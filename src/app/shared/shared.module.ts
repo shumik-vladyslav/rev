@@ -21,7 +21,9 @@ import {
   MatProgressBarModule,
   MatFormFieldModule,
   MatSelectModule,
+  MatCheckboxModule
 } from '@angular/material';
+import { DialogParametersComponent } from './components/dialog-parameters/dialog-parameters.component';
 
 @NgModule({
   imports: [
@@ -45,6 +47,7 @@ import {
     MatProgressBarModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatCheckboxModule,
     FlexLayoutModule,
   ],
   exports: [
@@ -67,8 +70,10 @@ import {
     MatProgressBarModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatCheckboxModule,
     FlexLayoutModule,
   ],
-  declarations: [],
+  entryComponents: [DialogParametersComponent],
+  declarations: [DialogParametersComponent],
 })
 export class SharedModule { }

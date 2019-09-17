@@ -1,21 +1,80 @@
-<mat-card class="example-card">
-  <mat-card-header>
-    <mat-card-title>Login</mat-card-title>
-  </mat-card-header>
+<h1 class="title">Welcome back!</h1>
+<p class="subtitle">Log in below and make work flow.</p>
+<div class="auth-container">
+  <form action="">
+    <div class="form-group">
+      <input
+        type="text"
+        name="email"
+        class="input"
+        placeholder="Your email"
+        [(ngModel)]="email"
+      />
+    </div>
+    <div class="form-group">
+      <input
+        type="password"
+        class="input"
+        [(ngModel)]="password"
+        name="password"
+        placeholder="Your password"
+      />
+    </div>
+    <div class="form-submit">
+      <button (click)="login()" mat-raised-button color="primary">
+        Login
+      </button>
+    </div>
+  </form>
+  <div class="form-footer df jc-b">
+    <span>
+        No account yet?
+      <a class="button-link" [routerLink]="['/auth/register']">Sign up</a>
+    </span>
+    <span>
+      <a class="button-link">Forgot your password?</a>
+    </span>
+  </div>
+  <form action="" class="social-form">
+    <button mat-stroked-button>
+      <img src="assets/icons/btn_google.svg" alt="" />
+      Login with Google
+    </button>
+    <button mat-stroked-button>
+      <img src="assets/icons/btn_linkedin.svg" alt="" />
+      Login with LinkedIn
+    </button>
+  </form>
+</div>
+
+<!-- <mat-card class="example-card">
   <mat-card-content>
     <form class="example-form">
       <table cellspacing="0">
         <tr>
           <td>
             <mat-form-field>
-              <input matInput placeholder="Email" [(ngModel)]="email" name="email" required>
+              <input
+                matInput
+                placeholder="Email"
+                [(ngModel)]="email"
+                name="email"
+                required
+              />
             </mat-form-field>
           </td>
         </tr>
         <tr>
           <td>
             <mat-form-field>
-              <input matInput placeholder="Password" [(ngModel)]="password" type="password" name="password" required>
+              <input
+                matInput
+                placeholder="Password"
+                [(ngModel)]="password"
+                type="password"
+                name="password"
+                required
+              />
             </mat-form-field>
           </td>
         </tr>
@@ -24,6 +83,9 @@
   </mat-card-content>
   <mat-card-actions>
     <button mat-raised-button (click)="login()" color="primary">Login</button>
-    <span>Don't have an account ? <a [routerLink]="['/auth/register']" >register</a> here</span>
+    <span
+      >Don't have an account ?
+      <a [routerLink]="['/auth/register']">register</a> here</span
+    >
   </mat-card-actions>
-</mat-card>
+</mat-card> -->

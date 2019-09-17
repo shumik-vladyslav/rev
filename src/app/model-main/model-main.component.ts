@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ModelService } from '../shared/model.service';
 import { ComponentService } from '../shared/component.service';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { DialogParametersComponent } from '../shared/components/dialog-parameters/dialog-parameters.component';
 
 @Component({
   selector: 'app-model-main',
@@ -8,12 +10,23 @@ import { ComponentService } from '../shared/component.service';
   styleUrls: ['./model-main.component.scss']
 })
 export class ModelMainComponent implements OnInit {
+  picture;
 
   constructor(
     private modelService: ModelService,
     private componentService: ComponentService,
-    
+    public dialog: MatDialog,
   ) { }
+  
+  openDialog(): void {
+    const dialogRef = this.dialog.open(DialogParametersComponent, {
+      width: '450px',
+      data: 'Hi dialog'
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result, 'The dialog was closed');
+    });
+  }
 
   ngOnInit() {
     let model = {

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModelService } from '../shared/model.service';
 import { AuthService } from '../auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-model-list',
@@ -19,6 +20,7 @@ export class ModelListComponent implements OnInit {
   constructor(
     private modelService: ModelService,
     private authService: AuthService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -42,5 +44,5 @@ export class ModelListComponent implements OnInit {
       console.log(data)
     })
   }
-
+  
 }

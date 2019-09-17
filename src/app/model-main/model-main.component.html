@@ -1,3 +1,225 @@
-<p>
-  model-main works!
-</p>
+<div class="bpm-wrap">
+  <div class="palette-entries">
+    <div class="bpm-item">
+      <span class="icon bpmn-icon-hand-tool"></span>
+    </div>
+    <div class="bpm-item">
+      <span class="icon bpmn-icon-lasso-tool"></span>
+    </div>
+    <div class="bpm-item">
+      <span class="entry icon bpmn-icon-space-tool"></span>
+    </div>
+    <div class="bpm-item">
+      <span class="entry icon bpmn-icon-connection-multi"></span>
+    </div>
+    <div class="separator"></div>
+    <div class="bpm-item">
+      <span class="icon bpmn-icon-start-event-none"></span>
+    </div>
+    <div class="bpm-item">
+      <span class="icon bpmn-icon-intermediate-event-none"></span>
+    </div>
+    <div class="bpm-item">
+      <span class="icon bpmn-icon-end-event-none"></span>
+    </div>
+    <div class="bpm-item">
+      <span class="icon bpmn-icon-gateway-none"></span>
+    </div>
+    <div class="bpm-item">
+      <span class="icon bpmn-icon-task"></span>
+    </div>
+    <div class="bpm-item">
+      <span class="icon bpmn-icon-subprocess-expanded"></span>
+    </div>
+    <div class="bpm-item">
+      <span class="icon bpmn-icon-data-object"></span>
+    </div>
+    <div class="bpm-item">
+      <span class="icon bpmn-icon-data-store"></span>
+    </div>
+    <div class="bpm-item">
+      <span class="icon bpmn-icon-participant"></span>
+    </div>
+    <div class="bpm-item">
+      <span class="icon bpmn-icon-group"></span>
+    </div>
+  </div>
+  <div [ngClass]="{ show: true }" class="sidebar">
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="Id" />
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="Name" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>ObjectClass</mat-label>
+      <mat-select>
+        <mat-option value="1">
+          1
+        </mat-option>
+        <mat-option value="2">
+          2
+        </mat-option>
+        <mat-option value="3">
+          3
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <input matInput placeholder="ObjectType" />
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <textarea matInput placeholder="Description"></textarea>
+    </mat-form-field>
+    <div class="input-btn-wrap">
+      <mat-form-field class="example-full-width">
+        <input readonly [(ngModel)]="picture" matInput placeholder="Picture" />
+      </mat-form-field>
+      <input #file [(ngModel)]="picture" hidden type="file" />
+      <button
+        (click)="file.click()"
+        mat-raised-button
+        color="primary"
+        class="btn"
+      >
+        <i class="material-icons">
+          forward
+        </i>
+      </button>
+    </div>
+    <table>
+      <tr>
+        <th style="text-align: left;">Parameters</th>
+        <th>M</th>
+        <th>C</th>
+        <th>S</th>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field class="example-full-width">
+            <input matInput placeholder="Цена" />
+          </mat-form-field>
+        </td>
+        <td>
+          <div class="df jc-c">
+            <mat-checkbox></mat-checkbox>
+          </div>
+        </td>
+        <td>
+          <div class="df jc-c">
+            <mat-checkbox></mat-checkbox>
+          </div>
+        </td>
+        <td>
+          <div class="df jc-c">
+            <mat-checkbox></mat-checkbox>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field class="example-full-width">
+            <input matInput placeholder="Скорость" />
+          </mat-form-field>
+        </td>
+        <td>
+          <div class="df jc-c">
+            <mat-checkbox></mat-checkbox>
+          </div>
+        </td>
+        <td>
+          <div class="df jc-c">
+            <mat-checkbox></mat-checkbox>
+          </div>
+        </td>
+        <td>
+          <div class="df jc-c">
+            <mat-checkbox></mat-checkbox>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field class="example-full-width">
+            <input matInput placeholder="Себестоимость" />
+          </mat-form-field>
+        </td>
+        <td>
+          <div class="df jc-c">
+            <mat-checkbox></mat-checkbox>
+          </div>
+        </td>
+        <td>
+          <div class="df jc-c">
+            <mat-checkbox></mat-checkbox>
+          </div>
+        </td>
+        <td>
+          <div class="df jc-c">
+            <mat-checkbox></mat-checkbox>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <div>
+      <button mat-button>+ add parameter</button>
+    </div>
+
+    <div class="loop-item">
+      <mat-form-field class="example-full-width">
+        <input matInput placeholder="Id" />
+      </mat-form-field>
+      <mat-form-field class="example-full-width">
+        <input matInput placeholder="Name" />
+      </mat-form-field>
+      <mat-form-field class="example-full-width">
+        <textarea matInput placeholder="Description"></textarea>
+      </mat-form-field>
+      <div class="input-btn-wrap">
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="Picture" />
+        </mat-form-field>
+        <button (click)="openDialog()" mat-raised-button color="primary" class="btn">
+          <i>
+            f(x)
+          </i>
+        </button>
+      </div>
+      <mat-form-field>
+        <mat-label>Feature label</mat-label>
+        <mat-select>
+          <mat-option value="1">
+            1
+          </mat-option>
+          <mat-option value="2">
+            2
+          </mat-option>
+          <mat-option value="3">
+            3
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div class="chekboxs-list">
+        <mat-checkbox>Measurable</mat-checkbox>
+        <mat-checkbox>Changeable</mat-checkbox>
+        <mat-checkbox>Show on diagram</mat-checkbox>
+        <mat-checkbox>Show name</mat-checkbox>
+      </div>
+      <mat-form-field>
+        <mat-label>Control type</mat-label>
+        <mat-select>
+          <mat-option value="1">
+            1
+          </mat-option>
+          <mat-option value="2">
+            2
+          </mat-option>
+          <mat-option value="3">
+            3
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+</div>

@@ -14,3 +14,88 @@
 .mat-card-title {
   font-size: 16px;
 }
+.title{
+  text-align: center;
+  font-size: 45px;
+  color: #4b4b4b;
+  margin: 16px 0;
+}
+.subtitle{
+  text-align: center;
+  font-size: 24px;
+  margin-top: 0;
+  font-size: 18px;
+  font-weight: 300;
+}
+.form-group{
+  margin-bottom: 1rem;
+  input{
+    width: 100%;
+    padding: 14px 16px;
+    line-height: 1;
+    font-weight: 300;
+    font-family: inherit;
+    font-size: 16px;
+    border-radius: 3px;
+    border: 1px solid #c3c3c3;
+    color: inherit;
+    background-color: white;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .error{
+    color: #ff6347;
+    font-size: 12px;
+    margin-top: 5px;
+    padding-left: 17px;
+  }
+}
+.form-submit{
+  display: flex;
+  justify-content: flex-end;
+}
+.button-link{
+  color: #47c9af;
+  font-weight: bold;
+  font-family: inherit;
+  font-size: inherit;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+.form-footer{
+  display: flex;
+  justify-content: space-between;
+  margin: 2rem 0;
+  font-size: 14px;
+  color: #8b8b8b;
+  font-weight: 300;
+}
+.social-form{
+  padding-top: 1rem;
+  border-top: 1px solid #c3c3c3;
+  button{
+    width: calc(50% - 10px);
+    font-weight: bold;
+    color: #8b8b8b;
+    padding: 6px 1rem;
+    border-radius: 3px;
+    border: 1px solid #c3c3c3;
+    &:first-child{
+      margin-right: 20px !important;
+    }
+    img{
+      position: absolute;
+      left: 10px;
+      height: 20px;
+      top: 13px;
+    }
+  }
+}
+.auth-container{
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}

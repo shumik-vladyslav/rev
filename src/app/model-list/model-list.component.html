@@ -1,5 +1,41 @@
-<p>
-  model-list works!
-</p>
+<div class="wrap">
+  <div class="head">
+    <div class="df ai-c">
+      <div class="title">
+        Recently Active
+      </div>
+      <div class="subtitle">
+        Diagrams last changed by you
+      </div>
+    </div>
+    <div>
+      <button
+        [routerLink]="['/model']"
+        mat-raised-button
+        color="primary"
+      >
+        New project
+      </button>
+    </div>
+  </div>
+
+  <div class="model-list">
+    <div class="model-wrap">
+      <div [routerLink]="['/model']" class="model">
+        <div class="img-wrap">
+          <img src="" alt="" />
+        </div>
+        <div>
+          <div class="name">
+            New diagram
+          </div>
+          <div class="desc">
+            Last modified: 9 minutes ago
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <button (click)="createModel()">create model</button>

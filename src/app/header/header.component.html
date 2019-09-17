@@ -1,16 +1,34 @@
 <header>
   <mat-toolbar color="primary">
-    <a [routerLink]="['/']" class="logo"></a>
-    <span class="example-spacer"></span>
-    <a class="links side" [routerLink]="['/auth/login']" *ngIf="!user">Login</a>
-    <div>
-      <a class="links side" *ngIf="user" [matMenuTriggerFor]="menu">
-        <mat-icon>account_circle</mat-icon>{{user.fullname}}
-      </a>
-      <mat-menu #menu="matMenu">
-        <button mat-menu-item *ngIf="user && user.isAdmin" [routerLink]="['/admin']">admin</button>
-        <button mat-menu-item (click)="logout()">logout</button>
-      </mat-menu>
+    <div [ngClass]="{'container': router.url.slice(1, 5) === 'auth'}" class="df full-width">
+      <a [routerLink]="['/']" class="logo"></a>
+      <span class="example-spacer"></span>
+      <button [routerLink]="['/auth/register']" mat-raised-button color="primary" class="m-r-10">
+        Sign up free
+      </button>
+      <button
+        mat-button
+        color="primary"
+        [routerLink]="['/auth/login']"
+        *ngIf="!user"
+      >
+        Login
+      </button>
+      <div>
+        <a class="links side" *ngIf="user" [matMenuTriggerFor]="menu">
+          <mat-icon>account_circle</mat-icon>{{ user.fullname }}
+        </a>
+        <mat-menu #menu="matMenu">
+          <button
+            mat-menu-item
+            *ngIf="user && user.isAdmin"
+            [routerLink]="['/admin']"
+          >
+            admin
+          </button>
+          <button mat-menu-item (click)="logout()">logout</button>
+        </mat-menu>
+      </div>
     </div>
   </mat-toolbar>
 </header>

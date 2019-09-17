@@ -37,7 +37,10 @@ export class RegisterComponent implements OnInit {
   get repeatPassword(): any { return this.userForm.get('repeatPassword'); }
 
   register() {
-
+    console.log(this.userForm);
+    console.log(this.userForm.controls['repeatPassword'].invalid);
+    console.log(this.userForm.controls['repeatPassword'].touched);
+      
     if(!this.userForm.valid) return;
 
     let {
