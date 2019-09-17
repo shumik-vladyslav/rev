@@ -50,7 +50,6 @@
   width: 100%;
   max-width: 400px;
   background-color: white;
-  box-shadow: rgba(0, 0, 0, 0.1) -3px 0px 5px -4px;
   transform: translate(100%, 0);
   transition: all 0.4s;
   height: 100%;
@@ -59,6 +58,7 @@
   overflow-y: auto;
   &.show {
     transform: translate(0, 0);
+    box-shadow: rgba(0, 0, 0, 0.1) -8px 0px 5px -4px;
   }
 }
 mat-form-field {
@@ -75,24 +75,24 @@ mat-form-field {
     padding: 0 6px;
     margin-left: 25px;
     min-width: 35px;
-    .material-icons{
-        transform: rotate(-90deg);
+    .material-icons {
+      transform: rotate(-90deg);
     }
   }
 }
-table{
-    width: 100%;
+table {
+  width: 100%;
 }
-.chekboxs-list{
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 10px;
-    margin-bottom: 5px;
-    mat-checkbox{
-        width: 50%;
-    }
+.chekboxs-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  mat-checkbox {
+    width: 50%;
+  }
 }
-.loop-item{
-    padding-bottom: 20px;
-    border-bottom: 1px dashed #b7b7b7;
+.loop-item {
+  padding-bottom: 20px;
+  border-bottom: 1px dashed #b7b7b7;
 }
