@@ -13,16 +13,19 @@ const Component = require('../models/component.model');
 
 module.exports = {
   insert,
-  getAll
+  getAll,
+  getAllById
 }
 
 async function insert(model) {
-  // model = await Joi.validate(model, modelSchema, { abortEarly: false });
   return await new Component(model).save();
 }
 
 
 async function getAll() {
-  // model = await Joi.validate(model, modelSchema, { abortEarly: false });
   return await Component.find()
+}
+
+async function getAllById(params) {
+  return await Component.find({modelId: params.id})
 }

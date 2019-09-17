@@ -17,4 +17,8 @@ export class ModelService {
   getAll(){
     return this.http.get('/api/model')
   }
+  
+  getAllById(id){
+    return this.http.get('/api/model/list/' + id)
+  }
 }

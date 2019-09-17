@@ -13,7 +13,8 @@ const Model = require('../models/model.model');
 
 module.exports = {
   insert,
-  getAll
+  getAll,
+  getAllById
 }
 
 async function insert(model) {
@@ -21,10 +22,13 @@ async function insert(model) {
   return await new Model(model).save();
 }
 
-
 async function getAll() {
-  // model = await Joi.validate(model, modelSchema, { abortEarly: false });
   return await Model.find()
 }
+
+async function getAllById(params) {
+  return await Model.find({userId: params.id})
+}
+
 
 

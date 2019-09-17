@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModelService } from '../shared/model.service';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-model-list',
@@ -7,13 +8,37 @@ import { ModelService } from '../shared/model.service';
   styleUrls: ['./model-list.component.scss']
 })
 export class ModelListComponent implements OnInit {
+  user;
+  model = {
+    id: "",
+    userId: "",
+    name: "",
+    description: ""
+  }
 
   constructor(
-    private modelService: ModelService
+    private modelService: ModelService,
+    private authService: AuthService,
   ) { }
 
   ngOnInit() {
-    this.modelService.getAll().subscribe((data) => {
+
+
+    this.authService.me().subscribe(data => {
+      this.user = data.user;
+      console.log(data)
+      this.modelService.getAllById(this.user._id).subscribe((data) => {
+        console.log(data)
+      });
+    });
+  }
+
+  createModel(){
+    this.model.userId = this.user._id;
+    this.model.id = "test1";
+    this.model.description = "tes1t";
+    this.model.name = "tes1t";
+    this.modelService.create(this.model).subscribe((data) => {
       console.log(data)
     })
   }

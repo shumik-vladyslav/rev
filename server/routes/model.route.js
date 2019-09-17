@@ -12,6 +12,8 @@ router.route('/')
   .post(asyncHandler(insert));
 router.route('/')
   .get(asyncHandler(getAll));
+router.route('/list/:id')
+.get(asyncHandler(getAllById));
   
 
 async function insert(req, res) {
@@ -23,3 +25,9 @@ async function getAll(req, res) {
   let model = await modelCtrl.getAll(req.body);
   res.json(model);
 }
+
+async function getAllById(req, res) {
+  let model = await modelCtrl.getAllById(req.params);
+  res.json(model);
+}
+

@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const ComponentSchema = new mongoose.Schema({
+  modelId: {
+    type: String,
+    required: true
+  },
   id: {
     type: String,
     required: true
