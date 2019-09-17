@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModelService } from '../shared/model.service';
+import { ComponentService } from '../shared/component.service';
 
 @Component({
   selector: 'app-model-main',
@@ -9,7 +10,9 @@ import { ModelService } from '../shared/model.service';
 export class ModelMainComponent implements OnInit {
 
   constructor(
-    private modelService: ModelService
+    private modelService: ModelService,
+    private componentService: ComponentService,
+    
   ) { }
 
   ngOnInit() {
@@ -35,7 +38,7 @@ export class ModelMainComponent implements OnInit {
       }]
     }
 
-    // this.modelService.create(model).subscribe((data) => {
+    // this.componentService.create(model).subscribe((data) => {
     //   console.log(1, data)
     // })
   }

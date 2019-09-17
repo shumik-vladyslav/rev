@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
-const Model = require('../models/model.model');
+const Component = require('../models/component.model');
 
 // const modelSchema = Joi.object({
 //   fullname: Joi.string().required(),
@@ -18,13 +18,11 @@ module.exports = {
 
 async function insert(model) {
   // model = await Joi.validate(model, modelSchema, { abortEarly: false });
-  return await new Model(model).save();
+  return await new Component(model).save();
 }
 
 
 async function getAll() {
   // model = await Joi.validate(model, modelSchema, { abortEarly: false });
-  return await Model.find()
+  return await Component.find()
 }
-
-

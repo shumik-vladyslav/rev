@@ -9,6 +9,7 @@ import { AuthService } from './auth.service';
 import { TokenStorage } from './token.storage';
 import { AuthRoutingModule } from './auth-routing.module';
 import { ModelService } from '../shared/model.service';
+import { ComponentService } from '../shared/component.service';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { ModelService } from '../shared/model.service';
   providers: [
     AuthService,
     TokenStorage,
-    ModelService
+    ModelService,
+    ComponentService
   ]
 })
 export class AuthModule { }
