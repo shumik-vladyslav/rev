@@ -4,13 +4,13 @@
       <div class="title">
         Recently Active
       </div>
-      <div class="subtitle">
+      <!-- <div class="subtitle">
         Diagrams last changed by you
-      </div>
+      </div> -->
     </div>
     <div>
       <button
-        [routerLink]="['/model']"
+        (click)="openDialog()"
         mat-raised-button
         color="primary"
       >
@@ -20,17 +20,17 @@
   </div>
 
   <div class="model-list">
-    <div class="model-wrap">
-      <div [routerLink]="['/model']" class="model">
+    <div *ngFor="let item of data" class="model-wrap">
+      <div [routerLink]="['/model/'+item._id]" class="model">
         <div class="img-wrap">
           <img src="" alt="" />
         </div>
         <div>
           <div class="name">
-            New diagram
+            {{item.name}}
           </div>
           <div class="desc">
-            Last modified: 9 minutes ago
+            {{item.description}}
           </div>
         </div>
       </div>
@@ -38,4 +38,4 @@
   </div>
 </div>
 
-<button (click)="createModel()">create model</button>
+<!-- <button (click)="createModel()">create model</button> -->

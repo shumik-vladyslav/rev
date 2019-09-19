@@ -2,7 +2,7 @@ header {
   width: 100%;
   .logo {
     background-image: url("../../assets/logo.png");
-    width: 40px;
+    width: 120px;
     height: 40px;
     background-size: contain;
     background-repeat: no-repeat;
@@ -33,6 +33,7 @@ header {
   .mat-icon {
     vertical-align: middle;
     margin: 0 5px;
+    color: #673ab7;
   }
   a {
     cursor: pointer;

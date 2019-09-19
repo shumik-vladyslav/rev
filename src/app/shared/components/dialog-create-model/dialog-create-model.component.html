@@ -1,0 +1,27 @@
+<h1 mat-dialog-title>Formula dialog</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-label>ID</mat-label>
+    <input matInput [(ngModel)]="model.id" />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Name</mat-label>
+    <input matInput [(ngModel)]="model.name" />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Description</mat-label>
+    <input matInput [(ngModel)]="model.description" />
+  </mat-form-field>
+</div>
+<div mat-dialog-actions class="jc-c df">
+  <button
+    mat-button
+    [mat-dialog-close]="model"
+    mat-raised-button
+    color="primary"
+    cdkFocusInitial
+  >
+    Ok
+  </button>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+</div>

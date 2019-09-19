@@ -24,6 +24,7 @@ import {
   MatCheckboxModule
 } from '@angular/material';
 import { DialogParametersComponent } from './components/dialog-parameters/dialog-parameters.component';
+import { DialogCreateModelComponent } from './components/dialog-create-model/dialog-create-model.component';
 
 @NgModule({
   imports: [
@@ -73,7 +74,7 @@ import { DialogParametersComponent } from './components/dialog-parameters/dialog
     MatCheckboxModule,
     FlexLayoutModule,
   ],
-  entryComponents: [DialogParametersComponent],
-  declarations: [DialogParametersComponent],
+  entryComponents: [DialogParametersComponent, DialogCreateModelComponent],
+  declarations: [DialogParametersComponent, DialogCreateModelComponent],
 })
 export class SharedModule { }

@@ -1,6 +1,6 @@
 <div class="bpm-wrap">
   <div class="palette-entries">
-    <div class="bpm-item">
+    <!-- <div class="bpm-item">
       <span class="icon bpmn-icon-hand-tool"></span>
     </div>
     <div class="bpm-item">
@@ -12,26 +12,30 @@
     <div class="bpm-item">
       <span class="entry icon bpmn-icon-connection-multi"></span>
     </div>
-    <div class="separator"></div>
+    <div class="separator"></div> -->
     <div class="bpm-item">
-      <span class="icon bpmn-icon-start-event-none"></span>
+      <span pTooltip="Start" tooltipPosition="top" [draggable]="true" id="Input"
+        class="icon bpmn-icon-start-event-none"></span>
     </div>
     <div class="bpm-item">
-      <span class="icon bpmn-icon-intermediate-event-none"></span>
+      <span id="Output" pTooltip="Start" tooltipPosition="top" [draggable]="true"
+        class="icon bpmn-icon-intermediate-event-none"></span>
     </div>
     <div class="bpm-item">
-      <span class="icon bpmn-icon-end-event-none"></span>
+      <span id="InputOutput" pTooltip="Start" tooltipPosition="top" [draggable]="true"
+        class="icon bpmn-icon-end-event-none"></span>
     </div>
-    <div class="bpm-item">
+    <!-- <div class="bpm-item">
       <span class="icon bpmn-icon-gateway-none"></span>
+    </div> -->
+    <div class="bpm-item">
+      <span id="Process" pTooltip="Start" tooltipPosition="top" [draggable]="true" class="icon bpmn-icon-task"></span>
     </div>
     <div class="bpm-item">
-      <span class="icon bpmn-icon-task"></span>
+      <span id="Table" pTooltip="Start" tooltipPosition="top" [draggable]="true"
+        class="icon bpmn-icon-subprocess-expanded"></span>
     </div>
-    <div class="bpm-item">
-      <span class="icon bpmn-icon-subprocess-expanded"></span>
-    </div>
-    <div class="bpm-item">
+    <!-- <div class="bpm-item">
       <span class="icon bpmn-icon-data-object"></span>
     </div>
     <div class="bpm-item">
@@ -42,9 +46,10 @@
     </div>
     <div class="bpm-item">
       <span class="icon bpmn-icon-group"></span>
-    </div>
+    </div> -->
   </div>
-  <div [ngClass]="{ show: true }" class="sidebar">
+  <div class="coco-bpm-graph" id="graph" style="height: calc(100vh - 25px);"></div>
+  <div [ngClass]="{ show: false }" class="sidebar">
     <mat-form-field class="example-full-width">
       <input matInput placeholder="Id" />
     </mat-form-field>
@@ -76,12 +81,7 @@
         <input readonly [(ngModel)]="picture" matInput placeholder="Picture" />
       </mat-form-field>
       <input #file [(ngModel)]="picture" hidden type="file" />
-      <button
-        (click)="file.click()"
-        mat-raised-button
-        color="primary"
-        class="btn"
-      >
+      <button (click)="file.click()" mat-raised-button color="primary" class="btn">
         <i class="material-icons">
           forward
         </i>

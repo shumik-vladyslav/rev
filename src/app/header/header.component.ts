@@ -9,7 +9,7 @@ import { AuthService } from "../auth/auth.service";
   styleUrls: ["./header.component.scss"]
 })
 export class HeaderComponent implements OnInit {
-  @Input() user: any = {};
+  @Input() user;
 
   constructor(private authService: AuthService, private router: Router) {}
 

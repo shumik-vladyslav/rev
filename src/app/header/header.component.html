@@ -3,7 +3,7 @@
     <div [ngClass]="{'container': router.url.slice(1, 5) === 'auth'}" class="df full-width">
       <a [routerLink]="['/']" class="logo"></a>
       <span class="example-spacer"></span>
-      <button [routerLink]="['/auth/register']" mat-raised-button color="primary" class="m-r-10">
+      <button   *ngIf="!user" [routerLink]="['/auth/register']" mat-raised-button color="primary" class="m-r-10">
         Sign up free
       </button>
       <button

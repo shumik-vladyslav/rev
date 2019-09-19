@@ -1,0 +1,481 @@
+/* style for bpm */
+.coco-full-height {
+    height: 100%;
+  }
+  .tree-bpm .tree-node {
+    padding-left: 15px !important;
+  }
+  .coco-bpm-bpm-main-wrap {
+    font-size: 12px;
+    font-family: "Roboto", sans-serif !important;
+    color: #333333;
+    line-height: 1.25;
+  }
+  .coco-bpm-bpm-main-wrap h1,
+  .coco-bpm-bpm-main-wrap h2,
+  .coco-bpm-bpm-main-wrap h3,
+  .coco-bpm-bpm-main-wrap h4,
+  .coco-bpm-bpm-main-wrap h5,
+  .coco-bpm-bpm-main-wrap h6,
+  .coco-bpm-bpm-main-wrap p,
+  .coco-bpm-bpm-main-wrap label,
+  .coco-bpm-bpm-main-wrap span,
+  .coco-bpm-bpm-main-wrap div {
+    font-family: "Roboto", sans-serif;
+    line-height: 1.25;
+  }
+  .coco-bpm-bpm-main-wrap h1,
+  .coco-bpm-bpm-main-wrap h2,
+  .coco-bpm-bpm-main-wrap h3,
+  .coco-bpm-bpm-main-wrap h4,
+  .coco-bpm-bpm-main-wrap h5,
+  .coco-bpm-bpm-main-wrap h6 {
+    font-weight: bold;
+  }
+  .coco-bpm-bpm-main-wrap input:-webkit-autofill,
+  .coco-bpm-bpm-main-wrap input:-webkit-autofill:hover,
+  .coco-bpm-bpm-main-wrap input:-webkit-autofill:focus,
+  .coco-bpm-bpm-main-wrap input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset;
+  }
+  .coco-bpm-graph {
+    font-size: 12px;
+  }
+  .coco-bpm-polygon-style {
+    fill: #f6b45d;
+  }
+  .coco-bpm-rect-style {
+    fill: #2196f3;
+  }
+  .coco-bpm-text-style {
+    stroke: black;
+    stroke-width: 2px;
+    fill: white;
+  }
+  
+  /* style for accordion  === start*/
+  .coco-bpm-custome-accordion > div > p-accordiontab > div.ui-accordion-header {
+    padding: 0 !important;
+    box-shadow: none !important;
+    background: none !important;
+    border: none !important;
+  }
+  .coco-bpm-custome-accordion
+    > div
+    > p-accordiontab
+    > div.ui-accordion-header.ui-state-active {
+    border-bottom: none !important;
+  }
+  .coco-bpm-custome-accordion > div > p-accordiontab > div.ui-accordion-header a {
+    display: flex;
+    align-items: center;
+    flex-flow: row-reverse;
+    justify-content: space-between;
+    font-family: Roboto;
+    font-size: 14px !important;
+    font-weight: bold;
+    color: #333333 !important;
+  }
+  .coco-bpm-custome-accordion
+    > div
+    > p-accordiontab
+    > div.ui-accordion-content-wrapper
+    .ui-accordion-content {
+    padding: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+  /* style for accordion  === end*/
+  
+  .coco-bpm-rect-fun {
+    opacity: 0;
+  }
+  
+  .coco-bpm-rect-fun-stroke {
+    opacity: 0;
+    fill: none;
+    stroke-width: 1;
+    stroke: #2196f3;
+  }
+  
+  .coco-bpm-text-desc {
+    font-family: Roboto;
+    font-size: 10px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    fill: #999999;
+    position: absolute;
+    z-index: 2;
+  }
+  
+  .coco-bpm-text-title {
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 500;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    fill: #666666;
+    position: absolute;
+    z-index: 2;
+  }
+  
+  .coco-bpm-line-chips {
+    display: flex;
+    align-items: flex-end;
+  }
+  .coco-bpm-line-chips .ui-float-label {
+    width: 100%;
+    height: 100%;
+  }
+  .coco-bpm-line-chips .ui-dropdown {
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+  }
+  .coco-bpm-line-chips .ui-chips {
+    display: flex;
+  }
+  
+  .pos-r {
+    position: relative;
+  }
+  .coco-bpm-d3-zoom-wrap {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+  }
+  .coco-bpm-d3-zoom-wrap-header {
+    display: flex;
+    margin-left: 10px;
+  }
+  .coco-bpm-slider-wrap {
+    width: 120px;
+    margin-left: 11px;
+    position: relative;
+  }
+  .coco-bpm-slider {
+    -webkit-appearance: none;
+    border-radius: 21px;
+    background-color: #dddddd;
+    outline: none;
+    width: calc(100% + 4px);
+    border: none;
+    height: 2px;
+  }
+  
+  .coco-bpm-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 100%;
+    background-color: #2196f3;
+    z-index: 11;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .coco-bpm-slider::-moz-range-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 100%;
+    background-color: #2196f3;
+    z-index: 11;
+    position: relative;
+    cursor: pointer;
+  }
+  .coco-bpm-line-range {
+    height: 2px;
+    background: #2196f3;
+    left: 3px;
+    position: absolute;
+    top: 9px;
+    pointer-events: none;
+  }
+  
+  .bpm-filter-query .q-connector {
+    display: flex;
+    align-items: center;
+  }
+  .bpm-filter-query .q-tree {
+    margin: 0 !important;
+  }
+  .bpm-filter-query .q-empty-warning {
+    white-space: normal;
+    margin-left: 10px;
+  }
+  .bpm-filter-query .ui-dropdown {
+    min-width: 100%;
+    max-width: 100%;
+  }
+  .bpm-filter-query .q-button-group {
+    min-width: 20px;
+  }
+  
+  .df {
+    display: flex;
+  }
+  .ai-c {
+    align-items: center;
+  }
+  .ai-e {
+    align-items: flex-end;
+  }
+  .jc-b {
+    justify-content: space-between;
+  }
+  
+  .c-p {
+    cursor: pointer;
+  }
+  
+  /* round checkbox */
+  
+  .cust-round > div > div.ui-chkbox-box {
+    width: 18px !important;
+    height: 18px !important;
+    border-radius: 9px !important;
+  }
+  p-radiobutton.cust-round
+    > div
+    > div.ui-state-active
+    > span.ui-chkbox-icon::before {
+    display: inline;
+    content: "done";
+    font-family: "Material Icons";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 13px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: "liga";
+    -webkit-font-smoothing: antialiased;
+    margin-top: 2px;
+  }
+  p-radiobutton.cust-round > label {
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    color: #666666;
+    margin-left: 7px !important;
+    margin-right: 15px !important;
+  }
+  p-radiobutton.cust-round.label-m-r-0 > label {
+    margin-right: 0px !important;
+  }
+  p-radiobutton > div > div.ui-radiobutton-box.ui-widget.ui-state-default > span {
+    height: 0 !important;
+    width: 0 !important;
+  }
+  p-radiobutton
+    > div
+    > div.ui-radiobutton-box.ui-widget.ui-state-default
+    > span::before {
+    display: inline;
+    content: "done";
+    font-family: "Material Icons";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 13px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: "liga";
+    -webkit-font-smoothing: antialiased;
+    margin-top: 2px;
+    color: white;
+    position: relative;
+    top: -5px;
+    left: -3px;
+  }
+  /* message */
+  .message-box {
+    border-radius: 2px;
+    padding: 13px 15px;
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    width: fit-content;
+    white-space: pre-wrap;
+  }
+  .message-box.succsess {
+    background-color: rgba(0, 200, 83, 0.1);
+    color: #00c853;
+  }
+  .message-box.danger {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+  }
+  .link-more {
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    color: #2196f3;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .link-more:hover {
+    text-decoration: none;
+  }
+  
+  /* smart hidden for inputs */
+  .smart-hidden {
+    height: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: none !important;
+    margin: 0 !important;
+    width: 0 !important;
+    outline: none !important;
+  }
+  
+  .full-width-calendar {
+    width: 100%;
+    display: inline-grid;
+  }
+  
+  /* cust-multiselect */
+  p-multiselect.cust-multiselect {
+    width: 100%;
+    display: inline-grid;
+  }
+  p-multiselect.cust-multiselect .ui-multiselect {
+    border: 1px solid #dddddd !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+  }
+  p-multiselect.cust-multiselect .ui-multiselect .ui-multiselect-label {
+    padding-top: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  p-multiselect.cust-multiselect .ui-multiselect .ui-multiselect-panel {
+    width: 100%;
+    border-radius: 2px !important;
+    box-shadow: 0 0 10px 0 rgba(204, 204, 204, 0.5) !important;
+    border: none !important;
+  }
+  p-multiselect.cust-multiselect
+    .ui-multiselect
+    .ui-multiselect-panel
+    .ui-multiselect-items-wrapper {
+    padding: none !important;
+  }
+  p-multiselect.cust-multiselect .ui-multiselect .ui-multiselect-item {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+    padding: 12px 15px !important;
+    background: none !important;
+    color: #666666 !important;
+    background: none !important;
+    outline: none !important;
+  }
+  p-multiselect.cust-multiselect .ui-multiselect .ui-multiselect-item:last-child {
+    border-bottom: none !important;
+  }
+  p-multiselect.cust-multiselect .ui-multiselect .ui-multiselect-item .ui-chkbox {
+    margin-right: 10px !important;
+  }
+  p-multiselect.cust-multiselect
+    .ui-multiselect
+    .ui-multiselect-item
+    .ui-chkbox
+    .ui-chkbox-box {
+    border-radius: 100px !important;
+    width: 14px !important;
+    height: 14px !important;
+  }
+  p-multiselect.cust-multiselect
+    .ui-multiselect
+    .ui-multiselect-item
+    .ui-chkbox
+    .ui-chkbox-icon::before {
+    display: inline;
+    content: "done";
+    font-family: "Material Icons";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: "liga";
+    -webkit-font-smoothing: antialiased;
+    margin-top: 2px;
+    color: white;
+    position: relative;
+    top: -2px;
+  }
+  .calendar-icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+    pointer-events: none;
+  }
+  p-autocomplete.autocomplete-full-width {
+    min-width: 100%;
+    display: inline-flex;
+  }
+  p-autocomplete.autocomplete-full-width span.ui-autocomplete {
+    width: 100% !important;
+  }
+  .header-fs-16 .ui-accordion-header-text {
+    font-size: 16px;
+  }
+  .graph-pos-a {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .filtr-icon.indicator {
+    position: relative;
+  }
+  .filtr-icon.indicator::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    background-color: #ff6b68;
+    border-radius: 100px;
+    position: absolute;
+    top: 0px;
+    right: -2px;
+  }
+  

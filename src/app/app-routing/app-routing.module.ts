@@ -7,12 +7,15 @@ import { ModelMainComponent } from '../model-main/model-main.component';
 
 const routes: Routes = [{
   path: '',
-  component: HomeComponent
+  component: ModelListComponent
 },{
   path: 'model-list',
   component: ModelListComponent
 },{
   path: 'model',
+  component: ModelMainComponent
+},{
+  path: 'model/:id',
   component: ModelMainComponent
 }, {
   path: 'auth',
