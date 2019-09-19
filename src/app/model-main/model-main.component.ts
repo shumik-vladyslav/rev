@@ -15,7 +15,7 @@ declare var d3;
 })
 export class ModelMainComponent implements OnInit {
   types = [
-    "InputBpm",
+    "Input",
     "Output",
     "InputOutput",
     "Process",
@@ -286,7 +286,7 @@ export class ModelMainComponent implements OnInit {
 
     this.data.forEach((element, index, arr) => {
       switch (element.objectClass) {
-        case "InputBpm":
+        case "Input":
         case "Output":
         case "InputOutput":
           let d, dx, dy, color;
@@ -606,9 +606,9 @@ export class ModelMainComponent implements OnInit {
     // d3.selectAll("g").remove();
 
     d3.selectAll(".path").remove();
-    this.types.forEach(type => {
-      d3.selectAll(type).remove();
-    });
+    // this.types.forEach(type => {
+    //   d3.selectAll(type).remove();
+    // });
 
   }
   searchById(id, arr) {
