@@ -14,13 +14,13 @@ const Component = require('../models/component.model');
 module.exports = {
   insert,
   getAll,
-  getAllById
+  getAllById,
+  updateById
 }
 
 async function insert(model) {
   return await new Component(model).save();
 }
-
 
 async function getAll() {
   return await Component.find()
@@ -28,4 +28,9 @@ async function getAll() {
 
 async function getAllById(params) {
   return await Component.find({modelId: params.id})
+}
+
+async function updateById(params) {
+  console.log(params)
+  return await Component.update({_id: params._id}, {$set: params})
 }

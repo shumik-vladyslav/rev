@@ -13,7 +13,10 @@ router.route('/')
 router.route('/')
   .get(asyncHandler(getAll));
 router.route('/list/:id')
-.get(asyncHandler(getAllById));
+  .get(asyncHandler(getAllById));
+router.route('/')
+  .put(asyncHandler(updateById));
+  
 
 async function insert(req, res) {
   let model = await componentCtrl.insert(req.body);
@@ -27,5 +30,10 @@ async function getAll(req, res) {
 
 async function getAllById(req, res) {
   let model = await componentCtrl.getAllById(req.params);
+  res.json(model);
+}
+
+async function updateById(req, res) {
+  let model = await componentCtrl.updateById(req.body);
   res.json(model);
 }

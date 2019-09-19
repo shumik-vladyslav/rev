@@ -17,4 +17,12 @@ export class ComponentService {
   getAll(){
     return this.http.get('/api/component')
   }
+
+  update(component){
+    return this.http.put('/api/component', component)
+  }
+
+  getAllById(id){
+    return this.http.get('/api/component/list/' + id)
+  }
 }

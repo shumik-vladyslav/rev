@@ -32,7 +32,7 @@
       <span id="Process" pTooltip="Start" tooltipPosition="top" [draggable]="true" class="icon bpmn-icon-task"></span>
     </div>
     <div class="bpm-item">
-      <span id="Table" pTooltip="Start" tooltipPosition="top" [draggable]="true"
+      <span id="Board" pTooltip="Start" tooltipPosition="top" [draggable]="true"
         class="icon bpmn-icon-subprocess-expanded"></span>
     </div>
     <!-- <div class="bpm-item">
@@ -49,24 +49,30 @@
     </div> -->
   </div>
   <div class="coco-bpm-graph" id="graph" style="height: calc(100vh - 25px);"></div>
-  <div [ngClass]="{ show: false }" class="sidebar">
+  <div [ngClass]="{ show: showSide }" *ngIf="selectedModal" class="sidebar show">
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="Id" />
+      <input matInput [(ngModel)]="data[selectedModal].id" (ngModelChange)="onFieldChange($event)" />
     </mat-form-field>
     <mat-form-field class="example-full-width">
-      <input matInput placeholder="Name" />
+      <input matInput [(ngModel)]="data[selectedModal].name" (ngModelChange)="onFieldChange($event)"/>
     </mat-form-field>
     <mat-form-field>
       <mat-label>ObjectClass</mat-label>
-      <mat-select>
-        <mat-option value="1">
-          1
+      <mat-select [(ngModel)]="data[selectedModal].objectClass" (ngModelChange)="onFieldChange($event)">
+        <mat-option value="Board">
+          Board
         </mat-option>
-        <mat-option value="2">
-          2
+        <mat-option value="Input">
+          Input
         </mat-option>
-        <mat-option value="3">
-          3
+        <mat-option value="Output">
+          Output
+        </mat-option>
+        <mat-option value="InputOutput">
+          InputOutput
+        </mat-option>
+        <mat-option value="Process">
+          Process
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -74,9 +80,9 @@
       <input matInput placeholder="ObjectType" />
     </mat-form-field>
     <mat-form-field class="example-full-width">
-      <textarea matInput placeholder="Description"></textarea>
+      <textarea matInput placeholder="Description" [(ngModel)]="data[selectedModal].description" (ngModelChange)="onFieldChange($event)"></textarea>
     </mat-form-field>
-    <div class="input-btn-wrap">
+    <!-- <div class="input-btn-wrap">
       <mat-form-field class="example-full-width">
         <input readonly [(ngModel)]="picture" matInput placeholder="Picture" />
       </mat-form-field>
@@ -86,7 +92,7 @@
           forward
         </i>
       </button>
-    </div>
+    </div> -->
     <table>
       <tr>
         <th style="text-align: left;">Parameters</th>
@@ -98,50 +104,6 @@
         <td>
           <mat-form-field class="example-full-width">
             <input matInput placeholder="Цена" />
-          </mat-form-field>
-        </td>
-        <td>
-          <div class="df jc-c">
-            <mat-checkbox></mat-checkbox>
-          </div>
-        </td>
-        <td>
-          <div class="df jc-c">
-            <mat-checkbox></mat-checkbox>
-          </div>
-        </td>
-        <td>
-          <div class="df jc-c">
-            <mat-checkbox></mat-checkbox>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <mat-form-field class="example-full-width">
-            <input matInput placeholder="Скорость" />
-          </mat-form-field>
-        </td>
-        <td>
-          <div class="df jc-c">
-            <mat-checkbox></mat-checkbox>
-          </div>
-        </td>
-        <td>
-          <div class="df jc-c">
-            <mat-checkbox></mat-checkbox>
-          </div>
-        </td>
-        <td>
-          <div class="df jc-c">
-            <mat-checkbox></mat-checkbox>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <mat-form-field class="example-full-width">
-            <input matInput placeholder="Себестоимость" />
           </mat-form-field>
         </td>
         <td>
