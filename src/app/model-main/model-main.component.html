@@ -48,13 +48,13 @@
       <span class="icon bpmn-icon-group"></span>
     </div> -->
   </div>
-  <div class="coco-bpm-graph" id="graph" style="height: calc(100vh - 25px);"></div>
+  <div class="coco-bpm-graph" id="graph" style="height: calc(100vh - 60px);"></div>
   <div [ngClass]="{ show: showSide }" *ngIf="selectedModal" class="sidebar show">
     <mat-form-field class="example-full-width">
       <input matInput [(ngModel)]="data[selectedModal].id" (ngModelChange)="onFieldChange($event)" />
     </mat-form-field>
     <mat-form-field class="example-full-width">
-      <input matInput [(ngModel)]="data[selectedModal].name" (ngModelChange)="onFieldChange($event)"/>
+      <input matInput [(ngModel)]="data[selectedModal].name" (ngModelChange)="onFieldChange($event)" />
     </mat-form-field>
     <mat-form-field>
       <mat-label>ObjectClass</mat-label>
@@ -80,7 +80,8 @@
       <input matInput placeholder="ObjectType" />
     </mat-form-field>
     <mat-form-field class="example-full-width">
-      <textarea matInput placeholder="Description" [(ngModel)]="data[selectedModal].description" (ngModelChange)="onFieldChange($event)"></textarea>
+      <textarea matInput placeholder="Description" [(ngModel)]="data[selectedModal].description"
+        (ngModelChange)="onFieldChange($event)"></textarea>
     </mat-form-field>
     <!-- <div class="input-btn-wrap">
       <mat-form-field class="example-full-width">
@@ -99,33 +100,116 @@
         <th>M</th>
         <th>C</th>
         <th>S</th>
+        <th></th>
       </tr>
-      <tr>
-        <td>
-          <mat-form-field class="example-full-width">
-            <input matInput placeholder="Цена" />
-          </mat-form-field>
-        </td>
-        <td>
-          <div class="df jc-c">
-            <mat-checkbox></mat-checkbox>
-          </div>
-        </td>
-        <td>
-          <div class="df jc-c">
-            <mat-checkbox></mat-checkbox>
-          </div>
-        </td>
-        <td>
-          <div class="df jc-c">
-            <mat-checkbox></mat-checkbox>
-          </div>
-        </td>
-      </tr>
+
+      <tbody>
+        <tr>
+          <td>
+            <mat-form-field class="example-full-width">
+              <input matInput placeholder="Цена" />
+            </mat-form-field>
+          </td>
+          <td>
+            <div class="df jc-c">
+              <mat-checkbox></mat-checkbox>
+            </div>
+          </td>
+          <td>
+            <div class="df jc-c">
+              <mat-checkbox></mat-checkbox>
+            </div>
+          </td>
+          <td>
+            <div class="df jc-c">
+              <mat-checkbox></mat-checkbox>
+            </div>
+          </td>
+          <td>
+            <div class="df jc-c ai-c">
+              <button mat-icon-button>
+                <i class="material-icons-outlined">
+                  arrow_drop_down_circle
+                </i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="5">
+            <mat-accordion>
+              <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Personal data
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <div class="loop-item desc">
+                  <mat-form-field class="example-full-width">
+                    <input matInput placeholder="Id" />
+                  </mat-form-field>
+                  <mat-form-field class="example-full-width">
+                    <input matInput placeholder="Name" />
+                  </mat-form-field>
+                  <mat-form-field class="example-full-width">
+                    <textarea matInput placeholder="Description"></textarea>
+                  </mat-form-field>
+                  <div class="input-btn-wrap">
+                    <mat-form-field class="example-full-width">
+                      <input matInput placeholder="Picture" />
+                    </mat-form-field>
+                    <button (click)="openDialog()" mat-raised-button color="primary" class="btn">
+                      <i>
+                        f(x)
+                      </i>
+                    </button>
+                  </div>
+                  <mat-form-field>
+                    <mat-label>Feature label</mat-label>
+                    <mat-select>
+                      <mat-option value="1">
+                        1
+                      </mat-option>
+                      <mat-option value="2">
+                        2
+                      </mat-option>
+                      <mat-option value="3">
+                        3
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <div class="chekboxs-list">
+                    <mat-checkbox>Measurable</mat-checkbox>
+                    <mat-checkbox>Changeable</mat-checkbox>
+                    <mat-checkbox>Show on diagram</mat-checkbox>
+                    <mat-checkbox>Show name</mat-checkbox>
+                  </div>
+                  <mat-form-field>
+                    <mat-label>Control type</mat-label>
+                    <mat-select>
+                      <mat-option value="1">
+                        1
+                      </mat-option>
+                      <mat-option value="2">
+                        2
+                      </mat-option>
+                      <mat-option value="3">
+                        3
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </td>
+        </tr>
+      </tbody>
+
     </table>
 
-    <div>
-      <button mat-button>+ add parameter</button>
+    <div class="m-t-10 m-b-10">
+      <button mat-raised-button color="accent">+ Add parameter</button>
     </div>
 
     <div class="loop-item">
@@ -185,3 +269,16 @@
     </div>
   </div>
 </div>
+
+example-full-width mat-form-field ng-tns-c7-5 mat-primary mat-form-field-type-mat-input mat-form-field-appearance-legacy mat-form-field-can-float mat-form-field-hide-placeholder
+example-full-width mat-form-field ng-tns-c7-5 mat-primary mat-form-field-type-mat-input mat-form-field-appearance-legacy mat-form-field-can-float mat-form-field-hide-placeholder
+
+mat-form-field-wrapper
+
+mat-form-field-flex
+
+mat-input-element mat-form-field-autofill-control cdk-text-field-autofill-monitored
+
+mat-form-field-label-wrapper
+
+mat-form-field-label ng-tns-c7-5 mat-empty mat-form-field-empty ng-star-inserted

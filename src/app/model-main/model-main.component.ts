@@ -15,7 +15,7 @@ declare var d3;
 })
 export class ModelMainComponent implements OnInit {
   types = [
-    "Input",
+    "InputBpm",
     "Output",
     "InputOutput",
     "Process",
@@ -286,7 +286,7 @@ export class ModelMainComponent implements OnInit {
 
     this.data.forEach((element, index, arr) => {
       switch (element.objectClass) {
-        case "Input":
+        case "InputBpm":
         case "Output":
         case "InputOutput":
           let d, dx, dy, color;

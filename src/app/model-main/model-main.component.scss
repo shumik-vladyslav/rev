@@ -7,6 +7,7 @@
   overflow: hidden;
   min-height: calc(100vh - 58px);
 }
+
 .palette-entries {
   position: absolute;
   left: 20px;
@@ -17,6 +18,7 @@
   border: 1px solid #ccc;
   display: flex;
   flex-wrap: wrap;
+
   .bpm-item {
     width: 46px;
     height: 46px;
@@ -25,16 +27,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
     .icon {
       color: #333;
       font-size: 30px;
     }
+
     &:hover {
       .icon {
         color: #ff7400;
       }
     }
   }
+
   .separator {
     margin: 0 5px;
     padding-top: 5px;
@@ -57,43 +62,61 @@
   top: 0;
   padding: 15px;
   overflow-y: auto;
+
   &.show {
     transform: translate(0, 0);
     box-shadow: rgba(0, 0, 0, 0.1) -8px 0px 5px -4px;
   }
 }
+
 mat-form-field {
   display: block;
 }
+
 .input-btn-wrap {
   display: flex;
   align-items: center;
+
   mat-form-field {
     width: 100%;
   }
+
   button.btn {
     min-width: 0;
     padding: 0 6px;
     margin-left: 25px;
     min-width: 35px;
+
     .material-icons {
       transform: rotate(-90deg);
     }
   }
 }
+
 table {
   width: 100%;
 }
+
 .chekboxs-list {
   display: flex;
   flex-wrap: wrap;
   margin-top: 10px;
   margin-bottom: 5px;
+
   mat-checkbox {
     width: 50%;
   }
 }
+
 .loop-item {
   padding-bottom: 20px;
   border-bottom: 1px dashed #b7b7b7;
+  padding: 5px 10px;
+  padding-bottom: 10px;
+  border: 1px dashed #b7b7b7;
+
+  &.desc {
+    padding: 0 !important;
+    border: none !important;
+  }
 }
