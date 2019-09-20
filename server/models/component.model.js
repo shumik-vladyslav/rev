@@ -36,7 +36,7 @@ const ComponentSchema = new mongoose.Schema({
     id: String,
     name: String,
     description: String,
-    value: Number,
+    value: String,
     measurable: Number,
     changeable: Number,
     controlType: String,

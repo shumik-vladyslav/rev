@@ -24,11 +24,11 @@ export class ParameterClass{
     id = "";
     name = "";
     description = ""
-    value = 1;
-    measurable = 1;
-    changeable = 1;
+    value = "";
+    measurable = 0;
+    changeable = 0;
     controlType = "";
-    showName = 1;
-    showOnDiagram = 1;
+    showName = 0;
+    showOnDiagram = 0;
     featureLabelNone = "";
 }

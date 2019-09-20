@@ -3,7 +3,7 @@ import { ModelService } from '../shared/model.service';
 import { ComponentService } from '../shared/component.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DialogParametersComponent } from '../shared/components/dialog-parameters/dialog-parameters.component';
-import { ComponentClass } from '../shared/model';
+import { ComponentClass, ParameterClass } from '../shared/model';
 import { ActivatedRoute } from '@angular/router';
 import {Subject} from "rxjs";
 import {debounceTime, distinctUntilChanged} from "rxjs/internal/operators";
@@ -38,6 +38,7 @@ export class ModelMainComponent implements OnInit {
   modelId;
   showSide;
   selectedModal;
+  optionsModal = {};
 
   constructor(
     private modelService: ModelService,
@@ -629,5 +630,12 @@ export class ModelMainComponent implements OnInit {
   txtQueryChanged: Subject<any> = new Subject<any>();
   onFieldChange(query:string){
     this.txtQueryChanged.next(query);
+  }
+
+  newParametr = new ParameterClass();
+
+  addParametr(){
+    this.data[this.selectedModal].parameters.push(this.newParametr);
+    this.newParametr = new ParameterClass();
   }
 }
