@@ -39,8 +39,9 @@ export class ModelListComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(model => {
       model.userId = this.user._id;
-      this.modelService.create(model).subscribe((data) => {
+      this.modelService.create(model).subscribe((data:any ) => {
         console.log(data)
+        this.router.navigate(["model/" + data._id])
       })
       console.log(model, 'The dialog was closed');
     });

@@ -39,7 +39,8 @@ export class ModelMainComponent implements OnInit {
   showSide;
   selectedModal;
   optionsModal = {};
-
+  dragSelected;
+  
   constructor(
     private modelService: ModelService,
     private componentService: ComponentService,
@@ -49,15 +50,28 @@ export class ModelMainComponent implements OnInit {
     this.modelId = this.activatedRoute.snapshot.paramMap.get('id');
 
     this.componentService.getAllById(this.modelId).subscribe((data: any) => {
-      console.log(data)
       this.data = data;
       this.drow();
     });
 
+    setInterval(() => {
+      this.removeAll()
+      this.drowLines()
+      this.drow();
+      this.txtQueryChanged.next(this.uuidv4());
+    }, 5000)
+
     this.txtQueryChanged
-    .pipe(debounceTime(1000), distinctUntilChanged())
+    .pipe(debounceTime(1800), distinctUntilChanged())
     .subscribe(model => {
-      this.componentService.update(this.data[this.selectedModal]).subscribe((data) => {});
+      let id =this.data[this.selectedModal || this.dragSelected];
+      if(id)
+      this.componentService.update(id).subscribe((data) => {
+      });
+      setTimeout(() => {
+        this.removeAll();
+        this.drow();
+      }, 1000);
     });
   }
 
@@ -67,7 +81,6 @@ export class ModelMainComponent implements OnInit {
       data: 'Hi dialog'
     });
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result, 'The dialog was closed');
     });
   }
 
@@ -151,7 +164,7 @@ export class ModelMainComponent implements OnInit {
         var d = {
           source: {
             x: this.data[this.startDrowLine].x,
-            y: this.data[this.startDrowLine].y
+            y: this.data[this.startDrowLine].y - 50
           },
           target: {
             x: x,
@@ -224,7 +237,6 @@ export class ModelMainComponent implements OnInit {
           "dragstart",
           ev => {
             this.dragType = type;
-            // if ((this.isStart && type === 'Start') || (this.isStop && type === 'Stop')) {
             if (this.isStart && type === "Start") {
               event.preventDefault();
             }
@@ -241,17 +253,6 @@ export class ModelMainComponent implements OnInit {
       "drop",
       ev => {
         let x, y;
-        switch (this.dragType) {
-          // case 'Stop':
-          //   this.isStop = true
-          //   break;
-          case "Start":
-            this.isStart = true;
-            break;
-          default:
-            break;
-        }
-
         if (
           document.getElementById("wrap").getAttribute("transform") === null
         ) {
@@ -263,13 +264,12 @@ export class ModelMainComponent implements OnInit {
         }
         ev.preventDefault();
         let model = new ComponentClass()
-        console.log(model)
         model.x = x;
         model.y = y;
         model.objectClass = this.dragType;
         model.modelId = this.modelId;
+        model.id = this.dragType + this.data.length;
         this.componentService.create(model).subscribe((data) => {
-          console.log(1, data);
           this.data.push(data)
     
           this.removeAll();
@@ -294,14 +294,28 @@ export class ModelMainComponent implements OnInit {
           dx = element.x - 10;
           dy = element.y - 8;
           color = "#3cd57c";
-          let g = this.conteiner.append("g");
-          g.append("svg:circle")
+          let count = 0;
+
+          element.parameters.forEach((param, index) => {
+            if(param.showOnDiagram){
+     
+              count++;
+            }
+          });
+
+          let h = (60 + (count > 3 ? ((count - 3) * 16  + (count * 5)) : 0));
+
+          let g = this.conteiner.append("g").attr("class", "g");
+            g.append("rect")
             .attr("class", "nodes")
             .attr("id", index)
-            .attr("cx", element.x)
-            .attr("cy", element.y)
-            .attr("r", "30px")
             .attr("fill", color)
+            .attr("x", element.x - 25)
+            .attr("y", element.y - 80)
+            .attr("width", 160)
+            .attr("height", h)
+            .attr("rx", 10)
+            .attr("ry", 10)
             .on("mouseover", (q, w, e) => {
               d3.event.stopPropagation();
               if (this.activeArrow) {
@@ -327,12 +341,12 @@ export class ModelMainComponent implements OnInit {
               this.shepClick(s);
             })
             .on("dblclick", (d, i, s) => {
-              // if (this.instanceId || this.workflowFlag) {
-              //   this.shepClick(s);
-              // }
               this.selectedModal = s[0].id;
               this.showSide = !this.showSide;
-              console.log(2)
+              this.removeAll();
+              this.drow();
+              this.activeArrow = null;
+              this.startDrowLine = null;
             })
             .call(
               d3
@@ -341,6 +355,17 @@ export class ModelMainComponent implements OnInit {
                 .on("drag", dragged)
                 .on("end", dragended)
             );
+            let countIndex = 0;
+            element.parameters.forEach((param, index) => {
+              if(param.showOnDiagram){
+                let py = element.y -50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
+                g.append("text")
+                .attr("x", element.x)
+                .attr("y", py)
+                .text((param.name || param.id) + " - " + param.value);
+                countIndex++;
+              }
+            });
 
           break;
 
@@ -349,27 +374,25 @@ export class ModelMainComponent implements OnInit {
           dx = element.x - 10;
           dy = element.y - 8;
           color = "#3cd57c";
-          let gr = this.conteiner.append("g");
+          count= 0;
+          element.parameters.forEach((param, index) => {
+            if(param.showOnDiagram){
+     
+              count++;
+            }
+          });
+
+          h = (60 + (count > 3 ? ((count - 3) * 16  + (count * 5)) : 0));
+          let gr = this.conteiner.append("g").attr("class", "g");
           gr.append("rect")
             .attr("id", index)
             .attr("class", "nodes coco-bpm-rect-style")
             .attr("x", element.x - 25)
-            .attr("y", element.y - 30)
-            .attr("width", 60)
-            .attr("height", 60)
-            .attr("rx", 10)
-            .attr("ry", 10)
-
-
-            // gr.append("rect")
-            //   .attr("id", index)
-            //   .attr("class", "nodes coco-bpm-rect-fun")
-            //   .attr("x", element.x - 25)
-            //   .attr("y", element.y - 30)
-            //   .attr("width", 160)
-            //   .attr("height", 60)
-            //   .attr("rx", 10)
-            //   .attr("ry", 10)
+            .attr("y", element.y - 80)
+            .attr("width", 160)
+            .attr("height", h)
+            // .attr("rx", 10)
+            // .attr("ry", 10)
             .on("mouseover", (q, w, e) => {
               d3.event.stopPropagation();
               if (this.activeArrow) {
@@ -395,9 +418,12 @@ export class ModelMainComponent implements OnInit {
               this.shepClick(s);
             })
             .on("dblclick", (d, i, s) => {
-              // if (this.instanceId || this.workflowFlag) {
-              //   this.shepClick(s);
-              // }
+              this.selectedModal = s[0].id;
+              this.showSide = !this.showSide;
+              this.removeAll();
+              this.drow();
+              this.activeArrow = null;
+              this.startDrowLine = null;
             })
             .call(
               d3
@@ -406,6 +432,18 @@ export class ModelMainComponent implements OnInit {
                 .on("drag", dragged)
                 .on("end", dragended)
             );
+
+            countIndex = 0;
+            element.parameters.forEach((param, index) => {
+              if(param.showOnDiagram){
+                let py = element.y -50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
+                gr.append("text")
+                .attr("x", element.x)
+                .attr("y", py)
+                .text((param.name || param.id) + " - " + param.value);
+                countIndex++;
+              }
+            });
           break;
 
         default:
@@ -439,20 +477,15 @@ export class ModelMainComponent implements OnInit {
             current_scale_string.length - 1
           );
         }
-
+        self.dragSelected = this.getAttribute("id");
         self.data[this.getAttribute("id")].x =
           self.start_x + (d3.event.x - self.start_x) / current_scale;
         self.data[this.getAttribute("id")].y =
           self.start_y + (d3.event.y - self.start_y) / current_scale;
-        self.componentService.update(self.data[this.getAttribute("id")]).subscribe((data) => {
-        })
         self.removeAll();
         self.drow();
-        // self.data[this.getAttribute("id")].x = d3.event.x - 100;
-        // self.data[this.getAttribute("id")].y = d3.event.y - 250;
-        // self.removeAll();
-        // self.drow();
-        // self.menuOptions.hide = true;
+        self.txtQueryChanged.next(self.uuidv4());
+
       }
 
       function dragended(d) {
@@ -494,11 +527,11 @@ export class ModelMainComponent implements OnInit {
           var d = {
             source: {
               x: x,
-              y: y
+              y: y - 50
             },
             target: {
               x: x2,
-              y: y2
+              y: y2- 50
             }
           };
 
@@ -586,15 +619,14 @@ export class ModelMainComponent implements OnInit {
     } else {
       if (id !== this.activeArrow){
         this.data[this.activeArrow].selected.push(this.data[id]._id);
-        this.componentService.update(this.data[this.activeArrow]).subscribe((data) => {})
+        this.txtQueryChanged.next("query");
       }
-        console.log(this.data)
       this.activeArrow = null;
       this.startDrowLine = null;
       
       this.removeAll();
-      this.drow();
       this.drowLines();
+      this.drow();
     }
   }
 
@@ -602,11 +634,13 @@ export class ModelMainComponent implements OnInit {
     d3.selectAll("line").remove();
     d3.selectAll("polyline").remove();
     d3.selectAll("rect").remove();
+    d3.selectAll("text").remove();
     d3.selectAll("circle").remove();
 
     // d3.selectAll("g").remove();
 
     d3.selectAll(".path").remove();
+    d3.selectAll(".g").remove();
     // this.types.forEach(type => {
     //   d3.selectAll(type).remove();
     // });
@@ -637,5 +671,6 @@ export class ModelMainComponent implements OnInit {
   addParametr(){
     this.data[this.selectedModal].parameters.push(this.newParametr);
     this.newParametr = new ParameterClass();
+    this.txtQueryChanged.next("query");
   }
 }

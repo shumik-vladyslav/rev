@@ -196,17 +196,17 @@
                     <mat-checkbox [(ngModel)]="item.showName" (ngModelChange)="onFieldChange($event)">Show name
                     </mat-checkbox>
                   </div>
-                  <mat-form-field>
+                  <mat-form-field *ngIf="item.showOnDiagram">
                     <mat-label>Control type</mat-label>
                     <mat-select [(ngModel)]="item.controlType" (ngModelChange)="onFieldChange($event)">
-                      <mat-option value="1">
-                        1
+                      <mat-option value="Value">
+                        Value
                       </mat-option>
-                      <mat-option value="2">
-                        2
+                      <mat-option value="Input">
+                        Input
                       </mat-option>
-                      <mat-option value="3">
-                        3
+                      <mat-option value="Slider">
+                        Slider
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
@@ -263,17 +263,17 @@
         <mat-checkbox [(ngModel)]="newParametr.showOnDiagram">Show on diagram</mat-checkbox>
         <mat-checkbox [(ngModel)]="newParametr.showName">Show name</mat-checkbox>
       </div>
-      <mat-form-field>
+      <mat-form-field *ngIf="newParametr.showOnDiagram">
         <mat-label>Control type</mat-label>
         <mat-select [(ngModel)]="newParametr.controlType">
-          <mat-option value="1">
-            1
+          <mat-option value="Value">
+            Value
           </mat-option>
-          <mat-option value="2">
-            2
+          <mat-option value="Input">
+            Input
           </mat-option>
-          <mat-option value="3">
-            3
+          <mat-option value="Slider">
+            Slider
           </mat-option>
         </mat-select>
       </mat-form-field>
