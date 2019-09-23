@@ -285,8 +285,8 @@ export class ModelMainComponent implements OnInit {
         model.id = this.dragType + this.data.length;
         let p1 = new ParameterClass("Price", "Price", "0", 1)
         let p2 = new ParameterClass("Speed", "Speed", "0", 1)
-        let p3 = new ParameterClass("CostPrice", "CostPrice", "0",1)
-        model.parameters = [ p1, p2, p3 ]
+        let p3 = new ParameterClass("CostPrice", "CostPrice", "0", 1)
+        model.parameters = [p1, p2, p3]
         this.componentService.create(model).subscribe((data) => {
           this.data.push(data)
 
@@ -325,7 +325,7 @@ export class ModelMainComponent implements OnInit {
 
           let h = (60 + (count > 3 ? ((count - 3) * 16 + (count * 5)) : 0));
 
-          let react = ((element.objectClass === "Process") ||   (element.objectClass === "Board")) ? " coco-bpm-rect-style" : "";
+          let react = ((element.objectClass === "Process") || (element.objectClass === "Board")) ? " coco-bpm-rect-style" : "";
 
           let g = this.conteiner.append("g").attr("class", "g");
           g.append("rect")
@@ -752,5 +752,15 @@ export class ModelMainComponent implements OnInit {
     this.data[this.selectedModal].parameters.push(this.newParametr);
     this.newParametr = new ParameterClass();
     this.txtQueryChanged.next("query");
+  }
+
+  onKeyUp(e) {
+    let arr = e.target.value.split('');
+    arr = arr.filter((item) => {
+      if (item != " ") {
+        return true;
+      }
+    })
+    e.target.value = arr.join('')
   }
 }

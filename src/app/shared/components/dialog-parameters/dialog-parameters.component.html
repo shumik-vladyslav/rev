@@ -19,7 +19,7 @@
   <mat-form-field>
     <mat-label>Object</mat-label>
     <mat-select [(ngModel)]="selectedObject" (ngModelChange)="paramsFilter($event)">
-      <mat-option *ngFor="let item of selectedObject" [value]="item">
+      <mat-option *ngFor="let item of listObjects" [value]="item">
         {{item}}
       </mat-option>
     </mat-select>
@@ -27,7 +27,7 @@
   <mat-form-field>
     <mat-label>Parameter</mat-label>
     <mat-select [(ngModel)]="selectedParam" (ngModelChange)="paramsChange($event)">
-      <mat-option *ngFor="let item of listParams" [value]="item._id">
+      <mat-option *ngFor="let item of listParams | filtrListParam: selectedClass: selectedObject" [value]="item._id">
         {{item.name}}
       </mat-option>
     </mat-select>

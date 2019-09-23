@@ -25,6 +25,7 @@ import {
 } from '@angular/material';
 import { DialogParametersComponent } from './components/dialog-parameters/dialog-parameters.component';
 import { DialogCreateModelComponent } from './components/dialog-create-model/dialog-create-model.component';
+import { FiltrListParamPipe } from './pipes/filtr-list-param.pipe';
 
 @NgModule({
   imports: [
@@ -75,6 +76,6 @@ import { DialogCreateModelComponent } from './components/dialog-create-model/dia
     FlexLayoutModule,
   ],
   entryComponents: [DialogParametersComponent, DialogCreateModelComponent],
-  declarations: [DialogParametersComponent, DialogCreateModelComponent],
+  declarations: [DialogParametersComponent, DialogCreateModelComponent, FiltrListParamPipe],
 })
 export class SharedModule { }

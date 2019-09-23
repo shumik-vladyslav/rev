@@ -24,19 +24,24 @@ export class DialogParametersComponent implements OnInit {
 
   ngOnInit(): void {
     this.listModel = this.data.list;
+    
+    
   }
 
   modelChange(id) {
     console.log(id)
     this.componentService.getAllById(id).subscribe((data: any) => {
       this.listComponents = data;
-
       this.listComponents.forEach(item => {
         this.listClass.push(item.objectClass);
         this.listObjects.push(item.objectType);
+        item.parameters.forEach(element => {
+          element.objectClass = item.objectClass;
+          element.objectType = item.objectType;
+        });
         this.listParams = [...this.listParams, ...item.parameters]
       });
-
+      console.log(this.listParams);
       this.listClass = [...this.listClass.filter(this.onlyUnique)];
       this.listObjects = [...this.listObjects.filter(this.onlyUnique)];
 
