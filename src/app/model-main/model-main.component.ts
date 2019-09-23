@@ -5,8 +5,8 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { DialogParametersComponent } from '../shared/components/dialog-parameters/dialog-parameters.component';
 import { ComponentClass, ParameterClass } from '../shared/model';
 import { ActivatedRoute } from '@angular/router';
-import {Subject} from "rxjs";
-import {debounceTime, distinctUntilChanged} from "rxjs/internal/operators";
+import { Subject } from "rxjs";
+import { debounceTime, distinctUntilChanged } from "rxjs/internal/operators";
 declare var d3;
 @Component({
   selector: 'app-model-main',
@@ -40,13 +40,13 @@ export class ModelMainComponent implements OnInit {
   selectedModal;
   optionsModal = {};
   dragSelected;
-  
+
   constructor(
     private modelService: ModelService,
     private componentService: ComponentService,
     public dialog: MatDialog,
     private activatedRoute: ActivatedRoute
-  ) { 
+  ) {
     this.modelId = this.activatedRoute.snapshot.paramMap.get('id');
 
     this.componentService.getAllById(this.modelId).subscribe((data: any) => {
@@ -62,17 +62,17 @@ export class ModelMainComponent implements OnInit {
     // }, 5000)
 
     this.txtQueryChanged
-    .pipe(debounceTime(1800), distinctUntilChanged())
-    .subscribe(model => {
-      let id =this.data[this.selectedModal || this.dragSelected];
-      if(id)
-      this.componentService.update(id).subscribe((data) => {
+      .pipe(debounceTime(1800), distinctUntilChanged())
+      .subscribe(model => {
+        let id = this.data[this.selectedModal || this.dragSelected];
+        if (id)
+          this.componentService.update(id).subscribe((data) => {
+          });
+        setTimeout(() => {
+          this.removeAll();
+          this.drow();
+        }, 1000);
       });
-      setTimeout(() => {
-        this.removeAll();
-        this.drow();
-      }, 1000);
-    });
   }
 
   openDialog(): void {
@@ -271,7 +271,7 @@ export class ModelMainComponent implements OnInit {
         model.id = this.dragType + this.data.length;
         this.componentService.create(model).subscribe((data) => {
           this.data.push(data)
-    
+
           this.removeAll();
           this.drow();
           this.dragType = null;
@@ -297,16 +297,16 @@ export class ModelMainComponent implements OnInit {
           let count = 0;
 
           element.parameters.forEach((param, index) => {
-            if(param.showOnDiagram){
-     
+            if (param.showOnDiagram) {
+
               count++;
             }
           });
 
-          let h = (60 + (count > 3 ? ((count - 3) * 16  + (count * 5)) : 0));
+          let h = (60 + (count > 3 ? ((count - 3) * 16 + (count * 5)) : 0));
 
           let g = this.conteiner.append("g").attr("class", "g");
-            g.append("rect")
+          g.append("rect")
             .attr("class", "nodes")
             .attr("id", index)
             .attr("fill", color)
@@ -355,77 +355,77 @@ export class ModelMainComponent implements OnInit {
                 .on("drag", dragged)
                 .on("end", dragended)
             );
-            let countIndex = 0;
-            element.parameters.forEach((param,paramIndex) => {
-              if(param.showOnDiagram){
-                let py = element.y -50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
-                console.log(param.controlType);
-                switch (param.controlType) {
-                  case "Value":
-                  case "":
-                    g.append("text")
+          let countIndex = 0;
+          element.parameters.forEach((param, paramIndex) => {
+            if (param.showOnDiagram) {
+              let py = element.y - 50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
+              console.log(param.controlType);
+              switch (param.controlType) {
+                case "Value":
+                case "":
+                  g.append("text")
                     .attr("x", element.x)
                     .attr("y", py)
                     .text((param.name || param.id) + " - " + param.value);
-                    break;
-                  case "Input":
-                    let gI = g.append("g");
-                    gI.append("text")
-                      .attr("x", element.x)
-                      .attr("y", py)
-                      .text((param.name || param.id) + " - ");
-                    gI      .append("foreignObject")
-                    .attr("x", element.x + ((param.name || param.id).length * 9))
-                    .attr("y", py- 15)
+                  break;
+                case "Input":
+                  let gI = g.append("g");
+                  gI.append("text")
+                    .attr("x", element.x)
+                    .attr("y", py)
+                    .text((param.name || param.id) + " - ");
+                  gI.append("foreignObject")
+                    .attr("x", element.x + ((param.name || param.id).length * 11))
+                    .attr("y", py - 15)
                     .attr("width", 50)
                     .attr("height", 16)
                     .attr("class", "foreignObject-input-bmp")
                     .html((d) => {
                       return `<input id="${index}-${paramIndex}" type="number" value="${param.value}" />`
                     });
-                    let inputElement :any  = document.getElementById(`${index}-${paramIndex}`);
-                    let self = this;
-                    inputElement.onkeypress = function(e) {
-                      setTimeout(() => {
-                        self.dragSelected = index;
-                        self.data[index].parameters[paramIndex].value = inputElement.value.toString();
-                        self.txtQueryChanged.next(inputElement.value);
-                      }, 500);
-                    };
-                    break;
-                  case "Slider":
-                      let gR = g.append("g");
-                      gR.append("text")
-                        .attr("x", element.x)
-                        .attr("y", py)
-                        .text((param.name || param.id) + " - ");
-                      gR      .append("foreignObject")
-                      .attr("x", element.x + ((param.name || param.id).length * 15))
-                      .attr("y", py- 15)
-                      .attr("width", 50)
-                      .attr("height", 16)
-                      .attr("class", "foreignObject-input-bmp")
-                      .html((d) => {
-                        return `<input id="${index}-${paramIndex}" type="range" min="0" max="1000" value="${param.value}" />`
-                      });
-                      self = this;
-                      let rangeElement :any  = document.getElementById(`${index}-${paramIndex}`);
-                      rangeElement.onchange = function(e) {
-                        console.log(rangeElement.value)
-                        setTimeout(() => {
-                          self.dragSelected = index;
-                          self.data[index].parameters[paramIndex].value = rangeElement.value.toString();
-                          self.txtQueryChanged.next(rangeElement.value);
-                        }, 500);
-                      };
-                    break;
-                  default:
-                    break;
-                }
-              
-                countIndex++;
+                  let inputElement: any = document.getElementById(`${index}-${paramIndex}`);
+                  let self = this;
+                  inputElement.onkeypress = function (e) {
+                    setTimeout(() => {
+                      self.dragSelected = index;
+                      self.data[index].parameters[paramIndex].value = inputElement.value.toString();
+                      self.txtQueryChanged.next(inputElement.value);
+                    }, 500);
+                  };
+                  break;
+                case "Slider":
+                  let gR = g.append("g");
+                  gR.append("text")
+                    .attr("x", element.x)
+                    .attr("y", py)
+                    .text((param.name || param.id) + " - ");
+                  gR.append("foreignObject")
+                    .attr("x", element.x + ((param.name || param.id).length * 10))
+                    .attr("y", py - 15)
+                    .attr("width", 50)
+                    .attr("height", 16)
+                    .attr("class", "foreignObject-input-bmp")
+                    .html((d) => {
+                      return `<input id="${index}-${paramIndex}" type="range" min="0" max="1000" value="${param.value}" />`
+                    })
+                  self = this;
+                  let rangeElement: any = document.getElementById(`${index}-${paramIndex}`);
+                  rangeElement.onchange = function (e) {
+                    console.log(rangeElement.value)
+                    setTimeout(() => {
+                      self.dragSelected = index;
+                      self.data[index].parameters[paramIndex].value = rangeElement.value.toString();
+                      self.txtQueryChanged.next(rangeElement.value);
+                    }, 500);
+                  };
+                  break;
+                default:
+                  break;
               }
-            });
+
+              countIndex++;
+            }
+          });
 
           break;
 
@@ -434,15 +434,15 @@ export class ModelMainComponent implements OnInit {
           dx = element.x - 10;
           dy = element.y - 8;
           color = "#3cd57c";
-          count= 0;
+          count = 0;
           element.parameters.forEach((param, index) => {
-            if(param.showOnDiagram){
-     
+            if (param.showOnDiagram) {
+
               count++;
             }
           });
 
-          h = (60 + (count > 3 ? ((count - 3) * 16  + (count * 5)) : 0));
+          h = (60 + (count > 3 ? ((count - 3) * 16 + (count * 5)) : 0));
           let gr = this.conteiner.append("g").attr("class", "g");
           gr.append("rect")
             .attr("id", index)
@@ -493,17 +493,17 @@ export class ModelMainComponent implements OnInit {
                 .on("end", dragended)
             );
 
-            countIndex = 0;
-            element.parameters.forEach((param, index) => {
-              if(param.showOnDiagram){
-                let py = element.y -50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
-                gr.append("text")
+          countIndex = 0;
+          element.parameters.forEach((param, index) => {
+            if (param.showOnDiagram) {
+              let py = element.y - 50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
+              gr.append("text")
                 .attr("x", element.x)
                 .attr("y", py)
                 .text((param.name || param.id) + " - " + param.value);
-                countIndex++;
-              }
-            });
+              countIndex++;
+            }
+          });
           break;
 
         default:
@@ -591,7 +591,7 @@ export class ModelMainComponent implements OnInit {
             },
             target: {
               x: x2,
-              y: y2- 50
+              y: y2 - 50
             }
           };
 
@@ -677,13 +677,13 @@ export class ModelMainComponent implements OnInit {
       this.activeArrow = id;
       this.startDrowLine = id;
     } else {
-      if (id !== this.activeArrow){
+      if (id !== this.activeArrow) {
         this.data[this.activeArrow].selected.push(this.data[id]._id);
         this.txtQueryChanged.next("query");
       }
       this.activeArrow = null;
       this.startDrowLine = null;
-      
+
       this.removeAll();
       this.drowLines();
       this.drow();
@@ -722,13 +722,13 @@ export class ModelMainComponent implements OnInit {
 
   txtQuery: string; // bind this to input with ngModel
   txtQueryChanged: Subject<any> = new Subject<any>();
-  onFieldChange(query:string){
+  onFieldChange(query: string) {
     this.txtQueryChanged.next(query);
   }
 
   newParametr = new ParameterClass();
 
-  addParametr(){
+  addParametr() {
     this.data[this.selectedModal].parameters.push(this.newParametr);
     this.newParametr = new ParameterClass();
     this.txtQueryChanged.next("query");
