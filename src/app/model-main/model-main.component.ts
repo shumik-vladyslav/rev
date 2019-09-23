@@ -379,6 +379,7 @@ export class ModelMainComponent implements OnInit {
                     .attr("y", py- 15)
                     .attr("width", 50)
                     .attr("height", 16)
+                    .attr("class", "foreignObject-input-bmp")
                     .html((d) => {
                       return `<input id="${index}-${paramIndex}" type="number" value="${param.value}" />`
                     });
@@ -403,6 +404,7 @@ export class ModelMainComponent implements OnInit {
                       .attr("y", py- 15)
                       .attr("width", 50)
                       .attr("height", 16)
+                      .attr("class", "foreignObject-input-bmp")
                       .html((d) => {
                         return `<input id="${index}-${paramIndex}" type="range" min="0" max="1000" value="${param.value}" />`
                       });
