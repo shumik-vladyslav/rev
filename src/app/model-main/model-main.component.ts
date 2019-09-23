@@ -54,12 +54,12 @@ export class ModelMainComponent implements OnInit {
       this.drow();
     });
 
-    setInterval(() => {
-      this.removeAll()
-      this.drowLines()
-      this.drow();
-      this.txtQueryChanged.next(this.uuidv4());
-    }, 5000)
+    // setInterval(() => {
+    //   this.removeAll()
+    //   this.drowLines()
+    //   this.drow();
+    //   this.txtQueryChanged.next(this.uuidv4());
+    // }, 5000)
 
     this.txtQueryChanged
     .pipe(debounceTime(1800), distinctUntilChanged())
@@ -356,13 +356,71 @@ export class ModelMainComponent implements OnInit {
                 .on("end", dragended)
             );
             let countIndex = 0;
-            element.parameters.forEach((param, index) => {
+            element.parameters.forEach((param,paramIndex) => {
               if(param.showOnDiagram){
                 let py = element.y -50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
-                g.append("text")
-                .attr("x", element.x)
-                .attr("y", py)
-                .text((param.name || param.id) + " - " + param.value);
+                console.log(param.controlType);
+                switch (param.controlType) {
+                  case "Value":
+                  case "":
+                    g.append("text")
+                    .attr("x", element.x)
+                    .attr("y", py)
+                    .text((param.name || param.id) + " - " + param.value);
+                    break;
+                  case "Input":
+                    let gI = g.append("g");
+                    gI.append("text")
+                      .attr("x", element.x)
+                      .attr("y", py)
+                      .text((param.name || param.id) + " - ");
+                    gI      .append("foreignObject")
+                    .attr("x", element.x + ((param.name || param.id).length * 9))
+                    .attr("y", py- 15)
+                    .attr("width", 50)
+                    .attr("height", 16)
+                    .html((d) => {
+                      return `<input id="${index}-${paramIndex}" type="number" value="${param.value}" />`
+                    });
+                    let inputElement :any  = document.getElementById(`${index}-${paramIndex}`);
+                    let self = this;
+                    inputElement.onkeypress = function(e) {
+                      setTimeout(() => {
+                        self.dragSelected = index;
+                        self.data[index].parameters[paramIndex].value = inputElement.value.toString();
+                        self.txtQueryChanged.next(inputElement.value);
+                      }, 500);
+                    };
+                    break;
+                  case "Slider":
+                      let gR = g.append("g");
+                      gR.append("text")
+                        .attr("x", element.x)
+                        .attr("y", py)
+                        .text((param.name || param.id) + " - ");
+                      gR      .append("foreignObject")
+                      .attr("x", element.x + ((param.name || param.id).length * 15))
+                      .attr("y", py- 15)
+                      .attr("width", 50)
+                      .attr("height", 16)
+                      .html((d) => {
+                        return `<input id="${index}-${paramIndex}" type="range" min="0" max="1000" value="${param.value}" />`
+                      });
+                      self = this;
+                      let rangeElement :any  = document.getElementById(`${index}-${paramIndex}`);
+                      rangeElement.onchange = function(e) {
+                        console.log(rangeElement.value)
+                        setTimeout(() => {
+                          self.dragSelected = index;
+                          self.data[index].parameters[paramIndex].value = rangeElement.value.toString();
+                          self.txtQueryChanged.next(rangeElement.value);
+                        }, 500);
+                      };
+                    break;
+                  default:
+                    break;
+                }
+              
                 countIndex++;
               }
             });
