@@ -7,6 +7,7 @@ import { ComponentClass, ParameterClass } from '../shared/model';
 import { ActivatedRoute } from '@angular/router';
 import { Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/internal/operators";
+import { AuthService } from '../auth/auth.service';
 declare var d3;
 @Component({
   selector: 'app-model-main',
@@ -40,14 +41,24 @@ export class ModelMainComponent implements OnInit {
   selectedModal;
   optionsModal = {};
   dragSelected;
+  user;
+  modelList;
 
   constructor(
     private modelService: ModelService,
     private componentService: ComponentService,
     public dialog: MatDialog,
+    private authService: AuthService,
     private activatedRoute: ActivatedRoute
   ) {
     this.modelId = this.activatedRoute.snapshot.paramMap.get('id');
+    this.authService.me().subscribe(data => {
+      this.user = data.user;
+      this.modelService.getAllById(this.user._id).subscribe((data: any) => {
+        console.log(data)
+        this.modelList = data;
+      });
+    });
 
     this.componentService.getAllById(this.modelId).subscribe((data: any) => {
       this.data = data;
@@ -78,9 +89,12 @@ export class ModelMainComponent implements OnInit {
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogParametersComponent, {
       width: '450px',
-      data: 'Hi dialog'
+      data: {
+        list: this.modelList
+      }
     });
     dialogRef.afterClosed().subscribe(result => {
+      console.log(result)
     });
   }
 
@@ -269,6 +283,10 @@ export class ModelMainComponent implements OnInit {
         model.objectClass = this.dragType;
         model.modelId = this.modelId;
         model.id = this.dragType + this.data.length;
+        let p1 = new ParameterClass("Price", "Price", "0", 1)
+        let p2 = new ParameterClass("Speed", "Speed", "0", 1)
+        let p3 = new ParameterClass("CostPrice", "CostPrice", "0",1)
+        model.parameters = [ p1, p2, p3 ]
         this.componentService.create(model).subscribe((data) => {
           this.data.push(data)
 
@@ -290,6 +308,8 @@ export class ModelMainComponent implements OnInit {
         case "Input":
         case "Output":
         case "InputOutput":
+        case "Process":
+        case "Board":
           let d, dx, dy, color;
           dx = element.x - 10;
           dy = element.y - 8;
@@ -305,9 +325,11 @@ export class ModelMainComponent implements OnInit {
 
           let h = (60 + (count > 3 ? ((count - 3) * 16 + (count * 5)) : 0));
 
+          let react = ((element.objectClass === "Process") ||   (element.objectClass === "Board")) ? " coco-bpm-rect-style" : "";
+
           let g = this.conteiner.append("g").attr("class", "g");
           g.append("rect")
-            .attr("class", "nodes")
+            .attr("class", "nodes" + react)
             .attr("id", index)
             .attr("fill", color)
             .attr("x", element.x - 25)
@@ -359,7 +381,6 @@ export class ModelMainComponent implements OnInit {
           element.parameters.forEach((param, paramIndex) => {
             if (param.showOnDiagram) {
               let py = element.y - 50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
-              console.log(param.controlType);
               switch (param.controlType) {
                 case "Value":
                 case "":
@@ -411,7 +432,6 @@ export class ModelMainComponent implements OnInit {
                   self = this;
                   let rangeElement: any = document.getElementById(`${index}-${paramIndex}`);
                   rangeElement.onchange = function (e) {
-                    console.log(rangeElement.value)
                     setTimeout(() => {
                       self.dragSelected = index;
                       self.data[index].parameters[paramIndex].value = rangeElement.value.toString();
@@ -429,82 +449,82 @@ export class ModelMainComponent implements OnInit {
 
           break;
 
-        case "Process":
-        case "Board":
-          dx = element.x - 10;
-          dy = element.y - 8;
-          color = "#3cd57c";
-          count = 0;
-          element.parameters.forEach((param, index) => {
-            if (param.showOnDiagram) {
+        // case "Process":
+        // case "Board":
+        //   dx = element.x - 10;
+        //   dy = element.y - 8;
+        //   color = "#3cd57c";
+        //   count = 0;
+        //   element.parameters.forEach((param, index) => {
+        //     if (param.showOnDiagram) {
 
-              count++;
-            }
-          });
+        //       count++;
+        //     }
+        //   });
 
-          h = (60 + (count > 3 ? ((count - 3) * 16 + (count * 5)) : 0));
-          let gr = this.conteiner.append("g").attr("class", "g");
-          gr.append("rect")
-            .attr("id", index)
-            .attr("class", "nodes coco-bpm-rect-style")
-            .attr("x", element.x - 25)
-            .attr("y", element.y - 80)
-            .attr("width", 160)
-            .attr("height", h)
-            // .attr("rx", 10)
-            // .attr("ry", 10)
-            .on("mouseover", (q, w, e) => {
-              d3.event.stopPropagation();
-              if (this.activeArrow) {
-                document.documentElement.style.cursor = "default";
-                d3.select(document.getElementById(e[0].id + "main")).style(
-                  "fill",
-                  "#84bd96"
-                );
-              }
-            })
-            .on("mouseout", (q, w, e) => {
-              d3.event.stopPropagation();
-              d3.select(document.getElementById(e[0].id + "main")).style(
-                "fill",
-                "#2196f3"
-              );
-              if (this.activeArrow) {
-                document.documentElement.style.cursor = "not-allowed";
-              }
-            })
-            .on("click", (d, i, s) => {
-              d3.event.stopPropagation();
-              this.shepClick(s);
-            })
-            .on("dblclick", (d, i, s) => {
-              this.selectedModal = s[0].id;
-              this.showSide = !this.showSide;
-              this.removeAll();
-              this.drow();
-              this.activeArrow = null;
-              this.startDrowLine = null;
-            })
-            .call(
-              d3
-                .drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended)
-            );
+        //   h = (60 + (count > 3 ? ((count - 3) * 16 + (count * 5)) : 0));
+        //   let gr = this.conteiner.append("g").attr("class", "g");
+        //   gr.append("rect")
+        //     .attr("id", index)
+        //     .attr("class", "nodes coco-bpm-rect-style")
+        //     .attr("x", element.x - 25)
+        //     .attr("y", element.y - 80)
+        //     .attr("width", 160)
+        //     .attr("height", h)
+        //     // .attr("rx", 10)
+        //     // .attr("ry", 10)
+        //     .on("mouseover", (q, w, e) => {
+        //       d3.event.stopPropagation();
+        //       if (this.activeArrow) {
+        //         document.documentElement.style.cursor = "default";
+        //         d3.select(document.getElementById(e[0].id + "main")).style(
+        //           "fill",
+        //           "#84bd96"
+        //         );
+        //       }
+        //     })
+        //     .on("mouseout", (q, w, e) => {
+        //       d3.event.stopPropagation();
+        //       d3.select(document.getElementById(e[0].id + "main")).style(
+        //         "fill",
+        //         "#2196f3"
+        //       );
+        //       if (this.activeArrow) {
+        //         document.documentElement.style.cursor = "not-allowed";
+        //       }
+        //     })
+        //     .on("click", (d, i, s) => {
+        //       d3.event.stopPropagation();
+        //       this.shepClick(s);
+        //     })
+        //     .on("dblclick", (d, i, s) => {
+        //       this.selectedModal = s[0].id;
+        //       this.showSide = !this.showSide;
+        //       this.removeAll();
+        //       this.drow();
+        //       this.activeArrow = null;
+        //       this.startDrowLine = null;
+        //     })
+        //     .call(
+        //       d3
+        //         .drag()
+        //         .on("start", dragstarted)
+        //         .on("drag", dragged)
+        //         .on("end", dragended)
+        //     );
 
-          countIndex = 0;
-          element.parameters.forEach((param, index) => {
-            if (param.showOnDiagram) {
-              let py = element.y - 50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
-              gr.append("text")
-                .attr("x", element.x)
-                .attr("y", py)
-                .text((param.name || param.id) + " - " + param.value);
-              countIndex++;
-            }
-          });
-          break;
+        //   countIndex = 0;
+        //   element.parameters.forEach((param, index) => {
+        //     if (param.showOnDiagram) {
+        //       let py = element.y - 50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
+        //       gr.append("text")
+        //         .attr("x", element.x)
+        //         .attr("y", py)
+        //         .text((param.name || param.id) + " - " + param.value);
+        //       countIndex++;
+        //     }
+        //   });
+        //   break;
 
         default:
           break;

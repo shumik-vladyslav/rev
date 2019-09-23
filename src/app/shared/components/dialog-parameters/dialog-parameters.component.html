@@ -2,57 +2,33 @@
 <div mat-dialog-content>
   <mat-form-field>
     <mat-label>Model</mat-label>
-    <mat-select>
-      <mat-option value="1">
-        1
-      </mat-option>
-      <mat-option value="2">
-        2
-      </mat-option>
-      <mat-option value="3">
-        3
+    <mat-select [(ngModel)]="sleectedModel" (ngModelChange)="modelChange($event)">
+      <mat-option *ngFor="let item of listModel" [value]="item._id">
+        {{item.name}}
       </mat-option>
     </mat-select>
   </mat-form-field>
   <mat-form-field>
     <mat-label>Class</mat-label>
-    <mat-select>
-      <mat-option value="1">
-        1
-      </mat-option>
-      <mat-option value="2">
-        2
-      </mat-option>
-      <mat-option value="3">
-        3
+    <mat-select [(ngModel)]="selectedClass" (ngModelChange)="paramsFilter($event)">
+      <mat-option *ngFor="let item of listClass" [value]="item">
+        {{item}}
       </mat-option>
     </mat-select>
   </mat-form-field>
   <mat-form-field>
     <mat-label>Object</mat-label>
-    <mat-select>
-      <mat-option value="1">
-        1
-      </mat-option>
-      <mat-option value="2">
-        2
-      </mat-option>
-      <mat-option value="3">
-        3
+    <mat-select [(ngModel)]="selectedObject" (ngModelChange)="paramsFilter($event)">
+      <mat-option *ngFor="let item of selectedObject" [value]="item">
+        {{item}}
       </mat-option>
     </mat-select>
   </mat-form-field>
   <mat-form-field>
     <mat-label>Parameter</mat-label>
-    <mat-select>
-      <mat-option value="1">
-        1
-      </mat-option>
-      <mat-option value="2">
-        2
-      </mat-option>
-      <mat-option value="3">
-        3
+    <mat-select [(ngModel)]="selectedParam" (ngModelChange)="paramsChange($event)">
+      <mat-option *ngFor="let item of listParams" [value]="item._id">
+        {{item.name}}
       </mat-option>
     </mat-select>
   </mat-form-field>

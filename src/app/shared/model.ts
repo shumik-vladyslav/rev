@@ -21,6 +21,12 @@ export class ComponentClass{
 }
 
 export class ParameterClass{
+    constructor(id?, name?, value?, showOnDiagram?){
+        this.id = id;
+        this.name = name;
+        this.value = value;
+        this.showOnDiagram = showOnDiagram;
+    }
     id = "";
     name = "";
     description = ""
