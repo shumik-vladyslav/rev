@@ -57,13 +57,14 @@ export class ModelMainComponent implements OnInit {
       this.modelService.getAllById(this.user._id).subscribe((data: any) => {
         console.log(data)
         this.modelList = data;
+        this.componentService.getAllById(this.modelId).subscribe((data: any) => {
+          this.data = data;
+          this.drow();
+        });
       });
     });
 
-    this.componentService.getAllById(this.modelId).subscribe((data: any) => {
-      this.data = data;
-      this.drow();
-    });
+
 
     // setInterval(() => {
     //   this.removeAll()
@@ -86,7 +87,10 @@ export class ModelMainComponent implements OnInit {
       });
   }
 
-  openDialog(): void {
+  openDialogItem;
+
+  openDialog(item): void {
+    this.openDialogItem = item;
     const dialogRef = this.dialog.open(DialogParametersComponent, {
       width: '450px',
       data: {
@@ -94,7 +98,8 @@ export class ModelMainComponent implements OnInit {
       }
     });
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result)
+      item.value = result.formula;
+      this.txtQueryChanged.next(item.value);
     });
   }
 
@@ -384,10 +389,41 @@ export class ModelMainComponent implements OnInit {
               switch (param.controlType) {
                 case "Value":
                 case "":
-                  g.append("text")
+                  let v = param.value;
+
+                  if(v.charAt(0) === "="){
+                    console.log(v);
+                    let spcaSpit = v.split(" ");
+                    console.log(spcaSpit);
+
+                    spcaSpit.forEach((element, index) => {
+                      if(element.split(".").length == 2){
+                        this.formulaSearch(element);
+                      }
+                    });
+                    setTimeout(() => {
+                      spcaSpit.forEach((element, index) => {
+                        if(element.split(".").length == 2){
+                          spcaSpit[index] = this.formulaSaver[element];
+                        }
+                      });
+                      spcaSpit.shift();
+                      let join = spcaSpit.join(" ");
+                      console.log(join);
+                      g.append("text")
+                      .attr("x", element.x)
+                      .attr("y", py)
+                      .text((param.name || param.id) + " - " + eval(join));
+
+                    }, 500);
+                  } else {
+                    g.append("text")
                     .attr("x", element.x)
                     .attr("y", py)
-                    .text((param.name || param.id) + " - " + param.value);
+                    .text((param.name || param.id) + " - " + v);
+                  }
+
+               
                   break;
                 case "Input":
                   let gI = g.append("g");
@@ -570,6 +606,28 @@ export class ModelMainComponent implements OnInit {
 
       function dragended(d) {
         d3.select(this).classed("active", false);
+      }
+    });
+  }
+
+  formulaSaver = {};
+
+  formulaSearch(element){
+    let arr = element.split(".");
+    this.modelList.forEach(model => {
+      if(model.id === arr[0]){
+        this.componentService.getAllById(model._id).subscribe((data: any) => {
+          data.forEach(comp => {
+            comp.parameters.forEach(param => {
+              if(param.id === arr[1]){
+                console.log(model, element, param)
+                this.formulaSaver[element] = param.value;
+              }
+            });
+          });
+
+        });
+
       }
     });
   }

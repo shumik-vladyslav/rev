@@ -61,9 +61,51 @@ export class DialogParametersComponent implements OnInit {
     
   }
 
+  ok(){
+    let spcaSpit = this.formula.split(" ");
+    let valid = true;
+    spcaSpit.forEach((item) => {
+      let arr = item.split(".");
+      if(arr.length == 2){
+        this.listModel.forEach((model, modelIndex) => {
+          let validModel;
+          if(model.name === arr[0]){
+            validModel = true;
+            let validParam = false;
+            this.listParams.forEach((comp, index) => {
+              if(comp.name === arr[1]){
+                validParam = true
+              }
+
+              if(this.listParams.length === (index + 1) && !validParam){
+                valid = false;
+              }
+            })
+          }
+          if(this.listModel.length === (modelIndex + 1) && !validModel){
+            valid = false;
+          }
+        })
+      }
+    })
+
+    if(valid){
+      this.dialogRef.close({formula: this.formula});
+    }
+  }
+
+  selectedFormulaVar = "";
+  formula = "= ";
+
   paramsChange(e){
     let item = this.searchById(e, this.listParams);
-    console.log(e, item, this.sleectedModel)
+    let model = this.searchById(this.sleectedModel, this.listModel);
+    console.log(e, item, model);
+    this.selectedFormulaVar = model.id + "." + item.id
+  }
+
+  add(){
+    this.formula += this.selectedFormulaVar;
   }
 
   searchById(id, arr) {

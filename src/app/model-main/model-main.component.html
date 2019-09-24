@@ -162,13 +162,15 @@
                       (ngModelChange)="onFieldChange($event)"></textarea>
                   </mat-form-field>
                   <div class="input-btn-wrap">
-                    <mat-form-field class="example-full-width">
-                      <input matInput placeholder="Value" [(ngModel)]="item.value"
+                    <mat-form-field *ngIf="item.value.charAt(0) !== '=' " class="example-full-width">
+                      <input  matInput placeholder="Value" [(ngModel)]="item.value"
                         (ngModelChange)="onFieldChange($event)" />
                     </mat-form-field>
-                    <button (click)="openDialog()" mat-raised-button color="primary" class="btn">
+                    <span *ngIf="item.value.charAt(0) === '=' " class="example-full-width">f (x)</span>
+
+                    <button (click)="openDialog(item)" mat-raised-button color="primary" class="btn">
                       <i>
-                        f(x)
+                        Value = f(x)
                       </i>
                     </button>
                   </div>
