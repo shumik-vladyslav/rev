@@ -166,11 +166,11 @@
                       <input  matInput placeholder="Value" [(ngModel)]="item.value"
                         (ngModelChange)="onFieldChange($event)" />
                     </mat-form-field>
-                    <span *ngIf="item.value.charAt(0) === '=' " class="example-full-width">f (x)</span>
+                    <span *ngIf="item.value.charAt(0) === '=' " class="example-full-width">Value = f (x)</span>
 
                     <button (click)="openDialog(item)" mat-raised-button color="primary" class="btn">
                       <i>
-                        Value = f(x)
+                        f(x)
                       </i>
                     </button>
                   </div>

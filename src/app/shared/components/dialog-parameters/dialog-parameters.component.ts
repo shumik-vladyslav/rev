@@ -69,11 +69,11 @@ export class DialogParametersComponent implements OnInit {
       if(arr.length == 2){
         this.listModel.forEach((model, modelIndex) => {
           let validModel;
-          if(model.name === arr[0]){
+          if(model.id === arr[0]){
             validModel = true;
             let validParam = false;
             this.listParams.forEach((comp, index) => {
-              if(comp.name === arr[1]){
+              if(comp.id === arr[1]){
                 validParam = true
               }
 
