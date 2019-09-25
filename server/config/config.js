@@ -33,6 +33,13 @@ if (error) {
 const config = {
   env: envVars.NODE_ENV,
   // port: envVars.SERVER_PORT,
+  // "ng": "ng",
+  // "serve": "node server",
+  // "start": "concurrently -c \"yellow.bold,green.bold\" -n \"SERVER,BUILD\" \"nodemon server\" \"ng build --watch\"",
+  // "build": "ng build --prod",
+  // "test": "ng test",
+  // "lint": "ng lint",
+  // "e2e": "ng e2e"
   port: process.env.PORT,
   mongooseDebug: envVars.MONGOOSE_DEBUG,
   jwtSecret: envVars.JWT_SECRET,
