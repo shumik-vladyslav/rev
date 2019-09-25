@@ -2,6 +2,9 @@
   "name": "mean",
   "version": "2.0.2",
   "license": "MIT",
+  "scripts": {
+    "start": "concurrently -c \"yellow.bold,green.bold\" -n \"SERVER,BUILD\" \"nodemon server\"",
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "^6.1.9",
