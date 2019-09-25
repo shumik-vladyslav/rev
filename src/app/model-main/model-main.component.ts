@@ -59,7 +59,10 @@ export class ModelMainComponent implements OnInit {
         this.modelList = data;
         this.componentService.getAllById(this.modelId).subscribe((data: any) => {
           this.data = data;
-          this.drow();
+          this.calc();
+          setTimeout(() => {
+            this.drow();
+          }, 1000);
         });
       });
     });
@@ -77,14 +80,37 @@ export class ModelMainComponent implements OnInit {
       .pipe(debounceTime(1800), distinctUntilChanged())
       .subscribe(model => {
         let id = this.data[this.selectedModal || this.dragSelected];
-        if (id)
+        if (id){
           this.componentService.update(id).subscribe((data) => {
           });
+          this.formulaSaver = {};
+          this.calc();
+        }
+
         setTimeout(() => {
           this.removeAll();
           this.drow();
         }, 1000);
       });
+  }
+
+  calc(){
+    this.data.forEach((comp) => {
+      comp.parameters.forEach(element => {
+        let v = element.value
+        let spcaSpit = v.split(" ");
+    
+        spcaSpit.forEach((element, index) => {
+          let earr = element.split(".");
+          if(earr.length == 2){
+            if(!this.formulaSaver[earr[1]] && !this.formulaSaver[element]){
+              this.formulaSearch(element);
+            }
+          }
+        });
+      });
+    })
+
   }
 
   openDialogItem;
@@ -94,7 +120,8 @@ export class ModelMainComponent implements OnInit {
     const dialogRef = this.dialog.open(DialogParametersComponent, {
       width: '450px',
       data: {
-        list: this.modelList
+        list: this.modelList,
+        formula: item.value
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -288,9 +315,9 @@ export class ModelMainComponent implements OnInit {
         model.objectClass = this.dragType;
         model.modelId = this.modelId;
         model.id = this.dragType + this.data.length;
-        let p1 = new ParameterClass("Price", "Price", "0", 1)
-        let p2 = new ParameterClass("Speed", "Speed", "0", 1)
-        let p3 = new ParameterClass("CostPrice", "CostPrice", "0", 1)
+        let p1 = new ParameterClass("Price" + model.id, "Price", "0", 1)
+        let p2 = new ParameterClass("Speed" + model.id, "Speed", "0", 1)
+        let p3 = new ParameterClass("CostPrice" + model.id, "CostPrice", "0", 1)
         model.parameters = [p1, p2, p3]
         this.componentService.create(model).subscribe((data) => {
           this.data.push(data)
@@ -392,37 +419,36 @@ export class ModelMainComponent implements OnInit {
                   let v = param.value;
 
                   if(v.charAt(0) === "="){
-                    console.log(v);
                     let spcaSpit = v.split(" ");
-                    console.log(spcaSpit);
-
+            
                     spcaSpit.forEach((element, index) => {
-                      if(element.split(".").length == 2){
-                        this.formulaSearch(element);
-                      }
-                    });
-                    setTimeout(() => {
-                      spcaSpit.forEach((element, index) => {
-                        if(element.split(".").length == 2){
+                      let earr = element.split(".");
+                      if(earr.length == 2){
+                        if(this.formulaSaver[earr[1]]){
+                          spcaSpit[index] = this.formulaSaver[earr[1]];
+                        } else {
                           spcaSpit[index] = this.formulaSaver[element];
                         }
-                      });
-                      spcaSpit.shift();
-                      let join = spcaSpit.join(" ");
-                      console.log(join);
-                      g.append("text")
-                      .attr("x", element.x)
-                      .attr("y", py)
-                      .text((param.name || param.id) + " - " + eval(join));
+                      }
+                    });
+                    spcaSpit.shift();
+                    try{
+                      this.formulaSaver[param.id] = this.notEval(spcaSpit.join(''));
+                    } catch {
+                      this.calc();
+                    }
 
-                    }, 500);
+                    g.append("text")
+                    .attr("x", element.x)
+                    .attr("y", py)
+                    .text((param.name || param.id) + " - " + this.formulaSaver[param.id]);
+              
                   } else {
                     g.append("text")
                     .attr("x", element.x)
                     .attr("y", py)
                     .text((param.name || param.id) + " - " + v);
                   }
-
                
                   break;
                 case "Input":
@@ -575,9 +601,9 @@ export class ModelMainComponent implements OnInit {
       let self = this;
 
       function dragstarted(d) {
-        d3.select(this)
-          .raise()
-          .classed("active", true);
+        // d3.select(this)
+        //   .raise()
+        //   .classed("active", true);
         self.start_x = +d3.event.x;
         self.start_y = +d3.event.y;
       }
@@ -620,7 +646,6 @@ export class ModelMainComponent implements OnInit {
           data.forEach(comp => {
             comp.parameters.forEach(param => {
               if(param.id === arr[1]){
-                console.log(model, element, param)
                 this.formulaSaver[element] = param.value;
               }
             });
@@ -820,5 +845,9 @@ export class ModelMainComponent implements OnInit {
       }
     })
     e.target.value = arr.join('')
+  }
+
+  notEval(fn) {
+    return new Function('return ' + fn)();
   }
 }

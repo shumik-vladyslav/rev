@@ -1422,7 +1422,10 @@ var ModelMainComponent = /** @class */ (function () {
                 _this.modelList = data;
                 _this.componentService.getAllById(_this.modelId).subscribe(function (data) {
                     _this.data = data;
-                    _this.drow();
+                    _this.calc();
+                    setTimeout(function () {
+                        _this.drow();
+                    }, 1000);
                 });
             });
         });
@@ -1436,22 +1439,43 @@ var ModelMainComponent = /** @class */ (function () {
             .pipe(Object(rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8__["debounceTime"])(1800), Object(rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8__["distinctUntilChanged"])())
             .subscribe(function (model) {
             var id = _this.data[_this.selectedModal || _this.dragSelected];
-            if (id)
+            if (id) {
                 _this.componentService.update(id).subscribe(function (data) {
                 });
+                _this.formulaSaver = {};
+                _this.calc();
+            }
             setTimeout(function () {
                 _this.removeAll();
                 _this.drow();
             }, 1000);
         });
     }
+    ModelMainComponent.prototype.calc = function () {
+        var _this = this;
+        this.data.forEach(function (comp) {
+            comp.parameters.forEach(function (element) {
+                var v = element.value;
+                var spcaSpit = v.split(" ");
+                spcaSpit.forEach(function (element, index) {
+                    var earr = element.split(".");
+                    if (earr.length == 2) {
+                        if (!_this.formulaSaver[earr[1]] && !_this.formulaSaver[element]) {
+                            _this.formulaSearch(element);
+                        }
+                    }
+                });
+            });
+        });
+    };
     ModelMainComponent.prototype.openDialog = function (item) {
         var _this = this;
         this.openDialogItem = item;
         var dialogRef = this.dialog.open(_shared_components_dialog_parameters_dialog_parameters_component__WEBPACK_IMPORTED_MODULE_4__["DialogParametersComponent"], {
             width: '450px',
             data: {
-                list: this.modelList
+                list: this.modelList,
+                formula: item.value
             }
         });
         dialogRef.afterClosed().subscribe(function (result) {
@@ -1615,9 +1639,9 @@ var ModelMainComponent = /** @class */ (function () {
             model.objectClass = _this.dragType;
             model.modelId = _this.modelId;
             model.id = _this.dragType + _this.data.length;
-            var p1 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Price", "Price", "0", 1);
-            var p2 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Speed", "Speed", "0", 1);
-            var p3 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("CostPrice", "CostPrice", "0", 1);
+            var p1 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Price" + model.id, "Price", "0", 1);
+            var p2 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Speed" + model.id, "Speed", "0", 1);
+            var p3 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("CostPrice" + model.id, "CostPrice", "0", 1);
             model.parameters = [p1, p2, p3];
             _this.componentService.create(model).subscribe(function (data) {
                 _this.data.push(data);
@@ -1694,39 +1718,40 @@ var ModelMainComponent = /** @class */ (function () {
                     var countIndex_1 = 0;
                     element.parameters.forEach(function (param, paramIndex) {
                         if (param.showOnDiagram) {
-                            var py_1 = element.y - 50 - (countIndex_1 * 20) + (count_1 >= 3 ? ((count_1 - 3) * 16 + (count_1 * 7)) : (count_1 > 1) ? (count_1 * 4) : -9);
+                            var py = element.y - 50 - (countIndex_1 * 20) + (count_1 >= 3 ? ((count_1 - 3) * 16 + (count_1 * 7)) : (count_1 > 1) ? (count_1 * 4) : -9);
                             switch (param.controlType) {
                                 case "Value":
                                 case "":
                                     var v = param.value;
                                     if (v.charAt(0) === "=") {
-                                        console.log(v);
                                         var spcaSpit_1 = v.split(" ");
-                                        console.log(spcaSpit_1);
                                         spcaSpit_1.forEach(function (element, index) {
-                                            if (element.split(".").length == 2) {
-                                                _this.formulaSearch(element);
-                                            }
-                                        });
-                                        setTimeout(function () {
-                                            spcaSpit_1.forEach(function (element, index) {
-                                                if (element.split(".").length == 2) {
+                                            var earr = element.split(".");
+                                            if (earr.length == 2) {
+                                                if (_this.formulaSaver[earr[1]]) {
+                                                    spcaSpit_1[index] = _this.formulaSaver[earr[1]];
+                                                }
+                                                else {
                                                     spcaSpit_1[index] = _this.formulaSaver[element];
                                                 }
-                                            });
-                                            spcaSpit_1.shift();
-                                            var join = spcaSpit_1.join(" ");
-                                            console.log(join);
-                                            g_1.append("text")
-                                                .attr("x", element.x)
-                                                .attr("y", py_1)
-                                                .text((param.name || param.id) + " - " + eval(join));
-                                        }, 500);
+                                            }
+                                        });
+                                        spcaSpit_1.shift();
+                                        try {
+                                            _this.formulaSaver[param.id] = _this.notEval(spcaSpit_1.join(''));
+                                        }
+                                        catch (_a) {
+                                            _this.calc();
+                                        }
+                                        g_1.append("text")
+                                            .attr("x", element.x)
+                                            .attr("y", py)
+                                            .text((param.name || param.id) + " - " + _this.formulaSaver[param.id]);
                                     }
                                     else {
                                         g_1.append("text")
                                             .attr("x", element.x)
-                                            .attr("y", py_1)
+                                            .attr("y", py)
                                             .text((param.name || param.id) + " - " + v);
                                     }
                                     break;
@@ -1734,11 +1759,11 @@ var ModelMainComponent = /** @class */ (function () {
                                     var gI = g_1.append("g");
                                     gI.append("text")
                                         .attr("x", element.x)
-                                        .attr("y", py_1)
+                                        .attr("y", py)
                                         .text((param.name || param.id) + " - ");
                                     gI.append("foreignObject")
                                         .attr("x", element.x + ((param.name || param.id).length * 11))
-                                        .attr("y", py_1 - 15)
+                                        .attr("y", py - 15)
                                         .attr("width", 50)
                                         .attr("height", 16)
                                         .attr("class", "foreignObject-input-bmp")
@@ -1759,11 +1784,11 @@ var ModelMainComponent = /** @class */ (function () {
                                     var gR = g_1.append("g");
                                     gR.append("text")
                                         .attr("x", element.x)
-                                        .attr("y", py_1)
+                                        .attr("y", py)
                                         .text((param.name || param.id) + " - ");
                                     gR.append("foreignObject")
                                         .attr("x", element.x + ((param.name || param.id).length * 10))
-                                        .attr("y", py_1 - 15)
+                                        .attr("y", py - 15)
                                         .attr("width", 50)
                                         .attr("height", 16)
                                         .attr("class", "foreignObject-input-bmp")
@@ -1872,9 +1897,9 @@ var ModelMainComponent = /** @class */ (function () {
                     .style("fill", "#999");
             var self = _this;
             function dragstarted(d) {
-                d3.select(this)
-                    .raise()
-                    .classed("active", true);
+                // d3.select(this)
+                //   .raise()
+                //   .classed("active", true);
                 self.start_x = +d3.event.x;
                 self.start_y = +d3.event.y;
             }
@@ -1910,7 +1935,6 @@ var ModelMainComponent = /** @class */ (function () {
                     data.forEach(function (comp) {
                         comp.parameters.forEach(function (param) {
                             if (param.id === arr[1]) {
-                                console.log(model, element, param);
                                 _this.formulaSaver[element] = param.value;
                             }
                         });
@@ -2087,6 +2111,9 @@ var ModelMainComponent = /** @class */ (function () {
             }
         });
         e.target.value = arr.join('');
+    };
+    ModelMainComponent.prototype.notEval = function (fn) {
+        return new Function('return ' + fn)();
     };
     ModelMainComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
@@ -2307,6 +2334,7 @@ var DialogParametersComponent = /** @class */ (function () {
     }
     DialogParametersComponent.prototype.ngOnInit = function () {
         this.listModel = this.data.list;
+        this.formula = this.data.formula;
     };
     DialogParametersComponent.prototype.modelChange = function (id) {
         var _this = this;

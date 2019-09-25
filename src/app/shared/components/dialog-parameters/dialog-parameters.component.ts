@@ -25,7 +25,7 @@ export class DialogParametersComponent implements OnInit {
 
   ngOnInit(): void {
     this.listModel = this.data.list;
-
+    this.formula = this.data.formula;
 
   }
 
