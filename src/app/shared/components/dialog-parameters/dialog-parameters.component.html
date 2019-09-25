@@ -34,7 +34,8 @@
   </mat-form-field>
   <div class="textarea-wrap">
     <mat-form-field style="width: 60%" class="example-full-width">
-      <textarea [(ngModel)]="formula" matInput></textarea>
+      <!--  -->
+      <textarea (ngModelChange)="change($event)" (keydown)="checkPattern($event)" [(ngModel)]="formula"  matInput></textarea>
     </mat-form-field>
     <div style="width: 40%; padding: 20px 0 0 20px;">
       <div class="full-width">

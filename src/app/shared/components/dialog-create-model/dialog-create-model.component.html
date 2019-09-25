@@ -2,7 +2,7 @@
 <div mat-dialog-content>
   <mat-form-field>
     <mat-label>ID</mat-label>
-    <input matInput [(ngModel)]="model.id" />
+    <input matInput (keyup)="onKeyUp($event)" [(ngModel)]="model.id" />
   </mat-form-field>
   <mat-form-field>
     <mat-label>Name</mat-label>

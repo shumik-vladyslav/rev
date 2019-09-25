@@ -49,6 +49,7 @@
     </div> -->
   </div>
   <div class="coco-bpm-graph" id="graph" style="height: calc(100vh - 60px);"></div>
+  <div class="clickShield" *ngIf="showSide" (click)="showSide = false"></div>
   <div [ngClass]="{ show: showSide }" *ngIf="selectedModal" class="sidebar show">
     <mat-form-field class="example-full-width">
       <mat-label>Id</mat-label>
@@ -151,7 +152,7 @@
 
                 <div class="loop-item desc">
                   <mat-form-field class="example-full-width">
-                    <input matInput placeholder="Id" [(ngModel)]="item.id" (ngModelChange)="onFieldChange($event)" />
+                    <input matInput placeholder="Id" (keyup)="onKeyUp($event)" [(ngModel)]="item.id" (ngModelChange)="onFieldChange($event)" />
                   </mat-form-field>
                   <mat-form-field class="example-full-width">
                     <input matInput placeholder="Name" [(ngModel)]="item.name"

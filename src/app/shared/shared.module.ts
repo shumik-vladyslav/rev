@@ -26,6 +26,7 @@ import {
 import { DialogParametersComponent } from './components/dialog-parameters/dialog-parameters.component';
 import { DialogCreateModelComponent } from './components/dialog-create-model/dialog-create-model.component';
 import { FiltrListParamPipe } from './pipes/filtr-list-param.pipe';
+import { ClickOutsideDirective } from './directives/click-outside.directive';
 
 @NgModule({
   imports: [
@@ -76,6 +77,6 @@ import { FiltrListParamPipe } from './pipes/filtr-list-param.pipe';
     FlexLayoutModule,
   ],
   entryComponents: [DialogParametersComponent, DialogCreateModelComponent],
-  declarations: [DialogParametersComponent, DialogCreateModelComponent, FiltrListParamPipe],
+  declarations: [DialogParametersComponent, DialogCreateModelComponent, FiltrListParamPipe, ClickOutsideDirective],
 })
 export class SharedModule { }

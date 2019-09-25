@@ -9,10 +9,19 @@ import { ModelClass } from "../../model";
 })
 export class DialogCreateModelComponent implements OnInit {
   model = new ModelClass();
-  constructor(public dialogRef: MatDialogRef<DialogCreateModelComponent>) {}
+  constructor(public dialogRef: MatDialogRef<DialogCreateModelComponent>) { }
   ngOnInit(): void {
   }
   onNoClick(): void {
     this.dialogRef.close();
+  }
+  onKeyUp(e) {
+    let arr = e.target.value.split('');
+    arr = arr.filter((item) => {
+      if (item != " ") {
+        return true;
+      }
+    })
+    e.target.value = arr.join('')
   }
 }

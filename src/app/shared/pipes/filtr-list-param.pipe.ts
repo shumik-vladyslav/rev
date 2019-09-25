@@ -7,7 +7,7 @@ export class FiltrListParamPipe implements PipeTransform {
 
   transform(data: any, class_?: any, object?: any): any {
     data = data.filter((item) => {
-      if (class_ && object){
+      if (class_ && object) {
         if (item.objectClass === class_ && item.objectType === object) {
           return true;
         }
