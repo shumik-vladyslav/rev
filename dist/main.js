@@ -1443,7 +1443,8 @@ var ModelMainComponent = /** @class */ (function () {
                 _this.componentService.update(id).subscribe(function (data) {
                 });
                 _this.formulaSaver = {};
-                _this.calc();
+                if (!model.drag)
+                    _this.calc();
             }
             setTimeout(function () {
                 _this.removeAll();
@@ -1919,7 +1920,7 @@ var ModelMainComponent = /** @class */ (function () {
                     self.start_y + (d3.event.y - self.start_y) / current_scale;
                 self.removeAll();
                 self.drow();
-                self.txtQueryChanged.next(self.uuidv4());
+                self.txtQueryChanged.next({ data: self.uuidv4(), drag: 1 });
             }
             function dragended(d) {
                 d3.select(this).classed("active", false);

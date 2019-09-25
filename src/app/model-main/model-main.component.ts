@@ -84,6 +84,7 @@ export class ModelMainComponent implements OnInit {
           this.componentService.update(id).subscribe((data) => {
           });
           this.formulaSaver = {};
+          if(!model.drag)
           this.calc();
         }
 
@@ -626,7 +627,7 @@ export class ModelMainComponent implements OnInit {
           self.start_y + (d3.event.y - self.start_y) / current_scale;
         self.removeAll();
         self.drow();
-        self.txtQueryChanged.next(self.uuidv4());
+        self.txtQueryChanged.next({data:self.uuidv4(), drag : 1});
 
       }
 
