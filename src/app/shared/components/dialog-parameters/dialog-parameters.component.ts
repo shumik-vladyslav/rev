@@ -25,8 +25,8 @@ export class DialogParametersComponent implements OnInit {
 
   ngOnInit(): void {
     this.listModel = this.data.list;
-    this.formula = this.data.formula;
-
+    // this.formula = this.data.formula;
+    this.formula = '= ' + this.data.formula
   }
 
   modelChange(id) {
@@ -117,50 +117,161 @@ export class DialogParametersComponent implements OnInit {
   }
 
   re = /^\s{0,1}\d+[.]?(\d+)?(\s{0,1}[+|(\-)|*|/]+\s{0,1}\d+[.]?(\d+)?)*\s{0,1}$/;
-  patternMath = /\s?([+|(\-)|*|/])\s?$/;
+  reOperator = /^[+\-*/]$/mg;
+  reNumber = /[0-9]/;
+  reDigit = /^[0-9]*.([0-9]+)?$/mg;
+  keyPeriod = true;
+  boolLastOperator;
+
+  getBoolLastOperator() {
+    if (this.formula[this.formula.length - 1] === ' ') {
+      if (this.reOperator.test(this.formula[this.formula.length - 2])) {
+        this.boolLastOperator = true;
+        console.log(this.boolLastOperator);
+      } else {
+        this.boolLastOperator = false;
+        console.log(this.boolLastOperator);
+      }
+    } else {
+      if (this.reOperator.test(this.formula[this.formula.length - 1])) {
+        this.formula = this.formula + ' ';
+        this.boolLastOperator = true;
+        console.log(this.boolLastOperator);
+        
+      } else {
+        this.boolLastOperator = false;
+        console.log(this.boolLastOperator);
+      }
+    }
+  }
 
   checkPattern(elem) {
-    if (this.boolKeyPress) {
+    console.log(elem);
+
+    // operator
+    if (this.reOperator.test(elem.key)) {
+      this.keyPeriod = true;
+      if (this.formula[this.formula.length - 1] === '.') {
+        this.formula = this.formula + '0'
+      }
+
+      if (this.formula[this.formula.length - 2] === '=') {
+        return false;
+      } else if (
+        this.formula[this.formula.length - 1] !== ' ' &&
+        this.reOperator.test(this.formula[this.formula.length - 1])
+      ) {
+        this.formula = this.formula + ' ';
+      } else if (
+        this.formula[this.formula.length - 1] !== ' ' &&
+        (
+          !this.reOperator.test(this.formula[this.formula.length - 1])
+        )
+      ) {
+        this.formula = this.formula + ' ' + elem.key + ' ';
+
+      } else if (
+        this.formula[this.formula.length - 1] === ' ' &&
+        !this.reOperator.test(this.formula[this.formula.length - 2])
+      ) {
+        if (!this.reOperator.test(this.formula[this.formula.length - 2])) {
+          this.formula = this.formula + elem.key + ' ';
+        }
+      }
+    }
+
+    if (elem.code === "Period") {
+      if (!this.reNumber.test(this.formula[this.formula.length - 1])) {
+        return false;
+      }
+      if (!this.keyPeriod) {
+        return false;
+      }
+      this.keyPeriod = false;
+    }
+
+    if (elem.code === "Space") {
+      if (this.formula[this.formula.length - 1] === '.') {
+        this.formula = this.formula + '0'
+      }
+    }
+
+    if (
+      this.formula[this.formula.length - 1] === ' ' &&
+      this.reNumber.test(elem.key) &&
+      this.reNumber.test(this.formula[this.formula.length - 2])
+    ) {
       return false;
+    }
+
+    if (elem.code === "Space" && this.formula[this.formula.length - 1] === ' ') {
+      return false;
+    }
+    if (this.reNumber.test(elem.key)){
+      if (this.reOperator.test(this.formula[this.formula.length - 1])) {
+        this.formula = this.formula + ' ';
+      }
+    }
+    if (
+      !this.reNumber.test(elem.key) &&
+      elem.code !== "Backspace" &&
+      elem.code !== "Space" &&
+      elem.code !== "Period"
+    ) {
+      return false;
+    } else {
+      if (!this.reNumber.test(elem.key) && elem.code !== "Period") {
+        this.keyPeriod = true;
+      }
+      if (elem.code !== "Backspace") {
+        if (this.reOperator.test(this.formula[this.formula.length - 1])) {
+          this.formula = this.formula + ' ';
+        }
+      }
     }
   }
 
   currentFotmula;
-  boolKeyPress;
 
   change(e) {
-    this.boolKeyPress = true;
     let re = /^\s{0,1}\d+[.]?(\d+)?(\s{0,1}[+|\-|*|/]+\s{0,1}\d+[.]?(\d+)?)*\s{0,1}$/;
     let patternMath = /\s?([+|(\-)|*|/])\s?$/;
     let value = e;
-    if (value.slice(0, 1) === '=') {
-      if (value.slice(0, 2) === '= ') {
-        value = value.replace('= ', '')
-      } else {
-        value = value.replace('=', '')
-      }
-    }
-    // console.log(re.test(value));
-    if (!re.test(value)) {
-      if (!patternMath.test(value[value.length - 1])) {
-        setTimeout(() => {
-          this.formula = '= ' + value.substring(0, value.length - 1);
-
-          this.formula = this.formula.trim();
-          if (!value.length) {
-            this.formula = this.formula + ' '
-          }
-        }, 1);
-      } else {
-        this.formula = this.formula + '/s';
-      }
+    if (value.slice(0, 2) !== '= ') {
       setTimeout(() => {
-        this.boolKeyPress = false;
-      }, 2);
-    } else {
-      this.currentFotmula = this.formula;
-      this.boolKeyPress = false;
-      console.log(this.currentFotmula);
+        this.formula = this.formula.replace('=', '')
+        this.formula = '= ' + this.formula
+      }, 1);
     }
+    this.getBoolLastOperator();
+    //   if (value.slice(0, 1) === '=') {
+    //     if (value.slice(0, 2) === '= ') {
+    //       value = value.replace('= ', '')
+    //     } else {
+    //       value = value.replace('=', '')
+    //     }
+    //   }
+    //   if (!re.test(value)) {
+    //     if (!patternMath.test(value[value.length - 1])) {
+    //       setTimeout(() => {
+    //         this.formula = '= ' + value.substring(0, value.length - 1);
+
+    //         this.formula = this.formula.trim();
+    //         if (!value.length) {
+    //           this.formula = this.formula + ' '
+    //         }
+    //       }, 1);
+    //     } else {
+    //       this.formula = this.formula + '/s';
+    //     }
+    //     setTimeout(() => {
+    //       this.boolKeyPress = false;
+    //     }, 2);
+    //   } else {
+    //     this.currentFotmula = this.formula;
+    //     this.boolKeyPress = false;
+    //     console.log(this.currentFotmula);
+    //   }
+    // }
   }
 }

@@ -33,32 +33,29 @@
     </mat-select>
   </mat-form-field>
   <div class="textarea-wrap">
-    <mat-form-field style="width: 60%" class="example-full-width">
-      <!--  -->
-      <textarea [(ngModel)]="formula"  matInput></textarea>
-    </mat-form-field>
+    <div style="width: 60%; position: relative;">
+      <mat-form-field style="width: 100%" class="example-full-width">
+        <!-- (ngModelChange)="change($event)" -->
+        <textarea #textArea [(ngModel)]="formula" (ngModelChange)="change($event)" (keydown)="checkPattern($event)" matInput></textarea>
+      </mat-form-field>
+      <div (click)="textArea.focus()" class="text-area-shield"></div>
+    </div>
     <div style="width: 40%; padding: 20px 0 0 20px;">
       <div class="full-width">
-        <button (click)="add()" class="full-width" mat-raised-button color="primary" mat-button><= ADD</button>
-      </div>
-      <div class="df jc-c">
-        <button class="func" mat-raised-button color="primary" mat-button>
-          <i>
-            f(x)
-          </i>
-        </button>
+          <!-- [disabled]="!boolLastOperator" -->
+        <button (click)="add()" class="full-width" mat-raised-button color="primary" mat-button>
+          <= ADD</button> </div> <div class="df jc-c">
+            <button class="func" mat-raised-button color="primary" mat-button>
+              <i>
+                f(x)
+              </i>
+            </button>
       </div>
     </div>
   </div>
 </div>
 <div mat-dialog-actions class="jc-c df">
-  <button
-    mat-button
-    (click)="ok()"
-    mat-raised-button
-    color="primary"
-    cdkFocusInitial
-  >
+  <button mat-button (click)="ok()" mat-raised-button color="primary" cdkFocusInitial>
     Ok
   </button>
   <button mat-button (click)="onNoClick()">Cancel</button>
