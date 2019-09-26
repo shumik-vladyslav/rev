@@ -14,8 +14,12 @@ export class LoginComponent implements OnInit {
 
   email: string;
   password: string;
+  showError;
 
   ngOnInit() {
+    this.authService.$error.subscribe((e) => {
+      this.showError = true;
+    })
   }
 
   login(): void {

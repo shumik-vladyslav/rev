@@ -52,7 +52,7 @@
   <div class="clickShield" *ngIf="showSide" (click)="showSide = false"></div>
   <div [ngClass]="{ show: showSide }" *ngIf="selectedModal" class="sidebar show">
     <mat-form-field class="example-full-width">
-      <mat-label>Id</mat-label>
+      <mat-label>Id (latin simbols and digits)</mat-label>
       <input matInput [(ngModel)]="data[selectedModal].id" (keyup)="onKeyUp($event)" (ngModelChange)="onFieldChange($event)" />
     </mat-form-field>
     <mat-form-field class="example-full-width">

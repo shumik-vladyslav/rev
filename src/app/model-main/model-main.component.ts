@@ -115,6 +115,7 @@ export class ModelMainComponent implements OnInit {
   }
 
   openDialogItem;
+  slider;
 
   openDialog(item): void {
     this.openDialogItem = item;
@@ -150,15 +151,10 @@ export class ModelMainComponent implements OnInit {
           currentTransform.x = 0;
           currentTransform.y = 0;
         }
+        console.log(currentTransform)
         this.conteiner.attr("transform", currentTransform);
-        // if (!this.readOnly) {
-        //   this.slider.property("value", currentTransform.k);
-        //   this.rangeWidth();
-        // } else {
-        //   if (this.zoomTrans.k !== this.zoomTransHeader.k) {
-        //     this.rangeWidthHeader.emit(currentTransform);
-        //   }
-        // }
+        this.slider.property("value", currentTransform.k);
+        this.rangeWidth();
 
       });
     this.vis = d3.select("#graph").append("svg");
@@ -189,6 +185,56 @@ export class ModelMainComponent implements OnInit {
     this.vis.call(this.zoom).on("dblclick.zoom", null);
 
     this.conteiner = this.vis.append("g").attr("id", "wrap");
+    let g = d3
+        .select("#graph")
+        .append("div")
+        .datum({})
+        .attr("class", "coco-bpm-d3-zoom-wrap");
+      let g1 = g;
+      let icon = g1
+        .append("svg")
+        .attr("width", "14")
+        .attr("height", "14")
+        .attr("viewBox", "0 0 14 14")
+        .append("g")
+        .attr("fill", "#2196F3")
+        .attr("fill-rule", "nonzero");
+      icon
+        .append("path")
+        .attr(
+          "d",
+          "M12.316 9.677a5.677 5.677 0 0 0 0-8.019 5.676 5.676 0 0 0-8.019 0 5.56 5.56 0 0 0-.853 6.843s.094.158-.033.284L.518 11.678c-.575.576-.712 1.381-.202 1.892l.088.088c.51.51 1.316.373 1.892-.202l2.886-2.887c.133-.133.29-.04.29-.04a5.56 5.56 0 0 0 6.844-.852zM5.344 8.63a4.194 4.194 0 0 1 0-5.925 4.194 4.194 0 0 1 5.925 0 4.194 4.194 0 0 1 0 5.925 4.195 4.195 0 0 1-5.925 0z"
+        );
+      icon
+        .append("path")
+        .attr(
+          "d",
+          "M5.706 5.331a.584.584 0 0 1-.539-.813A3.688 3.688 0 0 1 9.996 2.56a.585.585 0 0 1-.457 1.078 2.516 2.516 0 0 0-3.294 1.336.585.585 0 0 1-.54.357z"
+        );
+    let g2 = g1
+    .append("div")
+    .datum({})
+    .attr("class", "coco-bpm-slider-wrap");
+
+    this.slider = g2
+    .append("input")
+    .datum({})
+    .attr("type", "range")
+    .attr("class", "coco-bpm-slider")
+    .attr("id", "range")
+    .attr("value", 1)
+    .attr("min", 0.1)
+    .attr("max", 2)
+    .attr("step", 0.01)
+    .on("input", () => {
+      this.zoom.scaleTo(this.vis, d3.select("#range").property("value"));
+      this.rangeWidth();
+    });
+
+    g2.append("div")
+    .datum({})
+    .attr("class", "coco-bpm-line-range")
+    .attr("id", "lineZoomRange");
 
     document.getElementById("graph").addEventListener("mousemove", e => {
       let dummyX = e.offsetX;
@@ -315,7 +361,7 @@ export class ModelMainComponent implements OnInit {
         model.y = y;
         model.objectClass = this.dragType;
         model.modelId = this.modelId;
-        model.id = this.dragType + this.data.length;
+        model.id =  "obj" + (this.data.length + 1);
         let p1 = new ParameterClass("Price" + model.id, "Price", "0", 1)
         let p2 = new ParameterClass("Speed" + model.id, "Speed", "0", 1)
         let p3 = new ParameterClass("CostPrice" + model.id, "CostPrice", "0", 1)
@@ -397,6 +443,7 @@ export class ModelMainComponent implements OnInit {
             })
             .on("dblclick", (d, i, s) => {
               this.selectedModal = s[0].id;
+              this.newParametr = new ParameterClass("par" + (this.data[this.selectedModal].parameters.length + 1))
               this.showSide = !this.showSide;
               this.removeAll();
               this.drow();
@@ -611,15 +658,17 @@ export class ModelMainComponent implements OnInit {
 
       function dragged(d) {
         let current_scale, current_scale_string;
-        if (this.getAttribute("transform") === null) {
+        let transform = document.getElementById('wrap')
+        if (transform.getAttribute("transform") === null) {
           current_scale = 1;
         } else {
-          current_scale_string = this.getAttribute("transform").split(" ")[1];
+          current_scale_string = transform.getAttribute("transform").split(" ")[1];
           current_scale = +current_scale_string.substring(
             6,
             current_scale_string.length - 1
           );
         }
+        console.log(transform.getAttribute("transform").split(" ")[1])
         self.dragSelected = this.getAttribute("id");
         self.data[this.getAttribute("id")].x =
           self.start_x + (d3.event.x - self.start_x) / current_scale;
@@ -850,5 +899,19 @@ export class ModelMainComponent implements OnInit {
 
   notEval(fn) {
     return new Function('return ' + fn)();
+  }
+
+
+  rangeWidth(flag?) {
+    if (flag) {
+      setTimeout(() => {
+        document.getElementById("lineZoomRange").style.width = 50 + "%";
+      }, 500);
+    } else {
+        let input = document.getElementById("range");
+        let width;
+        width = (input["value"] / 2) * 100;
+        document.getElementById("lineZoomRange").style.width = width + "%";
+    }
   }
 }

@@ -1,5 +1,5 @@
-import { Component, OnInit } from "@angular/core";
-import { MatDialogRef } from "@angular/material/dialog";
+import { Component, OnInit, Inject } from "@angular/core";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { ModelClass } from "../../model";
 
 @Component({
@@ -9,8 +9,10 @@ import { ModelClass } from "../../model";
 })
 export class DialogCreateModelComponent implements OnInit {
   model = new ModelClass();
-  constructor(public dialogRef: MatDialogRef<DialogCreateModelComponent>) { }
+  constructor(public dialogRef: MatDialogRef<DialogCreateModelComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any) { }
   ngOnInit(): void {
+    this.model.id = this.data.id;
   }
   onNoClick(): void {
     this.dialogRef.close();

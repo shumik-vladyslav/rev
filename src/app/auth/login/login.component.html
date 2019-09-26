@@ -1,5 +1,7 @@
 <h1 class="title">Welcome back!</h1>
 <p class="subtitle">Log in below and make work flow.</p>
+<p class="subtitle" *ngIf="showError" style="color: red">Incorrect login or password</p>
+
 <div class="auth-container">
   <form action="">
     <div class="form-group">

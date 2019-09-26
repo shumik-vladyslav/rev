@@ -12,6 +12,7 @@ export class AuthService {
   constructor(private http : HttpClient, private token: TokenStorage) {}
 
   public $userSource = new Subject<any>();
+  public $error = new Subject<any>();
 
   login(email : string, password : string) : Observable <any> {
     return Observable.create(observer => {
@@ -23,7 +24,7 @@ export class AuthService {
           this.setUser(data.user);
           this.token.saveToken(data.token);
           observer.complete();
-      })
+      }, (e) => {this.$error.next(e)})
     });
   }
 
