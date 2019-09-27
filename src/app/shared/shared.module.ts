@@ -23,6 +23,7 @@ import {
   MatSelectModule,
   MatCheckboxModule
 } from '@angular/material';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import { DialogParametersComponent } from './components/dialog-parameters/dialog-parameters.component';
 import { DialogCreateModelComponent } from './components/dialog-create-model/dialog-create-model.component';
 import { FiltrListParamPipe } from './pipes/filtr-list-param.pipe';
@@ -52,6 +53,7 @@ import { ClickOutsideDirective } from './directives/click-outside.directive';
     MatSelectModule,
     MatCheckboxModule,
     FlexLayoutModule,
+    MatTooltipModule
   ],
   exports: [
     MatToolbarModule,
@@ -75,6 +77,7 @@ import { ClickOutsideDirective } from './directives/click-outside.directive';
     MatSelectModule,
     MatCheckboxModule,
     FlexLayoutModule,
+    MatTooltipModule
   ],
   entryComponents: [DialogParametersComponent, DialogCreateModelComponent],
   declarations: [DialogParametersComponent, DialogCreateModelComponent, FiltrListParamPipe, ClickOutsideDirective],

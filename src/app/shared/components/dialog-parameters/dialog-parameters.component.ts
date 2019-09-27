@@ -106,7 +106,18 @@ export class DialogParametersComponent implements OnInit {
   }
 
   add() {
-    this.formula += this.selectedFormulaVar;
+    setTimeout(() => {
+      if (this.boolLastOperator && this.selectedFormulaVar) {
+        console.log(this.reOperator.test(this.formula[this.formula.length - 1]));
+        if (this.reOperator.test(this.formula[this.formula.length - 1])) {
+          this.formula = this.formula + ' ' + this.selectedFormulaVar;
+        } else {
+          this.formula += this.selectedFormulaVar;
+        }
+        this.boolLastOperator = false;
+      }
+      console.log(this.selectedFormulaVar, 'this.selectedFormulaVar');
+    }, 2);
   }
 
   searchById(id, arr) {
@@ -123,30 +134,39 @@ export class DialogParametersComponent implements OnInit {
   keyPeriod = true;
   boolLastOperator;
 
-  getBoolLastOperator() {
-    if (this.formula[this.formula.length - 1] === ' ') {
-      if (this.reOperator.test(this.formula[this.formula.length - 2])) {
-        this.boolLastOperator = true;
-        console.log(this.boolLastOperator);
-      } else {
-        this.boolLastOperator = false;
-        console.log(this.boolLastOperator);
-      }
-    } else {
-      if (this.reOperator.test(this.formula[this.formula.length - 1])) {
-        this.formula = this.formula + ' ';
-        this.boolLastOperator = true;
-        console.log(this.boolLastOperator);
-        
-      } else {
-        this.boolLastOperator = false;
-        console.log(this.boolLastOperator);
-      }
-    }
+  renameFormula(text) {
+    let newFormula = text + ' ';
+    setTimeout(() => {
+      this.formula = newFormula;
+      this.boolLastOperator = true;
+    }, 1);
   }
 
   checkPattern(elem) {
     console.log(elem);
+
+    setTimeout(() => {
+      if (this.formula[this.formula.length - 1] === ' ') {
+        if (this.reOperator.test(this.formula[this.formula.length - 2])) {
+          this.boolLastOperator = true;
+          console.log(this.boolLastOperator, '1');
+        } else {
+          this.boolLastOperator = false;
+          console.log(this.boolLastOperator, '2');
+        }
+      } else {
+        // backspace
+        if ((elem.keyCode !== 8 && elem.keyCode !== 46)) {
+          if (this.reOperator.test(this.formula[this.formula.length - 1])) {
+            this.boolLastOperator = true;
+            console.log(this.boolLastOperator, '3');
+          } else {
+            this.boolLastOperator = false;
+            console.log(this.boolLastOperator, '4');
+          }
+        }
+      }
+    }, 1);
 
     // operator
     if (this.reOperator.test(elem.key)) {
@@ -180,7 +200,7 @@ export class DialogParametersComponent implements OnInit {
       }
     }
 
-    if (elem.code === "Period") {
+    if (elem.key === ".") {
       if (!this.reNumber.test(this.formula[this.formula.length - 1])) {
         return false;
       }
@@ -189,13 +209,30 @@ export class DialogParametersComponent implements OnInit {
       }
       this.keyPeriod = false;
     }
-
-    if (elem.code === "Space") {
+    //space
+    if (elem.keyCode === 32) {
       if (this.formula[this.formula.length - 1] === '.') {
         this.formula = this.formula + '0'
       }
     }
-
+    // backspace
+    if (elem.keyCode === 8 || elem.keyCode === 46) {
+      setTimeout(() => {
+        if (this.formula[this.formula.length - 1] !== ' ') {
+          let arr = this.formula.split(' ');
+          console.log(arr);
+          console.log(arr[arr.length - 1]);
+          let number = this.reNumber.test(arr[arr.length - 1]);
+          let oper = this.reOperator.test(arr[arr.length - 1]);
+          if (
+            !number &&
+            !oper
+          ) {
+            this.renameFormula(arr.splice(0, arr.length - 1).join(' '))
+          }
+        }
+      }, 1);
+    }
     if (
       this.formula[this.formula.length - 1] === ' ' &&
       this.reNumber.test(elem.key) &&
@@ -203,27 +240,30 @@ export class DialogParametersComponent implements OnInit {
     ) {
       return false;
     }
-
-    if (elem.code === "Space" && this.formula[this.formula.length - 1] === ' ') {
+    //space
+    if (elem.keyCode === 32 && this.formula[this.formula.length - 1] === ' ') {
       return false;
     }
-    if (this.reNumber.test(elem.key)){
+    if (this.reNumber.test(elem.key)) {
       if (this.reOperator.test(this.formula[this.formula.length - 1])) {
         this.formula = this.formula + ' ';
       }
     }
     if (
       !this.reNumber.test(elem.key) &&
-      elem.code !== "Backspace" &&
-      elem.code !== "Space" &&
-      elem.code !== "Period"
+      // backspace
+      (elem.keyCode !== 8 && elem.keyCode !== 46) &&
+      // space
+      elem.keyCode !== 32 &&
+      elem.key !== "."
     ) {
       return false;
     } else {
-      if (!this.reNumber.test(elem.key) && elem.code !== "Period") {
+      if (!this.reNumber.test(elem.key) && elem.key !== ".") {
         this.keyPeriod = true;
       }
-      if (elem.code !== "Backspace") {
+      //backspace
+      if (elem.keyCode !== 8 && elem.keyCode !== 46) {
         if (this.reOperator.test(this.formula[this.formula.length - 1])) {
           this.formula = this.formula + ' ';
         }
@@ -236,14 +276,13 @@ export class DialogParametersComponent implements OnInit {
   change(e) {
     let re = /^\s{0,1}\d+[.]?(\d+)?(\s{0,1}[+|\-|*|/]+\s{0,1}\d+[.]?(\d+)?)*\s{0,1}$/;
     let patternMath = /\s?([+|(\-)|*|/])\s?$/;
-    let value = e;
-    if (value.slice(0, 2) !== '= ') {
-      setTimeout(() => {
-        this.formula = this.formula.replace('=', '')
-        this.formula = '= ' + this.formula
-      }, 1);
-    }
-    this.getBoolLastOperator();
+    setTimeout(() => {
+      if (this.formula.slice(0, 2) !== '= ') {
+        this.formula = '= '
+        console.log(this.formula);
+      }
+    }, 110);
+    // this.getBoolLastOperator();
     //   if (value.slice(0, 1) === '=') {
     //     if (value.slice(0, 2) === '= ') {
     //       value = value.replace('= ', '')

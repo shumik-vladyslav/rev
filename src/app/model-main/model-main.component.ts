@@ -80,12 +80,12 @@ export class ModelMainComponent implements OnInit {
       .pipe(debounceTime(1800), distinctUntilChanged())
       .subscribe(model => {
         let id = this.data[this.selectedModal || this.dragSelected];
-        if (id){
+        if (id) {
           this.componentService.update(id).subscribe((data) => {
           });
           this.formulaSaver = {};
-          if(!model.drag)
-          this.calc();
+          if (!model.drag)
+            this.calc();
         }
 
         setTimeout(() => {
@@ -95,20 +95,22 @@ export class ModelMainComponent implements OnInit {
       });
   }
 
-  calc(){
+  calc() {
     this.data.forEach((comp) => {
       comp.parameters.forEach(element => {
-        let v = element.value
-        let spcaSpit = v.split(" ");
-    
-        spcaSpit.forEach((element, index) => {
-          let earr = element.split(".");
-          if(earr.length == 2){
-            if(!this.formulaSaver[earr[1]] && !this.formulaSaver[element]){
-              this.formulaSearch(element);
+        if (element.value) {
+          let v = element.value
+          let spcaSpit = v.split(" ");
+
+          spcaSpit.forEach((element, index) => {
+            let earr = element.split(".");
+            if (earr.length == 2) {
+              if (!this.formulaSaver[earr[1]] && !this.formulaSaver[element]) {
+                this.formulaSearch(element);
+              }
             }
-          }
-        });
+          });
+        }
       });
     })
 
@@ -186,55 +188,55 @@ export class ModelMainComponent implements OnInit {
 
     this.conteiner = this.vis.append("g").attr("id", "wrap");
     let g = d3
-        .select("#graph")
-        .append("div")
-        .datum({})
-        .attr("class", "coco-bpm-d3-zoom-wrap");
-      let g1 = g;
-      let icon = g1
-        .append("svg")
-        .attr("width", "14")
-        .attr("height", "14")
-        .attr("viewBox", "0 0 14 14")
-        .append("g")
-        .attr("fill", "#2196F3")
-        .attr("fill-rule", "nonzero");
-      icon
-        .append("path")
-        .attr(
-          "d",
-          "M12.316 9.677a5.677 5.677 0 0 0 0-8.019 5.676 5.676 0 0 0-8.019 0 5.56 5.56 0 0 0-.853 6.843s.094.158-.033.284L.518 11.678c-.575.576-.712 1.381-.202 1.892l.088.088c.51.51 1.316.373 1.892-.202l2.886-2.887c.133-.133.29-.04.29-.04a5.56 5.56 0 0 0 6.844-.852zM5.344 8.63a4.194 4.194 0 0 1 0-5.925 4.194 4.194 0 0 1 5.925 0 4.194 4.194 0 0 1 0 5.925 4.195 4.195 0 0 1-5.925 0z"
-        );
-      icon
-        .append("path")
-        .attr(
-          "d",
-          "M5.706 5.331a.584.584 0 0 1-.539-.813A3.688 3.688 0 0 1 9.996 2.56a.585.585 0 0 1-.457 1.078 2.516 2.516 0 0 0-3.294 1.336.585.585 0 0 1-.54.357z"
-        );
+      .select("#graph")
+      .append("div")
+      .datum({})
+      .attr("class", "coco-bpm-d3-zoom-wrap");
+    let g1 = g;
+    let icon = g1
+      .append("svg")
+      .attr("width", "14")
+      .attr("height", "14")
+      .attr("viewBox", "0 0 14 14")
+      .append("g")
+      .attr("fill", "#2196F3")
+      .attr("fill-rule", "nonzero");
+    icon
+      .append("path")
+      .attr(
+        "d",
+        "M12.316 9.677a5.677 5.677 0 0 0 0-8.019 5.676 5.676 0 0 0-8.019 0 5.56 5.56 0 0 0-.853 6.843s.094.158-.033.284L.518 11.678c-.575.576-.712 1.381-.202 1.892l.088.088c.51.51 1.316.373 1.892-.202l2.886-2.887c.133-.133.29-.04.29-.04a5.56 5.56 0 0 0 6.844-.852zM5.344 8.63a4.194 4.194 0 0 1 0-5.925 4.194 4.194 0 0 1 5.925 0 4.194 4.194 0 0 1 0 5.925 4.195 4.195 0 0 1-5.925 0z"
+      );
+    icon
+      .append("path")
+      .attr(
+        "d",
+        "M5.706 5.331a.584.584 0 0 1-.539-.813A3.688 3.688 0 0 1 9.996 2.56a.585.585 0 0 1-.457 1.078 2.516 2.516 0 0 0-3.294 1.336.585.585 0 0 1-.54.357z"
+      );
     let g2 = g1
-    .append("div")
-    .datum({})
-    .attr("class", "coco-bpm-slider-wrap");
+      .append("div")
+      .datum({})
+      .attr("class", "coco-bpm-slider-wrap");
 
     this.slider = g2
-    .append("input")
-    .datum({})
-    .attr("type", "range")
-    .attr("class", "coco-bpm-slider")
-    .attr("id", "range")
-    .attr("value", 1)
-    .attr("min", 0.1)
-    .attr("max", 2)
-    .attr("step", 0.01)
-    .on("input", () => {
-      this.zoom.scaleTo(this.vis, d3.select("#range").property("value"));
-      this.rangeWidth();
-    });
+      .append("input")
+      .datum({})
+      .attr("type", "range")
+      .attr("class", "coco-bpm-slider")
+      .attr("id", "range")
+      .attr("value", 1)
+      .attr("min", 0.1)
+      .attr("max", 2)
+      .attr("step", 0.01)
+      .on("input", () => {
+        this.zoom.scaleTo(this.vis, d3.select("#range").property("value"));
+        this.rangeWidth();
+      });
 
     g2.append("div")
-    .datum({})
-    .attr("class", "coco-bpm-line-range")
-    .attr("id", "lineZoomRange");
+      .datum({})
+      .attr("class", "coco-bpm-line-range")
+      .attr("id", "lineZoomRange");
 
     document.getElementById("graph").addEventListener("mousemove", e => {
       let dummyX = e.offsetX;
@@ -361,7 +363,7 @@ export class ModelMainComponent implements OnInit {
         model.y = y;
         model.objectClass = this.dragType;
         model.modelId = this.modelId;
-        model.id =  "obj" + (this.data.length + 1);
+        model.id = "obj" + (this.data.length + 1);
         let p1 = new ParameterClass("Price" + model.id, "Price", "0", 1)
         let p2 = new ParameterClass("Speed" + model.id, "Speed", "0", 1)
         let p3 = new ParameterClass("CostPrice" + model.id, "CostPrice", "0", 1)
@@ -466,13 +468,13 @@ export class ModelMainComponent implements OnInit {
                 case "":
                   let v = param.value;
 
-                  if(v.charAt(0) === "="){
+                  if (v.charAt(0) === "=") {
                     let spcaSpit = v.split(" ");
-            
+
                     spcaSpit.forEach((element, index) => {
                       let earr = element.split(".");
-                      if(earr.length == 2){
-                        if(this.formulaSaver[earr[1]]){
+                      if (earr.length == 2) {
+                        if (this.formulaSaver[earr[1]]) {
                           spcaSpit[index] = this.formulaSaver[earr[1]];
                         } else {
                           spcaSpit[index] = this.formulaSaver[element];
@@ -480,24 +482,24 @@ export class ModelMainComponent implements OnInit {
                       }
                     });
                     spcaSpit.shift();
-                    try{
+                    try {
                       this.formulaSaver[param.id] = this.notEval(spcaSpit.join(''));
                     } catch {
                       this.calc();
                     }
 
                     g.append("text")
-                    .attr("x", element.x)
-                    .attr("y", py)
-                    .text((param.name || param.id) + " - " + this.formulaSaver[param.id]);
-              
+                      .attr("x", element.x)
+                      .attr("y", py)
+                      .text((param.name || param.id) + " - " + this.formulaSaver[param.id]);
+
                   } else {
                     g.append("text")
-                    .attr("x", element.x)
-                    .attr("y", py)
-                    .text((param.name || param.id) + " - " + v);
+                      .attr("x", element.x)
+                      .attr("y", py)
+                      .text((param.name || param.id) + " - " + v);
                   }
-               
+
                   break;
                 case "Input":
                   let gI = g.append("g");
@@ -591,30 +593,30 @@ export class ModelMainComponent implements OnInit {
           );
         }
 
-        if(!self.zoomTrans){
+        if (!self.zoomTrans) {
           self.zoomTrans = {
-              x: 0,
-              y: 0,
-              k: 1,
+            x: 0,
+            y: 0,
+            k: 1,
           }
 
         }
 
         self.dragSelected = this.getAttribute("id");
         self.data[this.getAttribute("id")].x =
-        (d3.event.x- self.zoomTrans.x) / self.zoomTrans.k ;
-          // self.start_x + (d3.event.x - self.start_x) / current_scale;
-          // (e.offsetX - this.zoomTrans.x) / this.zoomTrans.k;
-          let scale = 30;
-          if(self.zoomTrans.k < 0.33) {
-            scale = 50;
-          }
+          (d3.event.x - self.zoomTrans.x) / self.zoomTrans.k;
+        // self.start_x + (d3.event.x - self.start_x) / current_scale;
+        // (e.offsetX - this.zoomTrans.x) / this.zoomTrans.k;
+        let scale = 30;
+        if (self.zoomTrans.k < 0.33) {
+          scale = 50;
+        }
         self.data[this.getAttribute("id")].y =
-        (d3.event.y- self.zoomTrans.y) / self.zoomTrans.k - (scale / self.zoomTrans.k );
-          // self.start_y + (d3.event.y - self.start_y) / current_scale;
+          (d3.event.y - self.zoomTrans.y) / self.zoomTrans.k - (scale / self.zoomTrans.k);
+        // self.start_y + (d3.event.y - self.start_y) / current_scale;
         self.removeAll();
         self.drow();
-        self.txtQueryChanged.next({data:self.uuidv4(), drag : 1});
+        self.txtQueryChanged.next({ data: self.uuidv4(), drag: 1 });
 
       }
 
@@ -626,14 +628,14 @@ export class ModelMainComponent implements OnInit {
 
   formulaSaver = {};
 
-  formulaSearch(element){
+  formulaSearch(element) {
     let arr = element.split(".");
     this.modelList.forEach(model => {
-      if(model.id === arr[0]){
+      if (model.id === arr[0]) {
         this.componentService.getAllById(model._id).subscribe((data: any) => {
           data.forEach(comp => {
             comp.parameters.forEach(param => {
-              if(param.id === arr[1]){
+              if (param.id === arr[1]) {
                 this.formulaSaver[element] = param.value;
               }
             });
@@ -846,10 +848,10 @@ export class ModelMainComponent implements OnInit {
         document.getElementById("lineZoomRange").style.width = 50 + "%";
       }, 500);
     } else {
-        let input = document.getElementById("range");
-        let width;
-        width = (input["value"] / 2) * 100;
-        document.getElementById("lineZoomRange").style.width = width + "%";
+      let input = document.getElementById("range");
+      let width;
+      width = (input["value"] / 2) * 100;
+      document.getElementById("lineZoomRange").style.width = width + "%";
     }
   }
 }

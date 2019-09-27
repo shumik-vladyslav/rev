@@ -36,16 +36,17 @@
     <div style="width: 60%; position: relative;">
       <mat-form-field style="width: 100%" class="example-full-width">
         <!-- (ngModelChange)="change($event)" -->
-        <textarea #textArea [(ngModel)]="formula" (ngModelChange)="change($event)" (keydown)="checkPattern($event)" matInput></textarea>
+        <textarea #textArea [(ngModel)]="formula" (ngModelChange)="change($event)" (keydown)="checkPattern($event)"
+          matInput></textarea>
       </mat-form-field>
       <div (click)="textArea.focus()" class="text-area-shield"></div>
     </div>
     <div style="width: 40%; padding: 20px 0 0 20px;">
       <div class="full-width">
-          <!-- [disabled]="!boolLastOperator" -->
-        <button (click)="add()" class="full-width" mat-raised-button color="primary" mat-button>
+        <!-- [disabled]="!boolLastOperator" -->
+        <button [matTooltip]="!boolLastOperator ? 'Before add math operator: +, -, *, /' : null" (click)="add()" class="full-width" mat-raised-button color="primary" mat-button>
           <= ADD</button> </div> <div class="df jc-c">
-            <button class="func" mat-raised-button color="primary" mat-button>
+            <button (click)="test()" class="func" mat-raised-button color="primary" mat-button>
               <i>
                 f(x)
               </i>
