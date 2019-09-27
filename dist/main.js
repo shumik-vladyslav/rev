@@ -1504,13 +1504,13 @@ var ModelMainComponent = /** @class */ (function () {
             .scaleExtent([0.1, 2])
             .on("zoom", function () {
             _this.zoomTrans = d3.event.transform;
+            console.log(_this.zoomTrans);
             // this.conteiner.attr("transform", d3.event.transform);
             var currentTransform = d3.event.transform;
             if (!currentTransform.x) {
                 currentTransform.x = 0;
                 currentTransform.y = 0;
             }
-            console.log(currentTransform);
             _this.conteiner.attr("transform", currentTransform);
             _this.slider.property("value", currentTransform.k);
             _this.rangeWidth();
@@ -1860,83 +1860,9 @@ var ModelMainComponent = /** @class */ (function () {
                         }
                     });
                     break;
-                // case "Process":
-                // case "Board":
-                //   dx = element.x - 10;
-                //   dy = element.y - 8;
-                //   color = "#3cd57c";
-                //   count = 0;
-                //   element.parameters.forEach((param, index) => {
-                //     if (param.showOnDiagram) {
-                //       count++;
-                //     }
-                //   });
-                //   h = (60 + (count > 3 ? ((count - 3) * 16 + (count * 5)) : 0));
-                //   let gr = this.conteiner.append("g").attr("class", "g");
-                //   gr.append("rect")
-                //     .attr("id", index)
-                //     .attr("class", "nodes coco-bpm-rect-style")
-                //     .attr("x", element.x - 25)
-                //     .attr("y", element.y - 80)
-                //     .attr("width", 160)
-                //     .attr("height", h)
-                //     // .attr("rx", 10)
-                //     // .attr("ry", 10)
-                //     .on("mouseover", (q, w, e) => {
-                //       d3.event.stopPropagation();
-                //       if (this.activeArrow) {
-                //         document.documentElement.style.cursor = "default";
-                //         d3.select(document.getElementById(e[0].id + "main")).style(
-                //           "fill",
-                //           "#84bd96"
-                //         );
-                //       }
-                //     })
-                //     .on("mouseout", (q, w, e) => {
-                //       d3.event.stopPropagation();
-                //       d3.select(document.getElementById(e[0].id + "main")).style(
-                //         "fill",
-                //         "#2196f3"
-                //       );
-                //       if (this.activeArrow) {
-                //         document.documentElement.style.cursor = "not-allowed";
-                //       }
-                //     })
-                //     .on("click", (d, i, s) => {
-                //       d3.event.stopPropagation();
-                //       this.shepClick(s);
-                //     })
-                //     .on("dblclick", (d, i, s) => {
-                //       this.selectedModal = s[0].id;
-                //       this.showSide = !this.showSide;
-                //       this.removeAll();
-                //       this.drow();
-                //       this.activeArrow = null;
-                //       this.startDrowLine = null;
-                //     })
-                //     .call(
-                //       d3
-                //         .drag()
-                //         .on("start", dragstarted)
-                //         .on("drag", dragged)
-                //         .on("end", dragended)
-                //     );
-                //   countIndex = 0;
-                //   element.parameters.forEach((param, index) => {
-                //     if (param.showOnDiagram) {
-                //       let py = element.y - 50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
-                //       gr.append("text")
-                //         .attr("x", element.x)
-                //         .attr("y", py)
-                //         .text((param.name || param.id) + " - " + param.value);
-                //       countIndex++;
-                //     }
-                //   });
-                //   break;
                 default:
                     break;
             }
-            // this.generateDownloadJsonUri();
             if (_this.marker)
                 _this.marker
                     .append("path")
@@ -1945,9 +1871,9 @@ var ModelMainComponent = /** @class */ (function () {
                     .style("fill", "#999");
             var self = _this;
             function dragstarted(d) {
-                // d3.select(this)
-                //   .raise()
-                //   .classed("active", true);
+                d3.select(this)
+                    .raise()
+                    .classed("active", true);
                 self.start_x = +d3.event.x;
                 self.start_y = +d3.event.y;
             }
@@ -1961,12 +1887,25 @@ var ModelMainComponent = /** @class */ (function () {
                     current_scale_string = transform.getAttribute("transform").split(" ")[1];
                     current_scale = +current_scale_string.substring(6, current_scale_string.length - 1);
                 }
-                console.log(transform.getAttribute("transform").split(" ")[1]);
+                if (!self.zoomTrans) {
+                    self.zoomTrans = {
+                        x: 0,
+                        y: 0,
+                        k: 1,
+                    };
+                }
                 self.dragSelected = this.getAttribute("id");
                 self.data[this.getAttribute("id")].x =
-                    self.start_x + (d3.event.x - self.start_x) / current_scale;
+                    (d3.event.x - self.zoomTrans.x) / self.zoomTrans.k;
+                // self.start_x + (d3.event.x - self.start_x) / current_scale;
+                // (e.offsetX - this.zoomTrans.x) / this.zoomTrans.k;
+                var scale = 30;
+                if (self.zoomTrans.k < 0.33) {
+                    scale = 50;
+                }
                 self.data[this.getAttribute("id")].y =
-                    self.start_y + (d3.event.y - self.start_y) / current_scale;
+                    (d3.event.y - self.zoomTrans.y) / self.zoomTrans.k - (scale / self.zoomTrans.k);
+                // self.start_y + (d3.event.y - self.start_y) / current_scale;
                 self.removeAll();
                 self.drow();
                 self.txtQueryChanged.next({ data: self.uuidv4(), drag: 1 });
