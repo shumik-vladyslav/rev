@@ -53,7 +53,7 @@
   <div [ngClass]="{ show: showSide }" *ngIf="selectedModal" class="sidebar show">
     <mat-form-field class="example-full-width">
       <mat-label>Id (latin simbols and digits)</mat-label>
-      <input matInput [(ngModel)]="data[selectedModal].id" (keyup)="onKeyUp($event)" (ngModelChange)="onFieldChange($event)" />
+      <input matInput [(ngModel)]="data[selectedModal].id" (keydown)="onKeyDown($event)" (ngModelChange)="onFieldChange($event)" />
     </mat-form-field>
     <mat-form-field class="example-full-width">
       <mat-label>Name</mat-label>
@@ -152,7 +152,7 @@
 
                 <div class="loop-item desc">
                   <mat-form-field class="example-full-width">
-                    <input matInput placeholder="Id" (keyup)="onKeyUp($event)" [(ngModel)]="item.id" (ngModelChange)="onFieldChange($event)" />
+                    <input matInput placeholder="Id" (keydown)="onKeyDown($event)" [(ngModel)]="item.id" (ngModelChange)="onFieldChange($event)" />
                   </mat-form-field>
                   <mat-form-field class="example-full-width">
                     <input matInput placeholder="Name" [(ngModel)]="item.name"
@@ -228,7 +228,7 @@
 
     <div class="loop-item">
       <mat-form-field class="example-full-width">
-        <input matInput placeholder="Id" (keyup)="onKeyUp($event)" [(ngModel)]="newParametr.id" />
+        <input matInput placeholder="Id" (keydown)="onKeyDown($event)" [(ngModel)]="newParametr.id" />
       </mat-form-field>
       <mat-form-field class="example-full-width">
         <input matInput placeholder="Name" [(ngModel)]="newParametr.name" />

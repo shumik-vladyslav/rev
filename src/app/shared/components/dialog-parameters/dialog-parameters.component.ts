@@ -220,8 +220,6 @@ export class DialogParametersComponent implements OnInit {
       setTimeout(() => {
         if (this.formula[this.formula.length - 1] !== ' ') {
           let arr = this.formula.split(' ');
-          console.log(arr);
-          console.log(arr[arr.length - 1]);
           let number = this.reNumber.test(arr[arr.length - 1]);
           let oper = this.reOperator.test(arr[arr.length - 1]);
           if (

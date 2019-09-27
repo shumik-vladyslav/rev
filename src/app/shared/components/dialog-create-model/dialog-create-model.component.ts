@@ -17,13 +17,10 @@ export class DialogCreateModelComponent implements OnInit {
   onNoClick(): void {
     this.dialogRef.close();
   }
-  onKeyUp(e) {
-    let arr = e.target.value.split('');
-    arr = arr.filter((item) => {
-      if (item != " ") {
-        return true;
-      }
-    })
-    e.target.value = arr.join('')
+  onKeyDown(e) {
+    let re = /^(\d*[a-zA-Z]*\d*[a-zA-Z]*)*$/mg;
+    if (!re.test(e.key)){
+      return false;
+    }
   }
 }
