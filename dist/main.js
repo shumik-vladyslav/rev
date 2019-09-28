@@ -1348,7 +1348,7 @@ var ModelListComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"bpm-wrap\">\n  <div class=\"palette-entries\">\n    <!-- <div class=\"bpm-item\">\n      <span class=\"icon bpmn-icon-hand-tool\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span class=\"icon bpmn-icon-lasso-tool\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span class=\"entry icon bpmn-icon-space-tool\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span class=\"entry icon bpmn-icon-connection-multi\"></span>\n    </div>\n    <div class=\"separator\"></div> -->\n    <div class=\"bpm-item\">\n      <span pTooltip=\"Start\" tooltipPosition=\"top\" [draggable]=\"true\" id=\"Input\"\n        class=\"icon bpmn-icon-start-event-none\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span id=\"Output\" pTooltip=\"Start\" tooltipPosition=\"top\" [draggable]=\"true\"\n        class=\"icon bpmn-icon-intermediate-event-none\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span id=\"InputOutput\" pTooltip=\"Start\" tooltipPosition=\"top\" [draggable]=\"true\"\n        class=\"icon bpmn-icon-end-event-none\"></span>\n    </div>\n    <!-- <div class=\"bpm-item\">\n      <span class=\"icon bpmn-icon-gateway-none\"></span>\n    </div> -->\n    <div class=\"bpm-item\">\n      <span id=\"Process\" pTooltip=\"Start\" tooltipPosition=\"top\" [draggable]=\"true\" class=\"icon bpmn-icon-task\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span id=\"Board\" pTooltip=\"Start\" tooltipPosition=\"top\" [draggable]=\"true\"\n        class=\"icon bpmn-icon-subprocess-expanded\"></span>\n    </div>\n    <!-- <div class=\"bpm-item\">\n      <span class=\"icon bpmn-icon-data-object\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span class=\"icon bpmn-icon-data-store\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span class=\"icon bpmn-icon-participant\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span class=\"icon bpmn-icon-group\"></span>\n    </div> -->\n  </div>\n  <div class=\"coco-bpm-graph\" id=\"graph\" style=\"height: calc(100vh - 60px);\"></div>\n  <div class=\"clickShield\" *ngIf=\"showSide\" (click)=\"showSide = false\"></div>\n  <div [ngClass]=\"{ show: showSide }\" *ngIf=\"selectedModal\" class=\"sidebar show\">\n    <mat-form-field class=\"example-full-width\">\n      <mat-label>Id (latin simbols and digits)</mat-label>\n      <input matInput [(ngModel)]=\"data[selectedModal].id\" (keyup)=\"onKeyUp($event)\" (ngModelChange)=\"onFieldChange($event)\" />\n    </mat-form-field>\n    <mat-form-field class=\"example-full-width\">\n      <mat-label>Name</mat-label>\n      <input matInput [(ngModel)]=\"data[selectedModal].name\" (ngModelChange)=\"onFieldChange($event)\" />\n    </mat-form-field>\n    <mat-form-field>\n      <mat-label>ObjectClass</mat-label>\n      <mat-select [(ngModel)]=\"data[selectedModal].objectClass\" (ngModelChange)=\"onFieldChange($event)\">\n        <mat-option value=\"Board\">\n          Board\n        </mat-option>\n        <mat-option value=\"Input\">\n          Input\n        </mat-option>\n        <mat-option value=\"Output\">\n          Output\n        </mat-option>\n        <mat-option value=\"InputOutput\">\n          InputOutput\n        </mat-option>\n        <mat-option value=\"Process\">\n          Process\n        </mat-option>\n      </mat-select>\n    </mat-form-field>\n    <mat-form-field class=\"example-full-width\">\n      <input matInput placeholder=\"ObjectType\" [(ngModel)]=\"data[selectedModal].objectType\"\n        (ngModelChange)=\"onFieldChange($event)\" />\n    </mat-form-field>\n    <mat-form-field class=\"example-full-width\">\n      <textarea matInput placeholder=\"Description\" [(ngModel)]=\"data[selectedModal].description\"\n        (ngModelChange)=\"onFieldChange($event)\"></textarea>\n    </mat-form-field>\n    <!-- <div class=\"input-btn-wrap\">\n      <mat-form-field class=\"example-full-width\">\n        <input readonly [(ngModel)]=\"picture\" matInput placeholder=\"Picture\" />\n      </mat-form-field>\n      <input #file [(ngModel)]=\"picture\" hidden type=\"file\" />\n      <button (click)=\"file.click()\" mat-raised-button color=\"primary\" class=\"btn\">\n        <i class=\"material-icons\">\n          forward\n        </i>\n      </button>\n    </div> -->\n    <table>\n      <tr>\n        <th style=\"text-align: left;\">Parameters</th>\n        <th>M</th>\n        <th>C</th>\n        <th>S</th>\n        <th></th>\n      </tr>\n\n      <tbody *ngFor=\"let item of data[selectedModal].parameters\">\n        <tr>\n          <td>\n            <mat-form-field class=\"example-full-width\">\n              <input matInput [(ngModel)]=\"item.name\" (ngModelChange)=\"onFieldChange($event)\" />\n            </mat-form-field>\n          </td>\n          <td>\n            <div class=\"df jc-c\">\n              <mat-checkbox [(ngModel)]=\"item.measurable\" (ngModelChange)=\"onFieldChange($event)\"></mat-checkbox>\n            </div>\n          </td>\n          <td>\n            <div class=\"df jc-c\">\n              <mat-checkbox [(ngModel)]=\"item.changeable\" (ngModelChange)=\"onFieldChange($event)\"></mat-checkbox>\n            </div>\n          </td>\n          <td>\n            <div class=\"df jc-c\">\n              <mat-checkbox [(ngModel)]=\"item.showOnDiagram\" (ngModelChange)=\"onFieldChange($event)\"></mat-checkbox>\n            </div>\n          </td>\n          <td>\n            <div class=\"df jc-c ai-c\">\n              <button mat-icon-button\n                (click)=\"optionsModal[item.name + data[selectedModal].name] = !optionsModal[item.name + data[selectedModal].name]\">\n                <i class=\"material-icons-outlined\">\n                  arrow_drop_down_circle\n                </i>\n              </button>\n            </div>\n          </td>\n        </tr>\n        <tr *ngIf=\"optionsModal[item.name + data[selectedModal].name]\">\n          <td colspan=\"5\">\n            <mat-accordion>\n              <mat-expansion-panel [expanded]=\"true\">\n                <mat-expansion-panel-header>\n                  <mat-panel-title>\n                    Personal data\n                  </mat-panel-title>\n                </mat-expansion-panel-header>\n\n                <div class=\"loop-item desc\">\n                  <mat-form-field class=\"example-full-width\">\n                    <input matInput placeholder=\"Id\" (keyup)=\"onKeyUp($event)\" [(ngModel)]=\"item.id\" (ngModelChange)=\"onFieldChange($event)\" />\n                  </mat-form-field>\n                  <mat-form-field class=\"example-full-width\">\n                    <input matInput placeholder=\"Name\" [(ngModel)]=\"item.name\"\n                      (ngModelChange)=\"onFieldChange($event)\" />\n                  </mat-form-field>\n                  <mat-form-field class=\"example-full-width\">\n                    <textarea matInput placeholder=\"Description\" [(ngModel)]=\"item.description\"\n                      (ngModelChange)=\"onFieldChange($event)\"></textarea>\n                  </mat-form-field>\n                  <div class=\"input-btn-wrap\">\n                    <mat-form-field *ngIf=\"item.value.charAt(0) !== '=' \" class=\"example-full-width\">\n                      <input  matInput placeholder=\"Value\" [(ngModel)]=\"item.value\"\n                        (ngModelChange)=\"onFieldChange($event)\" />\n                    </mat-form-field>\n                    <span *ngIf=\"item.value.charAt(0) === '=' \" class=\"example-full-width\">Value = f (x)</span>\n\n                    <button (click)=\"openDialog(item)\" mat-raised-button color=\"primary\" class=\"btn\">\n                      <i>\n                        f(x)\n                      </i>\n                    </button>\n                  </div>\n                  <mat-form-field>\n                    <mat-label>Feature label</mat-label>\n                    <mat-select>\n                      <mat-option value=\"1\">\n                        1\n                      </mat-option>\n                      <mat-option value=\"2\">\n                        2\n                      </mat-option>\n                      <mat-option value=\"3\">\n                        3\n                      </mat-option>\n                    </mat-select>\n                  </mat-form-field>\n                  <div class=\"chekboxs-list\">\n                    <mat-checkbox [(ngModel)]=\"item.measurable\" (ngModelChange)=\"onFieldChange($event)\">Measurable\n                    </mat-checkbox>\n                    <mat-checkbox [(ngModel)]=\"item.changeable\" (ngModelChange)=\"onFieldChange($event)\">Changeable\n                    </mat-checkbox>\n                    <mat-checkbox [(ngModel)]=\"item.showOnDiagram\" (ngModelChange)=\"onFieldChange($event)\">Show on\n                      diagram</mat-checkbox>\n                    <mat-checkbox [(ngModel)]=\"item.showName\" (ngModelChange)=\"onFieldChange($event)\">Show name\n                    </mat-checkbox>\n                  </div>\n                  <mat-form-field *ngIf=\"item.showOnDiagram\">\n                    <mat-label>Control type</mat-label>\n                    <mat-select [(ngModel)]=\"item.controlType\" (ngModelChange)=\"onFieldChange($event)\">\n                      <mat-option value=\"Value\">\n                        Value\n                      </mat-option>\n                      <mat-option value=\"Input\">\n                        Input\n                      </mat-option>\n                      <mat-option value=\"Slider\">\n                        Slider\n                      </mat-option>\n                    </mat-select>\n                  </mat-form-field>\n                </div>\n              </mat-expansion-panel>\n            </mat-accordion>\n          </td>\n        </tr>\n      </tbody>\n\n    </table>\n\n    <div class=\"m-t-10 m-b-10\">\n      <button mat-raised-button color=\"accent\" (click)=\"addParametr()\">+ Add parameter</button>\n    </div>\n\n    <div class=\"loop-item\">\n      <mat-form-field class=\"example-full-width\">\n        <input matInput placeholder=\"Id\" (keyup)=\"onKeyUp($event)\" [(ngModel)]=\"newParametr.id\" />\n      </mat-form-field>\n      <mat-form-field class=\"example-full-width\">\n        <input matInput placeholder=\"Name\" [(ngModel)]=\"newParametr.name\" />\n      </mat-form-field>\n      <mat-form-field class=\"example-full-width\">\n        <textarea matInput placeholder=\"Description\" [(ngModel)]=\"newParametr.description\"></textarea>\n      </mat-form-field>\n      <div class=\"input-btn-wrap\">\n        <mat-form-field class=\"example-full-width\">\n          <input matInput placeholder=\"Value\" [(ngModel)]=\"newParametr.value\" />\n        </mat-form-field>\n        <button (click)=\"openDialog()\" mat-raised-button color=\"primary\" class=\"btn\">\n          <i>\n            f(x)\n          </i>\n        </button>\n      </div>\n      <mat-form-field>\n        <mat-label>Feature label</mat-label>\n        <mat-select [(ngModel)]=\"newParametr.featureLabelNone\">\n          <mat-option value=\"1\">\n            1\n          </mat-option>\n          <mat-option value=\"2\">\n            2\n          </mat-option>\n          <mat-option value=\"3\">\n            3\n          </mat-option>\n        </mat-select>\n      </mat-form-field>\n      <div class=\"chekboxs-list\">\n        <mat-checkbox [(ngModel)]=\"newParametr.measurable\">Measurable</mat-checkbox>\n        <mat-checkbox [(ngModel)]=\"newParametr.changeable\">Changeable</mat-checkbox>\n        <mat-checkbox [(ngModel)]=\"newParametr.showOnDiagram\">Show on diagram</mat-checkbox>\n        <mat-checkbox [(ngModel)]=\"newParametr.showName\">Show name</mat-checkbox>\n      </div>\n      <mat-form-field *ngIf=\"newParametr.showOnDiagram\">\n        <mat-label>Control type</mat-label>\n        <mat-select [(ngModel)]=\"newParametr.controlType\">\n          <mat-option value=\"Value\">\n            Value\n          </mat-option>\n          <mat-option value=\"Input\">\n            Input\n          </mat-option>\n          <mat-option value=\"Slider\">\n            Slider\n          </mat-option>\n        </mat-select>\n      </mat-form-field>\n    </div>\n  </div>\n</div>\n"
+module.exports = "<div class=\"bpm-wrap\">\n  <div class=\"palette-entries\">\n    <!-- <div class=\"bpm-item\">\n      <span class=\"icon bpmn-icon-hand-tool\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span class=\"icon bpmn-icon-lasso-tool\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span class=\"entry icon bpmn-icon-space-tool\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span class=\"entry icon bpmn-icon-connection-multi\"></span>\n    </div>\n    <div class=\"separator\"></div> -->\n    <div class=\"bpm-item\">\n      <div class=\"square\" style=\"background: #3cd57c\"></div>\n    </div>\n    <div class=\"bpm-item\">\n      <span pTooltip=\"Start\" tooltipPosition=\"top\" [draggable]=\"true\" id=\"Input\"\n        class=\"icon bpmn-icon-start-event-none\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span id=\"Output\" pTooltip=\"Start\" tooltipPosition=\"top\" [draggable]=\"true\"\n        class=\"icon bpmn-icon-intermediate-event-none\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span id=\"InputOutput\" pTooltip=\"Start\" tooltipPosition=\"top\" [draggable]=\"true\"\n        class=\"icon bpmn-icon-end-event-none\"></span>\n    </div>\n    <!-- <div class=\"bpm-item\">\n      <span class=\"icon bpmn-icon-gateway-none\"></span>\n    </div> -->\n    <div class=\"bpm-item\">\n      <span id=\"Process\" pTooltip=\"Start\" tooltipPosition=\"top\" [draggable]=\"true\" class=\"icon bpmn-icon-task\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span id=\"Board\" pTooltip=\"Start\" tooltipPosition=\"top\" [draggable]=\"true\"\n        class=\"icon bpmn-icon-subprocess-expanded\"></span>\n    </div>\n    <!-- <div class=\"bpm-item\">\n      <span class=\"icon bpmn-icon-data-object\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span class=\"icon bpmn-icon-data-store\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span class=\"icon bpmn-icon-participant\"></span>\n    </div>\n    <div class=\"bpm-item\">\n      <span class=\"icon bpmn-icon-group\"></span>\n    </div> -->\n  </div>\n  <div class=\"coco-bpm-graph\" id=\"graph\" style=\"height: calc(100vh - 60px);\"></div>\n  <div class=\"clickShield\" *ngIf=\"showSide\" (click)=\"showSide = false\"></div>\n  <div (click)=\"showSide = !showSide\" class=\"toggle-sidebar-btn\" [ngClass]=\"{ 'active': showSide }\">\n    <a mat-raised-button>\n      <i class=\"material-icons\">\n        menu_open\n      </i>\n    </a>\n  </div>\n  <div [ngClass]=\"{ show: showSide }\" *ngIf=\"selectedModal\" class=\"sidebar show\">\n    <mat-form-field class=\"example-full-width\">\n      <mat-label>Id (latin simbols and digits)</mat-label>\n      <input matInput [(ngModel)]=\"data[selectedModal].id\" (keydown)=\"onKeyDown($event)\"\n        (ngModelChange)=\"onFieldChange($event)\" />\n    </mat-form-field>\n    <mat-form-field class=\"example-full-width\">\n      <mat-label>Name</mat-label>\n      <input matInput [(ngModel)]=\"data[selectedModal].name\" (ngModelChange)=\"onFieldChange($event)\" />\n    </mat-form-field>\n    <mat-form-field>\n      <mat-label>ObjectClass</mat-label>\n      <mat-select [(ngModel)]=\"data[selectedModal].objectClass\" (ngModelChange)=\"onFieldChange($event)\">\n        <mat-option value=\"Board\">\n          Board\n        </mat-option>\n        <mat-option value=\"Input\">\n          Input\n        </mat-option>\n        <mat-option value=\"Output\">\n          Output\n        </mat-option>\n        <mat-option value=\"InputOutput\">\n          InputOutput\n        </mat-option>\n        <mat-option value=\"Process\">\n          Process\n        </mat-option>\n      </mat-select>\n    </mat-form-field>\n    <mat-form-field class=\"example-full-width\">\n      <input matInput placeholder=\"ObjectType\" [(ngModel)]=\"data[selectedModal].objectType\"\n        (ngModelChange)=\"onFieldChange($event)\" />\n    </mat-form-field>\n    <mat-form-field class=\"example-full-width\">\n      <textarea matInput placeholder=\"Description\" [(ngModel)]=\"data[selectedModal].description\"\n        (ngModelChange)=\"onFieldChange($event)\"></textarea>\n    </mat-form-field>\n    <!-- <div class=\"input-btn-wrap\">\n      <mat-form-field class=\"example-full-width\">\n        <input readonly [(ngModel)]=\"picture\" matInput placeholder=\"Picture\" />\n      </mat-form-field>\n      <input #file [(ngModel)]=\"picture\" hidden type=\"file\" />\n      <button (click)=\"file.click()\" mat-raised-button color=\"primary\" class=\"btn\">\n        <i class=\"material-icons\">\n          forward\n        </i>\n      </button>\n    </div> -->\n    <table class=\"table\">\n      <tr>\n        <th style=\"text-align: left;\">Parameters</th>\n        <th></th>\n        <th>M</th>\n        <th>C</th>\n        <th>S</th>\n        <th></th>\n      </tr>\n\n      <tbody *ngFor=\"let item of data[selectedModal].parameters\">\n        <tr>\n          <td>\n            Name\n          </td>\n          <td>\n            <mat-form-field class=\"example-full-width table-input\">\n              <input matInput [(ngModel)]=\"item.name\" (ngModelChange)=\"onFieldChange($event)\" />\n            </mat-form-field>\n          </td>\n          <td>\n            <div class=\"df jc-c\">\n              <mat-checkbox [(ngModel)]=\"item.measurable\" (ngModelChange)=\"onFieldChange($event)\"></mat-checkbox>\n            </div>\n          </td>\n          <td>\n            <div class=\"df jc-c\">\n              <mat-checkbox [(ngModel)]=\"item.changeable\" (ngModelChange)=\"onFieldChange($event)\"></mat-checkbox>\n            </div>\n          </td>\n          <td>\n            <div class=\"df jc-c\">\n              <mat-checkbox [(ngModel)]=\"item.showOnDiagram\" (ngModelChange)=\"onFieldChange($event)\"></mat-checkbox>\n            </div>\n          </td>\n          <td>\n            <div class=\"df jc-c ai-c\">\n              <button class=\"table-more-btn\" mat-icon-button\n                (click)=\"optionsModal[item.name + data[selectedModal].name] = !optionsModal[item.name + data[selectedModal].name]\">\n                <i class=\"material-icons-outlined\">\n                  arrow_drop_down_circle\n                </i>\n              </button>\n            </div>\n          </td>\n        </tr>\n        <tr *ngIf=\"optionsModal[item.name + data[selectedModal].name]\">\n          <td colspan=\"6\">\n            <mat-accordion>\n              <mat-expansion-panel [expanded]=\"true\">\n                <mat-expansion-panel-header>\n                  <mat-panel-title>\n                    Personal data\n                  </mat-panel-title>\n                </mat-expansion-panel-header>\n\n                <div class=\"loop-item desc\">\n                  <mat-form-field class=\"example-full-width\">\n                    <input matInput placeholder=\"Id\" (keydown)=\"onKeyDown($event)\" [(ngModel)]=\"item.id\"\n                      (ngModelChange)=\"onFieldChange($event)\" />\n                  </mat-form-field>\n                  <mat-form-field class=\"example-full-width\">\n                    <input matInput placeholder=\"Name\" [(ngModel)]=\"item.name\"\n                      (ngModelChange)=\"onFieldChange($event)\" />\n                  </mat-form-field>\n                  <mat-form-field class=\"example-full-width\">\n                    <textarea matInput placeholder=\"Description\" [(ngModel)]=\"item.description\"\n                      (ngModelChange)=\"onFieldChange($event)\"></textarea>\n                  </mat-form-field>\n                  <div class=\"input-btn-wrap\">\n                    <mat-form-field *ngIf=\"item.value.charAt(0) !== '=' \" class=\"example-full-width\">\n                      <input matInput placeholder=\"Value\" [(ngModel)]=\"item.value\"\n                        (ngModelChange)=\"onFieldChange($event)\" />\n                    </mat-form-field>\n                    <span *ngIf=\"item.value.charAt(0) === '=' \" class=\"example-full-width\">Value = f (x)</span>\n\n                    <button (click)=\"openDialog(item)\" mat-raised-button color=\"primary\" class=\"btn\">\n                      <i>\n                        f(x)\n                      </i>\n                    </button>\n                  </div>\n                  <mat-form-field>\n                    <mat-label>Feature label</mat-label>\n                    <mat-select>\n                      <mat-option value=\"1\">\n                        1\n                      </mat-option>\n                      <mat-option value=\"2\">\n                        2\n                      </mat-option>\n                      <mat-option value=\"3\">\n                        3\n                      </mat-option>\n                    </mat-select>\n                  </mat-form-field>\n                  <div class=\"chekboxs-list\">\n                    <mat-checkbox [(ngModel)]=\"item.measurable\" (ngModelChange)=\"onFieldChange($event)\">Measurable\n                    </mat-checkbox>\n                    <mat-checkbox [(ngModel)]=\"item.changeable\" (ngModelChange)=\"onFieldChange($event)\">Changeable\n                    </mat-checkbox>\n                    <mat-checkbox [(ngModel)]=\"item.showOnDiagram\" (ngModelChange)=\"onFieldChange($event)\">Show on\n                      diagram</mat-checkbox>\n                    <mat-checkbox [(ngModel)]=\"item.showName\" (ngModelChange)=\"onFieldChange($event)\">Show name\n                    </mat-checkbox>\n                  </div>\n                  <mat-form-field *ngIf=\"item.showOnDiagram\">\n                    <mat-label>Control type</mat-label>\n                    <mat-select [(ngModel)]=\"item.controlType\" (ngModelChange)=\"onFieldChange($event)\">\n                      <mat-option value=\"Value\">\n                        Value\n                      </mat-option>\n                      <mat-option value=\"Input\">\n                        Input\n                      </mat-option>\n                      <mat-option value=\"Slider\">\n                        Slider\n                      </mat-option>\n                    </mat-select>\n                  </mat-form-field>\n                </div>\n              </mat-expansion-panel>\n            </mat-accordion>\n          </td>\n        </tr>\n      </tbody>\n\n    </table>\n\n    <div class=\"m-t-10 m-b-10\">\n      <button mat-raised-button color=\"accent\" (click)=\"addParametr()\">+ Add parameter</button>\n    </div>\n\n    <div class=\"loop-item\">\n      <mat-form-field class=\"example-full-width\">\n        <input matInput placeholder=\"Id\" (keydown)=\"onKeyDown($event)\" [(ngModel)]=\"newParametr.id\" />\n      </mat-form-field>\n      <mat-form-field class=\"example-full-width\">\n        <input matInput placeholder=\"Name\" [(ngModel)]=\"newParametr.name\" />\n      </mat-form-field>\n      <mat-form-field class=\"example-full-width\">\n        <textarea matInput placeholder=\"Description\" [(ngModel)]=\"newParametr.description\"></textarea>\n      </mat-form-field>\n      <div class=\"input-btn-wrap\">\n        <mat-form-field class=\"example-full-width\">\n          <input matInput placeholder=\"Value\" [(ngModel)]=\"newParametr.value\" />\n        </mat-form-field>\n        <button (click)=\"openDialog()\" mat-raised-button color=\"primary\" class=\"btn\">\n          <i>\n            f(x)\n          </i>\n        </button>\n      </div>\n      <mat-form-field>\n        <mat-label>Feature label</mat-label>\n        <mat-select [(ngModel)]=\"newParametr.featureLabelNone\">\n          <mat-option value=\"1\">\n            1\n          </mat-option>\n          <mat-option value=\"2\">\n            2\n          </mat-option>\n          <mat-option value=\"3\">\n            3\n          </mat-option>\n        </mat-select>\n      </mat-form-field>\n      <div class=\"chekboxs-list\">\n        <mat-checkbox [(ngModel)]=\"newParametr.measurable\">Measurable</mat-checkbox>\n        <mat-checkbox [(ngModel)]=\"newParametr.changeable\">Changeable</mat-checkbox>\n        <mat-checkbox [(ngModel)]=\"newParametr.showOnDiagram\">Show on diagram</mat-checkbox>\n        <mat-checkbox [(ngModel)]=\"newParametr.showName\">Show name</mat-checkbox>\n      </div>\n      <mat-form-field *ngIf=\"newParametr.showOnDiagram\">\n        <mat-label>Control type</mat-label>\n        <mat-select [(ngModel)]=\"newParametr.controlType\">\n          <mat-option value=\"Value\">\n            Value\n          </mat-option>\n          <mat-option value=\"Input\">\n            Input\n          </mat-option>\n          <mat-option value=\"Slider\">\n            Slider\n          </mat-option>\n        </mat-select>\n      </mat-form-field>\n    </div>\n  </div>\n</div>"
 
 /***/ }),
 
@@ -1359,7 +1359,7 @@ module.exports = "<div class=\"bpm-wrap\">\n  <div class=\"palette-entries\">\n 
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".bpm-wrap {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: white;\n  border: 1px solid #ececec;\n  overflow: hidden;\n  min-height: calc(100vh - 58px); }\n\n.palette-entries {\n  position: absolute;\n  left: 20px;\n  top: 20px;\n  width: 94px;\n  border-radius: 5px;\n  background: #fafafa;\n  border: 1px solid #ccc;\n  display: flex;\n  flex-wrap: wrap; }\n\n.palette-entries .bpm-item {\n    width: 46px;\n    height: 46px;\n    line-height: 46px;\n    cursor: default;\n    display: flex;\n    align-items: center;\n    justify-content: center; }\n\n.palette-entries .bpm-item .icon {\n      color: #333;\n      font-size: 30px; }\n\n.palette-entries .bpm-item:hover .icon {\n      color: #ff7400; }\n\n.palette-entries .separator {\n    margin: 0 5px;\n    padding-top: 5px;\n    border: none;\n    border-bottom: 1px solid #ddd;\n    clear: both;\n    width: 100%; }\n\n.sidebar {\n  position: absolute;\n  width: 100%;\n  max-width: 400px;\n  background-color: white;\n  -webkit-transform: translate(100%, 0);\n          transform: translate(100%, 0);\n  transition: all 0.4s;\n  height: 100%;\n  right: 0;\n  top: 0;\n  padding: 15px;\n  overflow-y: auto; }\n\n.sidebar.show {\n    -webkit-transform: translate(0, 0);\n            transform: translate(0, 0);\n    box-shadow: rgba(0, 0, 0, 0.1) -8px 0px 5px -4px;\n    z-index: 111; }\n\nmat-form-field {\n  display: block; }\n\n.input-btn-wrap {\n  display: flex;\n  align-items: center; }\n\n.input-btn-wrap mat-form-field {\n    width: 100%; }\n\n.input-btn-wrap button.btn {\n    min-width: 0;\n    padding: 0 6px;\n    margin-left: 25px;\n    min-width: 35px; }\n\n.input-btn-wrap button.btn .material-icons {\n      -webkit-transform: rotate(-90deg);\n              transform: rotate(-90deg); }\n\ntable {\n  width: 100%; }\n\n.chekboxs-list {\n  display: flex;\n  flex-wrap: wrap;\n  margin-top: 10px;\n  margin-bottom: 5px; }\n\n.chekboxs-list mat-checkbox {\n    width: 50%; }\n\n.loop-item {\n  padding-bottom: 20px;\n  border-bottom: 1px dashed #b7b7b7;\n  padding: 5px 10px;\n  padding-bottom: 10px;\n  border: 1px dashed #b7b7b7; }\n\n.loop-item.desc {\n    padding: 0 !important;\n    border: none !important; }\n\n.clickShield {\n  position: fixed;\n  background: #0000003d;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  z-index: 1; }\n"
+module.exports = ".bpm-wrap {\n  position: relative;\n  width: 100%;\n  height: 100%;\n  background: white;\n  border: 1px solid #ececec;\n  overflow: hidden;\n  min-height: calc(100vh - 58px); }\n\n.palette-entries {\n  position: absolute;\n  left: 20px;\n  top: 20px;\n  width: 94px;\n  border-radius: 5px;\n  background: #fafafa;\n  border: 1px solid #ccc;\n  display: flex;\n  flex-wrap: wrap; }\n\n.palette-entries .bpm-item {\n    width: 46px;\n    height: 46px;\n    line-height: 46px;\n    cursor: default;\n    display: flex;\n    align-items: center;\n    justify-content: center; }\n\n.palette-entries .bpm-item .icon {\n      color: #333;\n      font-size: 30px; }\n\n.palette-entries .bpm-item:hover .icon {\n      color: #ff7400; }\n\n.palette-entries .bpm-item .square {\n      width: 30px;\n      height: 23px;\n      border-radius: 5px;\n      border: 2px solid; }\n\n.palette-entries .separator {\n    margin: 0 5px;\n    padding-top: 5px;\n    border: none;\n    border-bottom: 1px solid #ddd;\n    clear: both;\n    width: 100%; }\n\n.sidebar {\n  position: absolute;\n  width: 100%;\n  max-width: 400px;\n  background-color: white;\n  -webkit-transform: translate(100%, 0);\n          transform: translate(100%, 0);\n  transition: all 0.4s;\n  height: 100%;\n  right: 0;\n  top: 0;\n  padding: 15px;\n  overflow-y: auto; }\n\n.sidebar.show {\n    -webkit-transform: translate(0, 0);\n            transform: translate(0, 0);\n    box-shadow: rgba(0, 0, 0, 0.1) -8px 0px 5px -4px;\n    z-index: 111; }\n\nmat-form-field {\n  display: block; }\n\n.input-btn-wrap {\n  display: flex;\n  align-items: center; }\n\n.input-btn-wrap mat-form-field {\n    width: 100%; }\n\n.input-btn-wrap button.btn {\n    min-width: 0;\n    padding: 0 6px;\n    margin-left: 25px;\n    min-width: 35px; }\n\n.input-btn-wrap button.btn .material-icons {\n      -webkit-transform: rotate(-90deg);\n              transform: rotate(-90deg); }\n\ntable {\n  width: 100%; }\n\ntable td {\n    padding: 0; }\n\ntable th {\n    padding: 0; }\n\n.chekboxs-list {\n  display: flex;\n  flex-wrap: wrap;\n  margin-top: 10px;\n  margin-bottom: 5px; }\n\n.chekboxs-list mat-checkbox {\n    width: 50%; }\n\n.loop-item {\n  padding-bottom: 20px;\n  border-bottom: 1px dashed #b7b7b7;\n  padding: 5px 10px;\n  padding-bottom: 10px;\n  border: 1px dashed #b7b7b7; }\n\n.loop-item.desc {\n    padding: 0 !important;\n    border: none !important; }\n\n.clickShield {\n  position: fixed;\n  background: #0000003d;\n  width: 100%;\n  height: 100%;\n  top: 0; }\n\n.toggle-sidebar-btn {\n  position: absolute;\n  top: calc(50% - 18px);\n  right: 0;\n  transition: all .4s; }\n\n.toggle-sidebar-btn.active {\n    -webkit-transform: translate(-400px, 0);\n            transform: translate(-400px, 0); }\n\n.toggle-sidebar-btn a {\n    width: 29px;\n    min-width: unset;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    padding: 0; }\n"
 
 /***/ }),
 
@@ -1465,18 +1465,26 @@ var ModelMainComponent = /** @class */ (function () {
         var _this = this;
         this.data.forEach(function (comp) {
             comp.parameters.forEach(function (element) {
-                var v = element.value;
-                var spcaSpit = v.split(" ");
-                spcaSpit.forEach(function (element, index) {
-                    var earr = element.split(".");
-                    if (earr.length == 2) {
-                        if (!_this.formulaSaver[earr[1]] && !_this.formulaSaver[element]) {
-                            _this.formulaSearch(element);
+                if (element.value) {
+                    var v = element.value;
+                    var spcaSpit = v.split(" ");
+                    spcaSpit.forEach(function (element, index) {
+                        var earr = element.split(".");
+                        if (earr.length == 2) {
+                            if (!_this.formulaSaver[earr[1]] && !_this.formulaSaver[element]) {
+                                _this.formulaSearch(element);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             });
         });
+    };
+    ModelMainComponent.prototype.keyEvent = function (event) {
+        if ((event.keyCode === 46 || event.keyCode === 8) && this.selected) {
+            console.log();
+            // this.data.splice(this.selected, 1);
+        }
     };
     ModelMainComponent.prototype.openDialog = function (item) {
         var _this = this;
@@ -1504,7 +1512,6 @@ var ModelMainComponent = /** @class */ (function () {
             .scaleExtent([0.1, 2])
             .on("zoom", function () {
             _this.zoomTrans = d3.event.transform;
-            console.log(_this.zoomTrans);
             // this.conteiner.attr("transform", d3.event.transform);
             var currentTransform = d3.event.transform;
             if (!currentTransform.x) {
@@ -1871,9 +1878,8 @@ var ModelMainComponent = /** @class */ (function () {
                     .style("fill", "#999");
             var self = _this;
             function dragstarted(d) {
-                d3.select(this)
-                    .raise()
-                    .classed("active", true);
+                // d3.select(this)
+                //   .classed("active", true);
                 self.start_x = +d3.event.x;
                 self.start_y = +d3.event.y;
             }
@@ -2092,14 +2098,11 @@ var ModelMainComponent = /** @class */ (function () {
         this.newParametr = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]();
         this.txtQueryChanged.next("query");
     };
-    ModelMainComponent.prototype.onKeyUp = function (e) {
-        var arr = e.target.value.split('');
-        arr = arr.filter(function (item) {
-            if (item != " ") {
-                return true;
-            }
-        });
-        e.target.value = arr.join('');
+    ModelMainComponent.prototype.onKeyDown = function (e) {
+        var re = /^(\d*[a-zA-Z]*\d*[a-zA-Z]*)*$/mg;
+        if (!re.test(e.key)) {
+            return false;
+        }
     };
     ModelMainComponent.prototype.notEval = function (fn) {
         return new Function('return ' + fn)();
@@ -2117,6 +2120,12 @@ var ModelMainComponent = /** @class */ (function () {
             document.getElementById("lineZoomRange").style.width = width + "%";
         }
     };
+    __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["HostListener"])("document:keyup", ["$event"]),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [KeyboardEvent]),
+        __metadata("design:returntype", void 0)
+    ], ModelMainComponent.prototype, "keyEvent", null);
     ModelMainComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: 'app-model-main',
@@ -2193,7 +2202,7 @@ var ComponentService = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1 mat-dialog-title>Create Model</h1>\n<div mat-dialog-content>\n  <mat-form-field>\n    <mat-label>ID</mat-label>\n    <input matInput (keyup)=\"onKeyUp($event)\" [(ngModel)]=\"model.id\" />\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Name</mat-label>\n    <input matInput [(ngModel)]=\"model.name\" />\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Description</mat-label>\n    <input matInput [(ngModel)]=\"model.description\" />\n  </mat-form-field>\n</div>\n<div mat-dialog-actions class=\"jc-c df\">\n  <button\n    mat-button\n    [mat-dialog-close]=\"model\"\n    mat-raised-button\n    color=\"primary\"\n    cdkFocusInitial\n  >\n    Ok\n  </button>\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\n</div>\n"
+module.exports = "<h1 mat-dialog-title>Create Model</h1>\n<div mat-dialog-content>\n  <mat-form-field>\n    <mat-label>ID</mat-label>\n    <input matInput (keydown)=\"onKeyDown($event)\" [(ngModel)]=\"model.id\" />\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Name</mat-label>\n    <input matInput [(ngModel)]=\"model.name\" />\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Description</mat-label>\n    <input matInput [(ngModel)]=\"model.description\" />\n  </mat-form-field>\n</div>\n<div mat-dialog-actions class=\"jc-c df\">\n  <button\n    mat-button\n    [mat-dialog-close]=\"model\"\n    mat-raised-button\n    color=\"primary\"\n    cdkFocusInitial\n  >\n    Ok\n  </button>\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\n</div>\n"
 
 /***/ }),
 
@@ -2248,14 +2257,11 @@ var DialogCreateModelComponent = /** @class */ (function () {
     DialogCreateModelComponent.prototype.onNoClick = function () {
         this.dialogRef.close();
     };
-    DialogCreateModelComponent.prototype.onKeyUp = function (e) {
-        var arr = e.target.value.split('');
-        arr = arr.filter(function (item) {
-            if (item != " ") {
-                return true;
-            }
-        });
-        e.target.value = arr.join('');
+    DialogCreateModelComponent.prototype.onKeyDown = function (e) {
+        var re = /^(\d*[a-zA-Z]*\d*[a-zA-Z]*)*$/mg;
+        if (!re.test(e.key)) {
+            return false;
+        }
     };
     DialogCreateModelComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
@@ -2280,7 +2286,7 @@ var DialogCreateModelComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\n<div mat-dialog-content>\n  <mat-form-field>\n    <mat-label>Model</mat-label>\n    <mat-select [(ngModel)]=\"sleectedModel\" (ngModelChange)=\"modelChange($event)\">\n      <mat-option *ngFor=\"let item of listModel\" [value]=\"item._id\">\n        {{item.name}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Class</mat-label>\n    <mat-select [(ngModel)]=\"selectedClass\" (ngModelChange)=\"paramsFilter($event)\">\n      <mat-option *ngFor=\"let item of listClass\" [value]=\"item\">\n        {{item}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Object</mat-label>\n    <mat-select [(ngModel)]=\"selectedObject\" (ngModelChange)=\"paramsFilter($event)\">\n      <mat-option *ngFor=\"let item of listObjects\" [value]=\"item\">\n        {{item}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Parameter</mat-label>\n    <mat-select [(ngModel)]=\"selectedParam\" (ngModelChange)=\"paramsChange($event)\">\n      <mat-option *ngFor=\"let item of listParams | filtrListParam: selectedClass: selectedObject\" [value]=\"item._id\">\n        {{item.name}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <div class=\"textarea-wrap\">\n    <div style=\"width: 60%; position: relative;\">\n      <mat-form-field style=\"width: 100%\" class=\"example-full-width\">\n        <!-- (ngModelChange)=\"change($event)\" -->\n        <textarea #textArea [(ngModel)]=\"formula\" (ngModelChange)=\"change($event)\" (keydown)=\"checkPattern($event)\" matInput></textarea>\n      </mat-form-field>\n      <div (click)=\"textArea.focus()\" class=\"text-area-shield\"></div>\n    </div>\n    <div style=\"width: 40%; padding: 20px 0 0 20px;\">\n      <div class=\"full-width\">\n          <!-- [disabled]=\"!boolLastOperator\" -->\n        <button (click)=\"add()\" class=\"full-width\" mat-raised-button color=\"primary\" mat-button>\n          <= ADD</button> </div> <div class=\"df jc-c\">\n            <button class=\"func\" mat-raised-button color=\"primary\" mat-button>\n              <i>\n                f(x)\n              </i>\n            </button>\n      </div>\n    </div>\n  </div>\n</div>\n<div mat-dialog-actions class=\"jc-c df\">\n  <button mat-button (click)=\"ok()\" mat-raised-button color=\"primary\" cdkFocusInitial>\n    Ok\n  </button>\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\n</div>"
+module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\n<div mat-dialog-content>\n  <mat-form-field>\n    <mat-label>Model</mat-label>\n    <mat-select [(ngModel)]=\"sleectedModel\" (ngModelChange)=\"modelChange($event)\">\n      <mat-option *ngFor=\"let item of listModel\" [value]=\"item._id\">\n        {{item.name}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Class</mat-label>\n    <mat-select [(ngModel)]=\"selectedClass\" (ngModelChange)=\"paramsFilter($event)\">\n      <mat-option *ngFor=\"let item of listClass\" [value]=\"item\">\n        {{item}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Object</mat-label>\n    <mat-select [(ngModel)]=\"selectedObject\" (ngModelChange)=\"paramsFilter($event)\">\n      <mat-option *ngFor=\"let item of listObjects\" [value]=\"item\">\n        {{item}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Parameter</mat-label>\n    <mat-select [(ngModel)]=\"selectedParam\" (ngModelChange)=\"paramsChange($event)\">\n      <mat-option *ngFor=\"let item of listParams | filtrListParam: selectedClass: selectedObject\" [value]=\"item._id\">\n        {{item.name}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <div class=\"textarea-wrap\">\n    <div style=\"width: 60%; position: relative;\">\n      <mat-form-field style=\"width: 100%\" class=\"example-full-width\">\n        <!-- (ngModelChange)=\"change($event)\" -->\n        <textarea #textArea [(ngModel)]=\"formula\" (ngModelChange)=\"change($event)\" (keydown)=\"checkPattern($event)\"\n          matInput></textarea>\n      </mat-form-field>\n      <div (click)=\"textArea.focus()\" class=\"text-area-shield\"></div>\n    </div>\n    <div style=\"width: 40%; padding: 20px 0 0 20px;\">\n      <div class=\"full-width\">\n        <!-- [disabled]=\"!boolLastOperator\" -->\n        <button [matTooltip]=\"!boolLastOperator ? 'Before add math operator: +, -, *, /' : null\" (click)=\"add()\" class=\"full-width\" mat-raised-button color=\"primary\" mat-button>\n          <= ADD</button> </div> <div class=\"df jc-c\">\n            <button (click)=\"test()\" class=\"func\" mat-raised-button color=\"primary\" mat-button>\n              <i>\n                f(x)\n              </i>\n            </button>\n      </div>\n    </div>\n  </div>\n</div>\n<div mat-dialog-actions class=\"jc-c df\">\n  <button mat-button (click)=\"ok()\" mat-raised-button color=\"primary\" cdkFocusInitial>\n    Ok\n  </button>\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\n</div>"
 
 /***/ }),
 
@@ -2414,7 +2420,20 @@ var DialogParametersComponent = /** @class */ (function () {
         this.selectedFormulaVar = model.id + "." + item.id;
     };
     DialogParametersComponent.prototype.add = function () {
-        this.formula += this.selectedFormulaVar;
+        var _this = this;
+        setTimeout(function () {
+            if (_this.boolLastOperator && _this.selectedFormulaVar) {
+                console.log(_this.reOperator.test(_this.formula[_this.formula.length - 1]));
+                if (_this.reOperator.test(_this.formula[_this.formula.length - 1])) {
+                    _this.formula = _this.formula + ' ' + _this.selectedFormulaVar;
+                }
+                else {
+                    _this.formula += _this.selectedFormulaVar;
+                }
+                _this.boolLastOperator = false;
+            }
+            console.log(_this.selectedFormulaVar, 'this.selectedFormulaVar');
+        }, 2);
     };
     DialogParametersComponent.prototype.searchById = function (id, arr) {
         if (arr) {
@@ -2422,31 +2441,42 @@ var DialogParametersComponent = /** @class */ (function () {
             return result;
         }
     };
-    DialogParametersComponent.prototype.getBoolLastOperator = function () {
-        if (this.formula[this.formula.length - 1] === ' ') {
-            if (this.reOperator.test(this.formula[this.formula.length - 2])) {
-                this.boolLastOperator = true;
-                console.log(this.boolLastOperator);
-            }
-            else {
-                this.boolLastOperator = false;
-                console.log(this.boolLastOperator);
-            }
-        }
-        else {
-            if (this.reOperator.test(this.formula[this.formula.length - 1])) {
-                this.formula = this.formula + ' ';
-                this.boolLastOperator = true;
-                console.log(this.boolLastOperator);
-            }
-            else {
-                this.boolLastOperator = false;
-                console.log(this.boolLastOperator);
-            }
-        }
+    DialogParametersComponent.prototype.renameFormula = function (text) {
+        var _this = this;
+        var newFormula = text + ' ';
+        setTimeout(function () {
+            _this.formula = newFormula;
+            _this.boolLastOperator = true;
+        }, 1);
     };
     DialogParametersComponent.prototype.checkPattern = function (elem) {
+        var _this = this;
         console.log(elem);
+        setTimeout(function () {
+            if (_this.formula[_this.formula.length - 1] === ' ') {
+                if (_this.reOperator.test(_this.formula[_this.formula.length - 2])) {
+                    _this.boolLastOperator = true;
+                    console.log(_this.boolLastOperator, '1');
+                }
+                else {
+                    _this.boolLastOperator = false;
+                    console.log(_this.boolLastOperator, '2');
+                }
+            }
+            else {
+                // backspace
+                if ((elem.keyCode !== 8 && elem.keyCode !== 46)) {
+                    if (_this.reOperator.test(_this.formula[_this.formula.length - 1])) {
+                        _this.boolLastOperator = true;
+                        console.log(_this.boolLastOperator, '3');
+                    }
+                    else {
+                        _this.boolLastOperator = false;
+                        console.log(_this.boolLastOperator, '4');
+                    }
+                }
+            }
+        }, 1);
         // operator
         if (this.reOperator.test(elem.key)) {
             this.keyPeriod = true;
@@ -2471,7 +2501,7 @@ var DialogParametersComponent = /** @class */ (function () {
                 }
             }
         }
-        if (elem.code === "Period") {
+        if (elem.key === ".") {
             if (!this.reNumber.test(this.formula[this.formula.length - 1])) {
                 return false;
             }
@@ -2480,17 +2510,33 @@ var DialogParametersComponent = /** @class */ (function () {
             }
             this.keyPeriod = false;
         }
-        if (elem.code === "Space") {
+        //space
+        if (elem.keyCode === 32) {
             if (this.formula[this.formula.length - 1] === '.') {
                 this.formula = this.formula + '0';
             }
+        }
+        // backspace
+        if (elem.keyCode === 8 || elem.keyCode === 46) {
+            setTimeout(function () {
+                if (_this.formula[_this.formula.length - 1] !== ' ') {
+                    var arr = _this.formula.split(' ');
+                    var number = _this.reNumber.test(arr[arr.length - 1]);
+                    var oper = _this.reOperator.test(arr[arr.length - 1]);
+                    if (!number &&
+                        !oper) {
+                        _this.renameFormula(arr.splice(0, arr.length - 1).join(' '));
+                    }
+                }
+            }, 1);
         }
         if (this.formula[this.formula.length - 1] === ' ' &&
             this.reNumber.test(elem.key) &&
             this.reNumber.test(this.formula[this.formula.length - 2])) {
             return false;
         }
-        if (elem.code === "Space" && this.formula[this.formula.length - 1] === ' ') {
+        //space
+        if (elem.keyCode === 32 && this.formula[this.formula.length - 1] === ' ') {
             return false;
         }
         if (this.reNumber.test(elem.key)) {
@@ -2499,16 +2545,19 @@ var DialogParametersComponent = /** @class */ (function () {
             }
         }
         if (!this.reNumber.test(elem.key) &&
-            elem.code !== "Backspace" &&
-            elem.code !== "Space" &&
-            elem.code !== "Period") {
+            // backspace
+            (elem.keyCode !== 8 && elem.keyCode !== 46) &&
+            // space
+            elem.keyCode !== 32 &&
+            elem.key !== ".") {
             return false;
         }
         else {
-            if (!this.reNumber.test(elem.key) && elem.code !== "Period") {
+            if (!this.reNumber.test(elem.key) && elem.key !== ".") {
                 this.keyPeriod = true;
             }
-            if (elem.code !== "Backspace") {
+            //backspace
+            if (elem.keyCode !== 8 && elem.keyCode !== 46) {
                 if (this.reOperator.test(this.formula[this.formula.length - 1])) {
                     this.formula = this.formula + ' ';
                 }
@@ -2519,14 +2568,13 @@ var DialogParametersComponent = /** @class */ (function () {
         var _this = this;
         var re = /^\s{0,1}\d+[.]?(\d+)?(\s{0,1}[+|\-|*|/]+\s{0,1}\d+[.]?(\d+)?)*\s{0,1}$/;
         var patternMath = /\s?([+|(\-)|*|/])\s?$/;
-        var value = e;
-        if (value.slice(0, 2) !== '= ') {
-            setTimeout(function () {
-                _this.formula = _this.formula.replace('=', '');
-                _this.formula = '= ' + _this.formula;
-            }, 1);
-        }
-        this.getBoolLastOperator();
+        setTimeout(function () {
+            if (_this.formula.slice(0, 2) !== '= ') {
+                _this.formula = '= ';
+                console.log(_this.formula);
+            }
+        }, 110);
+        // this.getBoolLastOperator();
         //   if (value.slice(0, 1) === '=') {
         //     if (value.slice(0, 2) === '= ') {
         //       value = value.replace('= ', '')
@@ -2802,16 +2850,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
 /* harmony import */ var _angular_flex_layout__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/flex-layout */ "./node_modules/@angular/flex-layout/esm5/flex-layout.es5.js");
 /* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
-/* harmony import */ var _components_dialog_parameters_dialog_parameters_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/dialog-parameters/dialog-parameters.component */ "./src/app/shared/components/dialog-parameters/dialog-parameters.component.ts");
-/* harmony import */ var _components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/dialog-create-model/dialog-create-model.component */ "./src/app/shared/components/dialog-create-model/dialog-create-model.component.ts");
-/* harmony import */ var _pipes_filtr_list_param_pipe__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./pipes/filtr-list-param.pipe */ "./src/app/shared/pipes/filtr-list-param.pipe.ts");
-/* harmony import */ var _directives_click_outside_directive__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./directives/click-outside.directive */ "./src/app/shared/directives/click-outside.directive.ts");
+/* harmony import */ var _angular_material_tooltip__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/material/tooltip */ "./node_modules/@angular/material/esm5/tooltip.es5.js");
+/* harmony import */ var _components_dialog_parameters_dialog_parameters_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/dialog-parameters/dialog-parameters.component */ "./src/app/shared/components/dialog-parameters/dialog-parameters.component.ts");
+/* harmony import */ var _components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/dialog-create-model/dialog-create-model.component */ "./src/app/shared/components/dialog-create-model/dialog-create-model.component.ts");
+/* harmony import */ var _pipes_filtr_list_param_pipe__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./pipes/filtr-list-param.pipe */ "./src/app/shared/pipes/filtr-list-param.pipe.ts");
+/* harmony import */ var _directives_click_outside_directive__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./directives/click-outside.directive */ "./src/app/shared/directives/click-outside.directive.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 
@@ -2849,6 +2899,7 @@ var SharedModule = /** @class */ (function () {
                 _angular_material__WEBPACK_IMPORTED_MODULE_4__["MatSelectModule"],
                 _angular_material__WEBPACK_IMPORTED_MODULE_4__["MatCheckboxModule"],
                 _angular_flex_layout__WEBPACK_IMPORTED_MODULE_3__["FlexLayoutModule"],
+                _angular_material_tooltip__WEBPACK_IMPORTED_MODULE_5__["MatTooltipModule"]
             ],
             exports: [
                 _angular_material__WEBPACK_IMPORTED_MODULE_4__["MatToolbarModule"],
@@ -2872,9 +2923,10 @@ var SharedModule = /** @class */ (function () {
                 _angular_material__WEBPACK_IMPORTED_MODULE_4__["MatSelectModule"],
                 _angular_material__WEBPACK_IMPORTED_MODULE_4__["MatCheckboxModule"],
                 _angular_flex_layout__WEBPACK_IMPORTED_MODULE_3__["FlexLayoutModule"],
+                _angular_material_tooltip__WEBPACK_IMPORTED_MODULE_5__["MatTooltipModule"]
             ],
-            entryComponents: [_components_dialog_parameters_dialog_parameters_component__WEBPACK_IMPORTED_MODULE_5__["DialogParametersComponent"], _components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_6__["DialogCreateModelComponent"]],
-            declarations: [_components_dialog_parameters_dialog_parameters_component__WEBPACK_IMPORTED_MODULE_5__["DialogParametersComponent"], _components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_6__["DialogCreateModelComponent"], _pipes_filtr_list_param_pipe__WEBPACK_IMPORTED_MODULE_7__["FiltrListParamPipe"], _directives_click_outside_directive__WEBPACK_IMPORTED_MODULE_8__["ClickOutsideDirective"]],
+            entryComponents: [_components_dialog_parameters_dialog_parameters_component__WEBPACK_IMPORTED_MODULE_6__["DialogParametersComponent"], _components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_7__["DialogCreateModelComponent"]],
+            declarations: [_components_dialog_parameters_dialog_parameters_component__WEBPACK_IMPORTED_MODULE_6__["DialogParametersComponent"], _components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_7__["DialogCreateModelComponent"], _pipes_filtr_list_param_pipe__WEBPACK_IMPORTED_MODULE_8__["FiltrListParamPipe"], _directives_click_outside_directive__WEBPACK_IMPORTED_MODULE_9__["ClickOutsideDirective"]],
         })
     ], SharedModule);
     return SharedModule;

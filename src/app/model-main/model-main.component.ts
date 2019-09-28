@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,   HostListener } from '@angular/core';
 import { ModelService } from '../shared/model.service';
 import { ComponentService } from '../shared/component.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -116,6 +116,16 @@ export class ModelMainComponent implements OnInit {
 
   }
 
+  @HostListener("document:keyup", ["$event"])
+  keyEvent(event: KeyboardEvent) {
+      if (
+        (event.keyCode === 46 || event.keyCode === 8) && this.selected
+      ) {
+        console.log()
+        // this.data.splice(this.selected, 1);
+      }
+  }
+
   openDialogItem;
   slider;
 
@@ -147,7 +157,6 @@ export class ModelMainComponent implements OnInit {
       .scaleExtent([0.1, 2])
       .on("zoom", () => {
         this.zoomTrans = d3.event.transform
-        console.log(this.zoomTrans)
         // this.conteiner.attr("transform", d3.event.transform);
         const currentTransform = d3.event.transform;
         if (!currentTransform.x) {
@@ -573,9 +582,8 @@ export class ModelMainComponent implements OnInit {
       let self = this;
 
       function dragstarted(d) {
-        d3.select(this)
-          .raise()
-          .classed("active", true);
+        // d3.select(this)
+        //   .classed("active", true);
         self.start_x = +d3.event.x;
         self.start_y = +d3.event.y;
       }
@@ -766,6 +774,7 @@ export class ModelMainComponent implements OnInit {
   shepClick(s) {
     this.selected = s[0].id;
     let id = this.selected;
+
     if (!this.activeArrow) {
       this.activeArrow = id;
       this.startDrowLine = id;
