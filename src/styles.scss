@@ -219,3 +219,32 @@ mat-slider.bmp-slider {
 .foreignObject-input-bmp input[type=range]:focus::-ms-fill-upper {
   background: rgba(255, 255, 255, 0.95);
 }
+
+mat-form-field.table-input {
+  width: 135px;
+
+  .mat-form-field-infix {
+    padding: 0px 0;
+    border-top: 0;
+  }
+
+  .mat-form-field-underline {
+    bottom: 0;
+  }
+}
+
+button.table-more-btn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .mat-button-wrapper {
+    display: inherit;
+  }
+
+  .material-icons-outlined {
+    font-size: 20px;
+  }
+}
