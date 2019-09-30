@@ -13,10 +13,11 @@
       <span class="entry icon bpmn-icon-connection-multi"></span>
     </div>
     <div class="separator"></div> -->
-    <div class="bpm-item">
-      <div class="square" style="background: #3cd57c"></div>
+    <div *ngFor="let item of types" class="bpm-item">
+      <div [id]="item" [draggable]="true" [ngStyle]="{'background': colors[item]}"
+       class="square" [title]="item" tooltipPosition="top"></div>
     </div>
-    <div class="bpm-item">
+    <!-- <div class="bpm-item">
       <span pTooltip="Start" tooltipPosition="top" [draggable]="true" id="Input"
         class="icon bpmn-icon-start-event-none"></span>
     </div>
@@ -27,17 +28,17 @@
     <div class="bpm-item">
       <span id="InputOutput" pTooltip="Start" tooltipPosition="top" [draggable]="true"
         class="icon bpmn-icon-end-event-none"></span>
-    </div>
+    </div> -->
     <!-- <div class="bpm-item">
       <span class="icon bpmn-icon-gateway-none"></span>
     </div> -->
-    <div class="bpm-item">
+    <!-- <div class="bpm-item">
       <span id="Process" pTooltip="Start" tooltipPosition="top" [draggable]="true" class="icon bpmn-icon-task"></span>
     </div>
     <div class="bpm-item">
       <span id="Board" pTooltip="Start" tooltipPosition="top" [draggable]="true"
         class="icon bpmn-icon-subprocess-expanded"></span>
-    </div>
+    </div> -->
     <!-- <div class="bpm-item">
       <span class="icon bpmn-icon-data-object"></span>
     </div>
@@ -119,14 +120,14 @@
         <th></th>
       </tr>
 
-      <tbody *ngFor="let item of data[selectedModal].parameters">
+      <tbody *ngFor="let item of data[selectedModal].parameters.slice().reverse(); let i = index">
         <tr>
           <td>
-            Name
+            {{item.name}}
           </td>
           <td>
             <mat-form-field class="example-full-width table-input">
-              <input matInput [(ngModel)]="item.name" (ngModelChange)="onFieldChange($event)" />
+              <input matInput [(ngModel)]="item.value" (ngModelChange)="onFieldChange($event)" />
             </mat-form-field>
           </td>
           <td>
@@ -147,7 +148,7 @@
           <td>
             <div class="df jc-c ai-c">
               <button class="table-more-btn" mat-icon-button
-                (click)="optionsModal[item.name + data[selectedModal].name] = !optionsModal[item.name + data[selectedModal].name]">
+                (click)="optionsModal[item._id + index] = !optionsModal[item._id + index]">
                 <i class="material-icons-outlined">
                   arrow_drop_down_circle
                 </i>
@@ -155,7 +156,7 @@
             </div>
           </td>
         </tr>
-        <tr *ngIf="optionsModal[item.name + data[selectedModal].name]">
+        <tr *ngIf="optionsModal[item._id + index]">
           <td colspan="6">
             <mat-accordion>
               <mat-expansion-panel [expanded]="true">
@@ -179,11 +180,11 @@
                       (ngModelChange)="onFieldChange($event)"></textarea>
                   </mat-form-field>
                   <div class="input-btn-wrap">
-                    <mat-form-field *ngIf="item.value.charAt(0) !== '=' " class="example-full-width">
+                    <mat-form-field *ngIf="item.value && item.value.charAt(0) !== '=' " class="example-full-width">
                       <input matInput placeholder="Value" [(ngModel)]="item.value"
                         (ngModelChange)="onFieldChange($event)" />
                     </mat-form-field>
-                    <span *ngIf="item.value.charAt(0) === '=' " class="example-full-width">Value = f (x)</span>
+                    <span *ngIf="item.value && item.value.charAt(0) === '=' " class="example-full-width">Value = f (x)</span>
 
                     <button (click)="openDialog(item)" mat-raised-button color="primary" class="btn">
                       <i>
@@ -256,7 +257,7 @@
         <mat-form-field class="example-full-width">
           <input matInput placeholder="Value" [(ngModel)]="newParametr.value" />
         </mat-form-field>
-        <button (click)="openDialog()" mat-raised-button color="primary" class="btn">
+        <button (click)="openDialog(newParametr)" mat-raised-button color="primary" class="btn">
           <i>
             f(x)
           </i>

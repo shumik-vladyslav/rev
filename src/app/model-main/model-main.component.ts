@@ -1,4 +1,4 @@
-import { Component, OnInit,   HostListener } from '@angular/core';
+import { Component, OnInit,   HostListener, AfterViewInit } from '@angular/core';
 import { ModelService } from '../shared/model.service';
 import { ComponentService } from '../shared/component.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -14,14 +14,23 @@ declare var d3;
   templateUrl: './model-main.component.html',
   styleUrls: ['./model-main.component.scss']
 })
-export class ModelMainComponent implements OnInit {
+export class ModelMainComponent implements OnInit, AfterViewInit {
   types = [
     "Input",
     "Output",
     "InputOutput",
     "Process",
     "Board"
-  ]
+  ];
+
+  colors = {
+    "Input": "#f2f2f2",
+    "Output": "#fbe5d6",
+    "InputOutput": "#e2f0d9",
+    "Process": "#b4c7e7",
+    "Board": "#ffe699"
+  }
+
   picture;
   zoom;
   zoomTrans;
@@ -59,6 +68,8 @@ export class ModelMainComponent implements OnInit {
         this.modelList = data;
         this.componentService.getAllById(this.modelId).subscribe((data: any) => {
           this.data = data;
+        console.log(data)
+
           this.calc();
           setTimeout(() => {
             this.drow();
@@ -79,7 +90,7 @@ export class ModelMainComponent implements OnInit {
     this.txtQueryChanged
       .pipe(debounceTime(1800), distinctUntilChanged())
       .subscribe(model => {
-        let id = this.data[this.selectedModal || this.dragSelected];
+        let id = this.data[model.selected];
         if (id) {
           this.componentService.update(id).subscribe((data) => {
           });
@@ -87,7 +98,7 @@ export class ModelMainComponent implements OnInit {
           if (!model.drag)
             this.calc();
         }
-
+        if (!model.drag)
         setTimeout(() => {
           this.removeAll();
           this.drow();
@@ -121,8 +132,38 @@ export class ModelMainComponent implements OnInit {
       if (
         (event.keyCode === 46 || event.keyCode === 8) && this.selected
       ) {
-        console.log()
-        // this.data.splice(this.selected, 1);
+        this.componentService.delete(this.data[this.selected]).subscribe((data) => {
+          this.data.splice(this.selected, 1);
+          this.removeAll();
+          this.drowLines();
+          this.drow();
+  
+          this.selected = null;
+          this.activeArrow = null;
+        })
+      }
+
+      if( (event.keyCode === 46 || event.keyCode === 8) && (this.selectedLineId || this.selectedLineId === 0) ){
+          this.selectedLineFrom.selected.forEach((id, index) => {
+            if(id === this.selectedLineTo._id){
+              this.data.forEach((element, i) => {
+              if(element._id === this.selectedLineFrom._id ){
+                 this.data[i].selected.splice(index, 1)
+            
+                  this.txtQueryChanged.next({
+                    value: this.selectedLine,
+                    selected: i
+                  })
+                }
+      
+              })
+
+            }
+          });
+
+          this.removeAll();
+          this.drowLines();
+          this.drow();
       }
   }
 
@@ -140,11 +181,17 @@ export class ModelMainComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       item.value = result.formula;
-      this.txtQueryChanged.next(item.value);
+      this.txtQueryChanged.next({
+        value: item.value,
+        selected: this.selectedModal
+      });
     });
   }
 
   ngOnInit() {
+  }
+
+  ngAfterViewInit(){
     this.init();
   }
 
@@ -251,7 +298,7 @@ export class ModelMainComponent implements OnInit {
       let dummyX = e.offsetX;
       let dummyY = e.offsetY;
 
-      if (this.startDrowLine) {
+      if (this.startDrowLine && this.data[this.startDrowLine]) {
         this.removeAll();
         d3.selectAll("#drowLine").remove();
         let x, y;
@@ -403,7 +450,7 @@ export class ModelMainComponent implements OnInit {
           let d, dx, dy, color;
           dx = element.x - 10;
           dy = element.y - 8;
-          color = "#3cd57c";
+          color = this.colors[element.objectClass];
           let count = 0;
 
           element.parameters.forEach((param, index) => {
@@ -415,12 +462,14 @@ export class ModelMainComponent implements OnInit {
 
           let h = (60 + (count > 3 ? ((count - 3) * 16 + (count * 5)) : 0));
 
-          let react = ((element.objectClass === "Process") || (element.objectClass === "Board")) ? " coco-bpm-rect-style" : "";
 
+          let react = ((element.objectClass === "Process") || (element.objectClass === "Board")) ? " coco-bpm-rect-style" : "";
+          let selected = +this.selected === +index ? "stroke-width:1;stroke:rgb(0,0,0)" : "";
           let g = this.conteiner.append("g").attr("class", "g");
           g.append("rect")
             .attr("class", "nodes" + react)
             .attr("id", index)
+            .attr("style", selected)
             .attr("fill", color)
             .attr("x", element.x - 25)
             .attr("y", element.y - 80)
@@ -454,12 +503,13 @@ export class ModelMainComponent implements OnInit {
             })
             .on("dblclick", (d, i, s) => {
               this.selectedModal = s[0].id;
-              this.newParametr = new ParameterClass("par" + (this.data[this.selectedModal].parameters.length + 1))
+              this.newParametr = new ParameterClass("par" + (this.data[this.selectedModal].parameters.length + 1), "" , "0")
               this.showSide = !this.showSide;
               this.removeAll();
               this.drow();
               this.activeArrow = null;
               this.startDrowLine = null;
+              this.selected = null;
             })
             .call(
               d3
@@ -469,7 +519,8 @@ export class ModelMainComponent implements OnInit {
                 .on("end", dragended)
             );
           let countIndex = 0;
-          element.parameters.forEach((param, paramIndex) => {
+          let parameters = element.parameters.slice();
+          parameters.forEach((param, paramIndex) => {
             if (param.showOnDiagram) {
               let py = element.y - 50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
               switch (param.controlType) {
@@ -477,7 +528,7 @@ export class ModelMainComponent implements OnInit {
                 case "":
                   let v = param.value;
 
-                  if (v.charAt(0) === "=") {
+                  if (v && v.charAt(0) === "=") {
                     let spcaSpit = v.split(" ");
 
                     spcaSpit.forEach((element, index) => {
@@ -531,7 +582,10 @@ export class ModelMainComponent implements OnInit {
                     setTimeout(() => {
                       self.dragSelected = index;
                       self.data[index].parameters[paramIndex].value = inputElement.value.toString();
-                      self.txtQueryChanged.next(inputElement.value);
+                      self.txtQueryChanged.next({
+                        value: inputElement.value,
+                        selected: self.dragSelected
+                      });
                     }, 500);
                   };
                   break;
@@ -556,7 +610,10 @@ export class ModelMainComponent implements OnInit {
                     setTimeout(() => {
                       self.dragSelected = index;
                       self.data[index].parameters[paramIndex].value = rangeElement.value.toString();
-                      self.txtQueryChanged.next(rangeElement.value);
+                      self.txtQueryChanged.next({
+                        value: inputElement.value,
+                        selected: self.dragSelected
+                      });
                     }, 500);
                   };
                   break;
@@ -624,7 +681,11 @@ export class ModelMainComponent implements OnInit {
         // self.start_y + (d3.event.y - self.start_y) / current_scale;
         self.removeAll();
         self.drow();
-        self.txtQueryChanged.next({ data: self.uuidv4(), drag: 1 });
+        self.txtQueryChanged.next({
+          value: self.zoomTrans,
+          selected: self.dragSelected,
+          drag : 1
+        });
 
       }
 
@@ -654,6 +715,13 @@ export class ModelMainComponent implements OnInit {
       }
     });
   }
+
+  clickArrow;
+
+  selectedLine;
+  selectedLineId;
+  selectedLineFrom;
+  selectedLineTo;
 
   drowLines() {
     this.data.forEach((value, index, arr) => {
@@ -725,26 +793,24 @@ export class ModelMainComponent implements OnInit {
             .attr("stroke-opacity", 0)
             .attr("stroke-width", 15)
             .on("click", () => {
-              // if (!this.readOnly) {
-              //   if (this.selectedLine) {
-              //     this.unselectArrow();
-              //   }
-              //   this.clickArrow = true;
+                // if (this.selectedLine) {
+                //   this.unselectArrow();
+                // }
+                this.clickArrow = true;
 
-              //   this.selectedLine = from.id + to.id;
-              //   this.selectedLineId = value.id;
-              //   this.selectedLineFrom = from;
-              //   this.selectedLineTo = to;
+                this.selectedLine = from.id + to.id;
+                this.selectedLineId = index;
+                this.selectedLineFrom = from;
+                this.selectedLineTo = to;
 
-              //   d3.select(document.getElementById(from.id + to.id)).style(
-              //     "stroke-width",
-              //     2.5
-              //   );
-              //   d3.select(document.getElementById(from.id + to.id)).style(
-              //     "stroke",
-              //     "black"
-              //   );
-              // }
+                d3.select(document.getElementById(from.id + to.id)).style(
+                  "stroke-width",
+                  2.5
+                );
+                d3.select(document.getElementById(from.id + to.id)).style(
+                  "stroke",
+                  "black"
+                );
             });
 
           this.conteiner
@@ -774,22 +840,41 @@ export class ModelMainComponent implements OnInit {
   shepClick(s) {
     this.selected = s[0].id;
     let id = this.selected;
+      if (!this.activeArrow) {
+          this.activeArrow = id;
+          this.startDrowLine = id;
+      } else {
+        if(this.data[id].selected[0] && 
+          this.data[id].selected[0] === this.data[this.activeArrow]._id){
+          return;
+        }
+        let count = 0 ;
+        this.data.forEach((element, index) => {
+          if(this.data[this.activeArrow].selected[0] &&
+            this.data[this.activeArrow].selected[0] === this.data[index]._id){
+              count++;
+         }
+        });
+        if(count){
+          return;
+        }
 
-    if (!this.activeArrow) {
-      this.activeArrow = id;
-      this.startDrowLine = id;
-    } else {
-      if (id !== this.activeArrow) {
-        this.data[this.activeArrow].selected.push(this.data[id]._id);
-        this.txtQueryChanged.next("query");
+          if (id !== this.activeArrow) {
+            this.data[this.activeArrow].selected.push(this.data[id]._id);
+            this.txtQueryChanged.next({
+              value: "query",
+              selected: this.activeArrow
+            });
+          }
+          this.activeArrow = null;
+          this.startDrowLine = null;
       }
-      this.activeArrow = null;
-      this.startDrowLine = null;
-
+  
       this.removeAll();
       this.drowLines();
       this.drow();
-    }
+  
+
   }
 
   removeAll() {
@@ -825,15 +910,21 @@ export class ModelMainComponent implements OnInit {
   txtQuery: string; // bind this to input with ngModel
   txtQueryChanged: Subject<any> = new Subject<any>();
   onFieldChange(query: string) {
-    this.txtQueryChanged.next(query);
+    this.txtQueryChanged.next({
+      value: query,
+      selected: this.selectedModal
+    });
   }
 
-  newParametr = new ParameterClass();
+  newParametr = new ParameterClass("","", "0","");
 
   addParametr() {
-    this.data[this.selectedModal].parameters.push(this.newParametr);
-    this.newParametr = new ParameterClass();
-    this.txtQueryChanged.next("query");
+    this.data[this.selectedModal].parameters.unshift(this.newParametr);
+    this.newParametr = new ParameterClass("", "", "0", "");
+    this.txtQueryChanged.next({
+      value: this.newParametr,
+      selected: this.selectedModal
+    });
   }
 
   onKeyDown(e) {

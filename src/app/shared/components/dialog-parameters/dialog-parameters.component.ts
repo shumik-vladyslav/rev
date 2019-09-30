@@ -26,11 +26,12 @@ export class DialogParametersComponent implements OnInit {
   ngOnInit(): void {
     this.listModel = this.data.list;
     // this.formula = this.data.formula;
-    this.formula = '= ' + this.data.formula
+    this.formula = '= ' + this.data.formula;
+    this.sleectedModel = this.listModel[0]._id;
+    this.modelChange(this.sleectedModel);
   }
 
   modelChange(id) {
-    console.log(id)
     this.componentService.getAllById(id).subscribe((data: any) => {
       this.listComponents = data;
       this.listComponents.forEach(item => {
@@ -42,11 +43,8 @@ export class DialogParametersComponent implements OnInit {
         });
         this.listParams = [...this.listParams, ...item.parameters]
       });
-      console.log(this.listParams);
       this.listClass = [...this.listClass.filter(this.onlyUnique)];
       this.listObjects = [...this.listObjects.filter(this.onlyUnique)];
-
-      console.log(this.listComponents)
     });
   }
 
@@ -101,14 +99,12 @@ export class DialogParametersComponent implements OnInit {
   paramsChange(e) {
     let item = this.searchById(e, this.listParams);
     let model = this.searchById(this.sleectedModel, this.listModel);
-    console.log(e, item, model);
     this.selectedFormulaVar = model.id + "." + item.id
   }
 
   add() {
     setTimeout(() => {
       if (this.boolLastOperator && this.selectedFormulaVar) {
-        console.log(this.reOperator.test(this.formula[this.formula.length - 1]));
         if (this.reOperator.test(this.formula[this.formula.length - 1])) {
           this.formula = this.formula + ' ' + this.selectedFormulaVar;
         } else {
@@ -116,7 +112,6 @@ export class DialogParametersComponent implements OnInit {
         }
         this.boolLastOperator = false;
       }
-      console.log(this.selectedFormulaVar, 'this.selectedFormulaVar');
     }, 2);
   }
 
@@ -143,26 +138,21 @@ export class DialogParametersComponent implements OnInit {
   }
 
   checkPattern(elem) {
-    console.log(elem);
 
     setTimeout(() => {
       if (this.formula[this.formula.length - 1] === ' ') {
         if (this.reOperator.test(this.formula[this.formula.length - 2])) {
           this.boolLastOperator = true;
-          console.log(this.boolLastOperator, '1');
         } else {
           this.boolLastOperator = false;
-          console.log(this.boolLastOperator, '2');
         }
       } else {
         // backspace
         if ((elem.keyCode !== 8 && elem.keyCode !== 46)) {
           if (this.reOperator.test(this.formula[this.formula.length - 1])) {
             this.boolLastOperator = true;
-            console.log(this.boolLastOperator, '3');
           } else {
             this.boolLastOperator = false;
-            console.log(this.boolLastOperator, '4');
           }
         }
       }
@@ -277,7 +267,6 @@ export class DialogParametersComponent implements OnInit {
     setTimeout(() => {
       if (this.formula.slice(0, 2) !== '= ') {
         this.formula = '= '
-        console.log(this.formula);
       }
     }, 110);
     // this.getBoolLastOperator();

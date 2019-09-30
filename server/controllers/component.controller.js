@@ -15,7 +15,8 @@ module.exports = {
   insert,
   getAll,
   getAllById,
-  updateById
+  updateById,
+  removeById
 }
 
 async function insert(model) {
@@ -31,6 +32,10 @@ async function getAllById(params) {
 }
 
 async function updateById(params) {
-  console.log(params)
   return await Component.update({_id: params._id}, {$set: params})
 }
+
+async function removeById(params) {
+  return await Component.remove({_id: params.id})
+}
+
