@@ -15,7 +15,9 @@
     <div class="separator"></div> -->
     <div *ngFor="let item of types" class="bpm-item">
       <div [id]="item" [draggable]="true" [ngStyle]="{'background': colors[item]}"
-       class="square" [title]="item" tooltipPosition="top"></div>
+       class="square" [title]="item" tooltipPosition="top">
+      {{item}}
+      </div>
     </div>
     <!-- <div class="bpm-item">
       <span pTooltip="Start" tooltipPosition="top" [draggable]="true" id="Input"
