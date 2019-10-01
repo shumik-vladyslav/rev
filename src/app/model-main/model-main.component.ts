@@ -80,12 +80,12 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
 
 
 
-    // setInterval(() => {
-    //   this.removeAll()
-    //   this.drowLines()
-    //   this.drow();
-    //   this.txtQueryChanged.next(this.uuidv4());
-    // }, 5000)
+    setInterval(() => {
+      this.removeAll()
+      this.drowLines()
+      this.drow();
+      this.txtQueryChanged.next(this.uuidv4());
+    }, 5000)
 
     this.txtQueryChanged
       .pipe(debounceTime(1800), distinctUntilChanged())
@@ -115,8 +115,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
 
           spcaSpit.forEach((element, index) => {
             let earr = element.split(".");
-            if (earr.length == 2) {
-              if (!this.formulaSaver[earr[1]] && !this.formulaSaver[element]) {
+            if (earr.length == 3) {
+              if (!this.formulaSaver[earr[2]] && !this.formulaSaver[element]) {
                 this.formulaSearch(element);
               }
             }
@@ -176,7 +176,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
       width: '450px',
       data: {
         list: this.modelList,
-        formula: item.value
+        formula: item.value,
+        modelId:this.modelId
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -518,6 +519,11 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
                 .on("drag", dragged)
                 .on("end", dragended)
             );
+
+            g.append("text")
+            .attr("x", element.x + 40)
+            .attr("y", element.y - 90)
+            .text((element.name || element.id));
           let countIndex = 0;
           let parameters = element.parameters.slice();
           parameters.forEach((param, paramIndex) => {
@@ -533,9 +539,10 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
 
                     spcaSpit.forEach((element, index) => {
                       let earr = element.split(".");
-                      if (earr.length == 2) {
-                        if (this.formulaSaver[earr[1]]) {
-                          spcaSpit[index] = this.formulaSaver[earr[1]];
+                      if (earr.length == 3) {
+                        console.log(earr, this.formulaSaver)
+                        if (this.formulaSaver[earr[2]]) {
+                          spcaSpit[index] = this.formulaSaver[earr[2]];
                         } else {
                           spcaSpit[index] = this.formulaSaver[element];
                         }
@@ -551,13 +558,13 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
                     g.append("text")
                       .attr("x", element.x)
                       .attr("y", py)
-                      .text((param.name || param.id) + " - " + this.formulaSaver[param.id]);
+                      .text((param.name || param.id) + " - " + (this.formulaSaver[param.id] || ""));
 
                   } else {
                     g.append("text")
                       .attr("x", element.x)
                       .attr("y", py)
-                      .text((param.name || param.id) + " - " + v);
+                      .text((param.name || param.id) + " - " + (v || ""));
                   }
 
                   break;
@@ -699,12 +706,13 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
 
   formulaSearch(element) {
     let arr = element.split(".");
+    console.log(element)
     this.modelList.forEach(model => {
       if (model.id === arr[0]) {
         this.componentService.getAllById(model._id).subscribe((data: any) => {
           data.forEach(comp => {
             comp.parameters.forEach(param => {
-              if (param.id === arr[1]) {
+              if (param.id === arr[2]) {
                 this.formulaSaver[element] = param.value;
               }
             });

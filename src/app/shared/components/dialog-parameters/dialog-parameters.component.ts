@@ -26,20 +26,22 @@ export class DialogParametersComponent implements OnInit {
   ngOnInit(): void {
     this.listModel = this.data.list;
     // this.formula = this.data.formula;
-    this.formula = '= ' + this.data.formula;
-    this.sleectedModel = this.listModel[0]._id;
+    this.formula = this.data.formula.charAt(0) !== '=' ? ("=" + this.data.formula) : this.data.formula;
+    this.sleectedModel = this.data.modelId;
     this.modelChange(this.sleectedModel);
   }
 
   modelChange(id) {
     this.componentService.getAllById(id).subscribe((data: any) => {
       this.listComponents = data;
+      this.listClass = [];
+      this.listObjects = [];
       this.listComponents.forEach(item => {
         this.listClass.push(item.objectClass);
-        this.listObjects.push(item.objectType);
+        this.listObjects.push(item);
         item.parameters.forEach(element => {
           element.objectClass = item.objectClass;
-          element.objectType = item.objectType;
+          element.objectType = item.id;
         });
         this.listParams = [...this.listParams, ...item.parameters]
       });
@@ -99,7 +101,10 @@ export class DialogParametersComponent implements OnInit {
   paramsChange(e) {
     let item = this.searchById(e, this.listParams);
     let model = this.searchById(this.sleectedModel, this.listModel);
-    this.selectedFormulaVar = model.id + "." + item.id
+    console.log(this.selectedObject, this.listObjects)
+    let object = this.searchById(this.selectedObject, this.listObjects);
+    console.log(this.selectedObject)
+    this.selectedFormulaVar = model.id + "." + this.selectedObject + "." + item.id
   }
 
   add() {

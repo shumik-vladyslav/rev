@@ -1,58 +1,11 @@
 <div class="bpm-wrap">
   <div class="palette-entries">
-    <!-- <div class="bpm-item">
-      <span class="icon bpmn-icon-hand-tool"></span>
-    </div>
-    <div class="bpm-item">
-      <span class="icon bpmn-icon-lasso-tool"></span>
-    </div>
-    <div class="bpm-item">
-      <span class="entry icon bpmn-icon-space-tool"></span>
-    </div>
-    <div class="bpm-item">
-      <span class="entry icon bpmn-icon-connection-multi"></span>
-    </div>
-    <div class="separator"></div> -->
     <div *ngFor="let item of types" class="bpm-item">
       <div [id]="item" [draggable]="true" [ngStyle]="{'background': colors[item]}"
        class="square" [title]="item" tooltipPosition="top">
       {{item}}
       </div>
     </div>
-    <!-- <div class="bpm-item">
-      <span pTooltip="Start" tooltipPosition="top" [draggable]="true" id="Input"
-        class="icon bpmn-icon-start-event-none"></span>
-    </div>
-    <div class="bpm-item">
-      <span id="Output" pTooltip="Start" tooltipPosition="top" [draggable]="true"
-        class="icon bpmn-icon-intermediate-event-none"></span>
-    </div>
-    <div class="bpm-item">
-      <span id="InputOutput" pTooltip="Start" tooltipPosition="top" [draggable]="true"
-        class="icon bpmn-icon-end-event-none"></span>
-    </div> -->
-    <!-- <div class="bpm-item">
-      <span class="icon bpmn-icon-gateway-none"></span>
-    </div> -->
-    <!-- <div class="bpm-item">
-      <span id="Process" pTooltip="Start" tooltipPosition="top" [draggable]="true" class="icon bpmn-icon-task"></span>
-    </div>
-    <div class="bpm-item">
-      <span id="Board" pTooltip="Start" tooltipPosition="top" [draggable]="true"
-        class="icon bpmn-icon-subprocess-expanded"></span>
-    </div> -->
-    <!-- <div class="bpm-item">
-      <span class="icon bpmn-icon-data-object"></span>
-    </div>
-    <div class="bpm-item">
-      <span class="icon bpmn-icon-data-store"></span>
-    </div>
-    <div class="bpm-item">
-      <span class="icon bpmn-icon-participant"></span>
-    </div>
-    <div class="bpm-item">
-      <span class="icon bpmn-icon-group"></span>
-    </div> -->
   </div>
   <div class="coco-bpm-graph" id="graph" style="height: calc(100vh - 60px);"></div>
   <div class="clickShield" *ngIf="showSide" (click)="showSide = false"></div>
@@ -128,9 +81,12 @@
             {{item.name}}
           </td>
           <td>
-            <mat-form-field class="example-full-width table-input">
+            <mat-form-field *ngIf="(item.value && item.value.charAt(0) !== '=') || !item.value " class="example-full-width table-input">
               <input matInput [(ngModel)]="item.value" (ngModelChange)="onFieldChange($event)" />
             </mat-form-field>
+            <span *ngIf="item.value && item.value.charAt(0) === '=' ">
+              f (x)
+            </span>
           </td>
           <td>
             <div class="df jc-c">
