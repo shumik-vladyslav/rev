@@ -134,12 +134,19 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
       ) {
         this.componentService.delete(this.data[this.selected]).subscribe((data) => {
           this.data.splice(this.selected, 1);
+      
+          this.selected = null;
+          this.activeArrow = null;
+          this.clickArrow = null;
+          this.selectedLine = null;
+          this.selectedLineId = null;
+          this.selectedLineFrom = null;
+          this.selectedLineTo = null;
+          this.startDrowLine = null;
           this.removeAll();
           this.drowLines();
           this.drow();
-  
-          this.selected = null;
-          this.activeArrow = null;
+
         })
       }
 
@@ -160,10 +167,21 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
 
             }
           });
-
+          this.selected = null;
+          this.activeArrow = null;
+          this.clickArrow = null;
+          this.selectedLine = null;
+          this.selectedLineId = null;
+          this.selectedLineFrom = null;
+          this.selectedLineTo = null;
+          this.startDrowLine = null;
           this.removeAll();
           this.drowLines();
           this.drow();
+
+
+
+
       }
   }
 
@@ -464,11 +482,10 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
           let h = (60 + (count > 3 ? ((count - 3) * 16 + (count * 5)) : 0));
 
 
-          let react = ((element.objectClass === "Process") || (element.objectClass === "Board")) ? " coco-bpm-rect-style" : "";
           let selected = +this.selected === +index ? "stroke-width:1;stroke:rgb(0,0,0)" : "";
           let g = this.conteiner.append("g").attr("class", "g");
           g.append("rect")
-            .attr("class", "nodes" + react)
+            .attr("class", "nodes")
             .attr("id", index)
             .attr("style", selected)
             .attr("fill", color)
@@ -801,6 +818,11 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
             .attr("stroke-opacity", 0)
             .attr("stroke-width", 15)
             .on("click", () => {
+
+                this.selected = undefined;
+
+                this.removeAll();
+                this.drow();
                 // if (this.selectedLine) {
                 //   this.unselectArrow();
                 // }
@@ -819,6 +841,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
                   "stroke",
                   "black"
                 );
+
             });
 
           this.conteiner

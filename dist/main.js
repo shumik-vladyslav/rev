@@ -1494,11 +1494,17 @@ var ModelMainComponent = /** @class */ (function () {
         if ((event.keyCode === 46 || event.keyCode === 8) && this.selected) {
             this.componentService.delete(this.data[this.selected]).subscribe(function (data) {
                 _this.data.splice(_this.selected, 1);
+                _this.selected = null;
+                _this.activeArrow = null;
+                _this.clickArrow = null;
+                _this.selectedLine = null;
+                _this.selectedLineId = null;
+                _this.selectedLineFrom = null;
+                _this.selectedLineTo = null;
+                _this.startDrowLine = null;
                 _this.removeAll();
                 _this.drowLines();
                 _this.drow();
-                _this.selected = null;
-                _this.activeArrow = null;
             });
         }
         if ((event.keyCode === 46 || event.keyCode === 8) && (this.selectedLineId || this.selectedLineId === 0)) {
@@ -1515,6 +1521,14 @@ var ModelMainComponent = /** @class */ (function () {
                     });
                 }
             });
+            this.selected = null;
+            this.activeArrow = null;
+            this.clickArrow = null;
+            this.selectedLine = null;
+            this.selectedLineId = null;
+            this.selectedLineFrom = null;
+            this.selectedLineTo = null;
+            this.startDrowLine = null;
             this.removeAll();
             this.drowLines();
             this.drow();
@@ -1766,11 +1780,10 @@ var ModelMainComponent = /** @class */ (function () {
                         }
                     });
                     var h = (60 + (count_1 > 3 ? ((count_1 - 3) * 16 + (count_1 * 5)) : 0));
-                    var react = ((element.objectClass === "Process") || (element.objectClass === "Board")) ? " coco-bpm-rect-style" : "";
                     var selected = +_this.selected === +index ? "stroke-width:1;stroke:rgb(0,0,0)" : "";
                     var g_1 = _this.conteiner.append("g").attr("class", "g");
                     g_1.append("rect")
-                        .attr("class", "nodes" + react)
+                        .attr("class", "nodes")
                         .attr("id", index)
                         .attr("style", selected)
                         .attr("fill", color)
@@ -2068,6 +2081,9 @@ var ModelMainComponent = /** @class */ (function () {
                         .attr("stroke-opacity", 0)
                         .attr("stroke-width", 15)
                         .on("click", function () {
+                        _this.selected = undefined;
+                        _this.removeAll();
+                        _this.drow();
                         // if (this.selectedLine) {
                         //   this.unselectArrow();
                         // }
@@ -2365,7 +2381,7 @@ var DialogCreateModelComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\n<div mat-dialog-content>\n  <mat-form-field>\n    <mat-label>Model</mat-label>\n    <mat-select [(ngModel)]=\"sleectedModel\" (ngModelChange)=\"modelChange($event)\">\n      <mat-option *ngFor=\"let item of listModel\" [value]=\"item._id\">\n        {{item.name}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Class</mat-label>\n    <mat-select [(ngModel)]=\"selectedClass\" (ngModelChange)=\"paramsFilter($event)\">\n      <mat-option *ngFor=\"let item of listClass\" [value]=\"item\">\n        {{item}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Object</mat-label>\n    <mat-select [(ngModel)]=\"selectedObject\" (ngModelChange)=\"paramsFilter($event)\">\n      <mat-option *ngFor=\"let item of listObjects\" [value]=\"item.id\">\n        {{item.name || item.id}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Parameter</mat-label>\n    <mat-select [(ngModel)]=\"selectedParam\" (ngModelChange)=\"paramsChange($event)\">\n      <mat-option *ngFor=\"let item of listParams | filtrListParam: selectedClass: selectedObject\" [value]=\"item._id\">\n        {{item.name || item.id}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <div class=\"textarea-wrap\">\n    <div style=\"width: 60%; position: relative;\">\n      <mat-form-field style=\"width: 100%\" class=\"example-full-width\">\n        <!-- (ngModelChange)=\"change($event)\" -->\n        <textarea #textArea [(ngModel)]=\"formula\" (ngModelChange)=\"change($event)\" (keydown)=\"checkPattern($event)\"\n          matInput></textarea>\n      </mat-form-field>\n      <div (click)=\"textArea.focus()\" class=\"text-area-shield\"></div>\n    </div>\n    <div style=\"width: 40%; padding: 20px 0 0 20px;\">\n      <div class=\"full-width\">\n        <!-- [disabled]=\"!boolLastOperator\" -->\n        <button [matTooltip]=\"!boolLastOperator ? 'Before add math operator: +, -, *, /' : null\" (click)=\"add()\" class=\"full-width\" mat-raised-button color=\"primary\" mat-button>\n          <= ADD</button> </div> <div class=\"df jc-c\">\n            <button (click)=\"test()\" class=\"func\" mat-raised-button color=\"primary\" mat-button>\n              <i>\n                f(x)\n              </i>\n            </button>\n      </div>\n    </div>\n  </div>\n</div>\n<div mat-dialog-actions class=\"jc-c df\">\n  <button mat-button (click)=\"ok()\" mat-raised-button color=\"primary\" cdkFocusInitial>\n    Ok\n  </button>\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\n</div>"
+module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\n<div mat-dialog-content>\n  <mat-form-field>\n    <mat-label>Model</mat-label>\n    <mat-select [(ngModel)]=\"sleectedModel\" (ngModelChange)=\"modelChange($event)\">\n      <mat-option *ngFor=\"let item of listModel\" [value]=\"item._id\">\n        {{item.name}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Class</mat-label>\n    <mat-select [(ngModel)]=\"selectedClass\" (ngModelChange)=\"paramsFilter($event)\">\n      <mat-option *ngFor=\"let item of listClass\" [value]=\"item\">\n        {{item}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Object</mat-label>\n    <mat-select [(ngModel)]=\"selectedObject\" (ngModelChange)=\"paramsFilter($event)\">\n      <mat-option *ngFor=\"let item of listObjects | filtrListParam: selectedClass\" [value]=\"item.id\">\n        {{item.name || item.id}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <mat-form-field>\n    <mat-label>Parameter</mat-label>\n    <mat-select [(ngModel)]=\"selectedParam\" (ngModelChange)=\"paramsChange($event)\">\n      <mat-option *ngFor=\"let item of listParams | filtrListParam: selectedClass: selectedObject\" [value]=\"item._id\">\n        {{item.name || item.id}}\n      </mat-option>\n    </mat-select>\n  </mat-form-field>\n  <div class=\"textarea-wrap\">\n    <div style=\"width: 60%; position: relative;\">\n      <mat-form-field style=\"width: 100%\" class=\"example-full-width\">\n        <!-- (ngModelChange)=\"change($event)\" -->\n        <textarea #textArea [(ngModel)]=\"formula\" (ngModelChange)=\"change($event)\" (keydown)=\"checkPattern($event)\"\n          matInput></textarea>\n      </mat-form-field>\n      <div (click)=\"textArea.focus()\" class=\"text-area-shield\"></div>\n    </div>\n    <div style=\"width: 40%; padding: 20px 0 0 20px;\">\n      <div class=\"full-width\">\n        <!-- [disabled]=\"!boolLastOperator\" -->\n        <button [matTooltip]=\"!boolLastOperator ? 'Before add math operator: +, -, *, /' : null\" (click)=\"add()\" class=\"full-width\" mat-raised-button color=\"primary\" mat-button>\n          <= ADD</button> </div> <div class=\"df jc-c\">\n            <button (click)=\"test()\" class=\"func\" mat-raised-button color=\"primary\" mat-button>\n              <i>\n                f(x)\n              </i>\n            </button>\n      </div>\n    </div>\n  </div>\n</div>\n<div mat-dialog-actions class=\"jc-c df\">\n  <button mat-button (click)=\"ok()\" mat-raised-button color=\"primary\" cdkFocusInitial>\n    Ok\n  </button>\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\n</div>"
 
 /***/ }),
 
