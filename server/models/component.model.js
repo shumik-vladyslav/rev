@@ -42,6 +42,9 @@ const ComponentSchema = new mongoose.Schema({
     controlType: String,
     showName: Number,
     showOnDiagram: Number,
+    sliderStep: Number,
+    sliderMax: Number,
+    sliderMin: Number,
     featureLabelNone: String,
   }]
 }, {

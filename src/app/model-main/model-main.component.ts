@@ -1,4 +1,4 @@
-import { Component, OnInit,   HostListener, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy,  HostListener, AfterViewInit } from '@angular/core';
 import { ModelService } from '../shared/model.service';
 import { ComponentService } from '../shared/component.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -14,7 +14,7 @@ declare var d3;
   templateUrl: './model-main.component.html',
   styleUrls: ['./model-main.component.scss']
 })
-export class ModelMainComponent implements OnInit, AfterViewInit {
+export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   types = [
     "Input",
     "Output",
@@ -52,6 +52,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
   dragSelected;
   user;
   modelList;
+  setInterval;
 
   constructor(
     private modelService: ModelService,
@@ -80,23 +81,26 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
 
 
 
-    setInterval(() => {
-      this.removeAll()
-      this.drowLines()
-      this.drow();
-      this.txtQueryChanged.next(this.uuidv4());
-    }, 5000)
+    // this.setInterval = setInterval(() => {
+    //   this.removeAll()
+    //   this.drowLines()
+    //   this.drow();
+    //   this.txtQueryChanged.next(this.uuidv4());
+    // }, 5000)
 
     this.txtQueryChanged
       .pipe(debounceTime(1800), distinctUntilChanged())
       .subscribe(model => {
+        console.log(model)
         let id = this.data[model.selected];
         if (id) {
           this.componentService.update(id).subscribe((data) => {
           });
-          this.formulaSaver = {};
-          if (!model.drag)
+
+          if (!model.drag){
+            this.formulaSaver = {};
             this.calc();
+          }
         }
         if (!model.drag)
         setTimeout(() => {
@@ -107,6 +111,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
   }
 
   calc() {
+    console.log(5)
     this.data.forEach((comp) => {
       comp.parameters.forEach(element => {
         if (element.value) {
@@ -208,6 +213,10 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+  }
+
+  ngOnDestroy(){
+    clearInterval(this.setInterval);
   }
 
   ngAfterViewInit(){
@@ -438,14 +447,13 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
         model.y = y;
         model.objectClass = this.dragType;
         model.modelId = this.modelId;
-        model.id = "obj" + (this.data.length + 1);
+        model.id = this.dragType + (this.data.filter(value => value.objectClass === this.dragType).length + 1);
         let p1 = new ParameterClass("Price" + model.id, "Price", "0", 1)
         let p2 = new ParameterClass("Speed" + model.id, "Speed", "0", 1)
         let p3 = new ParameterClass("CostPrice" + model.id, "CostPrice", "0", 1)
         model.parameters = [p1, p2, p3]
         this.componentService.create(model).subscribe((data) => {
-          this.data.push(data)
-
+          this.data.push(data);
           this.removeAll();
           this.drow();
           this.dragType = null;
@@ -557,7 +565,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
                     spcaSpit.forEach((element, index) => {
                       let earr = element.split(".");
                       if (earr.length == 3) {
-                        console.log(earr, this.formulaSaver)
                         if (this.formulaSaver[earr[2]]) {
                           spcaSpit[index] = this.formulaSaver[earr[2]];
                         } else {
@@ -615,19 +622,36 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
                   break;
                 case "Slider":
                   let gR = g.append("g");
-                  gR.append("text")
-                    .attr("x", element.x)
-                    .attr("y", py)
-                    .text((param.name || param.id) + " - ");
+                  // gR.append("text")
+                  //   .attr("x", element.x)
+                  //   .attr("y", py)
+                  //   .text((param.name || param.id) + " - ");
                   gR.append("foreignObject")
-                    .attr("x", element.x + ((param.name || param.id).length * 10))
+                    .attr("x", element.x + ((param.name || param.id).length * 10) - 50)
                     .attr("y", py - 15)
-                    .attr("width", 50)
+                    .attr("width", 120)
                     .attr("height", 16)
                     .attr("class", "foreignObject-input-bmp")
                     .html((d) => {
-                      return `<input id="${index}-${paramIndex}" type="range" min="0" max="1000" value="${param.value}" />`
-                    })
+                      return `
+                      <div style="display:flex;align-items: center;">
+                      <input id="${index}-${paramIndex}-left" class="range-button" type="button" value="<">
+                      </input>
+                      <input id="${index}-${paramIndex}" type="range" 
+                      min="${param.sliderMin}" max="${param.sliderMax}" 
+                      step="${param.Step}" value="${param.value}" />
+                      <input id="${index}-${paramIndex}-right" class="range-button" type="button" value=">">
+                      </input>
+                      </div>
+                
+                      `
+                    });
+                  gR.append("text")
+                    .attr("font-size", "10px")
+                    .attr("x", element.x+40)
+                    .attr("y", py-10)
+                    .text((param.name || param.id) + "-" + (param.value));
+                    
                   self = this;
                   let rangeElement: any = document.getElementById(`${index}-${paramIndex}`);
                   rangeElement.onchange = function (e) {
@@ -635,10 +659,41 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
                       self.dragSelected = index;
                       self.data[index].parameters[paramIndex].value = rangeElement.value.toString();
                       self.txtQueryChanged.next({
-                        value: inputElement.value,
+                        value: rangeElement.value,
                         selected: self.dragSelected
                       });
                     }, 500);
+                  };
+
+                  let rangeElementleft: any = document.getElementById(`${index}-${paramIndex}-left`);
+                  rangeElementleft.onclick = function (e) {
+                    setTimeout(() => {
+                      let value = +rangeElement.value - +param.sliderStep;
+                      if(value > param.sliderMin){
+                        self.dragSelected = index;
+                        self.data[index].parameters[paramIndex].value = value.toString();
+                        self.txtQueryChanged.next({
+                          value: value,
+                          selected: self.dragSelected
+                        });
+                      }
+                    }, 200);
+                  };
+
+                  let rangeElementright: any = document.getElementById(`${index}-${paramIndex}-right`);
+                  rangeElementright.onclick = function (e) {
+                    setTimeout(() => {
+                      let value = +rangeElement.value + +param.sliderStep;
+                      console.log(value)
+                      if(value < param.sliderMax){
+                        self.dragSelected = index;
+                        self.data[index].parameters[paramIndex].value = value.toString();
+                        self.txtQueryChanged.next({
+                          value: value,
+                          selected: self.dragSelected
+                        });
+                      }
+                    }, 200);
                   };
                   break;
                 default:
@@ -723,7 +778,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit {
 
   formulaSearch(element) {
     let arr = element.split(".");
-    console.log(element)
     this.modelList.forEach(model => {
       if (model.id === arr[0]) {
         this.componentService.getAllById(model._id).subscribe((data: any) => {

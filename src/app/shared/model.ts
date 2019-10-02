@@ -37,4 +37,7 @@ export class ParameterClass{
     showName = 0;
     showOnDiagram = 0;
     featureLabelNone = "";
+    sliderStep = 1;
+    sliderMax = 100;
+    sliderMin = 0;
 }

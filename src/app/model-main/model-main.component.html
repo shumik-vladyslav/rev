@@ -81,7 +81,7 @@
             {{item.name}}
           </td>
           <td>
-            <mat-form-field *ngIf="(item.value && item.value.charAt(0) !== '=') || !item.value " class="example-full-width table-input">
+            <mat-form-field *ngIf="(item.value && item.value.charAt(0) !== '=') || !item.value" class="example-full-width table-input">
               <input matInput [(ngModel)]="item.value" (ngModelChange)="onFieldChange($event)" />
             </mat-form-field>
             <span *ngIf="item.value && item.value.charAt(0) === '=' ">
@@ -188,6 +188,15 @@
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
+                  <mat-form-field *ngIf="item.controlType === 'Slider'">
+                    <input matInput placeholder="Slider Step" [(ngModel)]="item.sliderStep" (ngModelChange)="onFieldChange($event)" />
+                  </mat-form-field>
+                  <mat-form-field *ngIf="item.controlType === 'Slider'">
+                    <input matInput placeholder="Slider Max" [(ngModel)]="item.sliderMax" (ngModelChange)="onFieldChange($event)" />
+                  </mat-form-field>
+                  <mat-form-field *ngIf="item.controlType === 'Slider'">
+                    <input matInput placeholder="Slider Min" [(ngModel)]="item.sliderMin" (ngModelChange)="onFieldChange($event)" />
+                  </mat-form-field>
                 </div>
               </mat-expansion-panel>
             </mat-accordion>
@@ -254,6 +263,15 @@
             Slider
           </mat-option>
         </mat-select>
+      </mat-form-field>
+      <mat-form-field *ngIf="newParametr.controlType === 'Slider'">
+        <input matInput placeholder="Slider Step" [(ngModel)]="newParametr.sliderStep" />
+      </mat-form-field>
+      <mat-form-field *ngIf="newParametr.controlType === 'Slider'">
+        <input matInput placeholder="Slider Max" [(ngModel)]="newParametr.sliderMax" />
+      </mat-form-field>
+      <mat-form-field *ngIf="newParametr.controlType === 'Slider'">
+        <input matInput placeholder="Slider Min" [(ngModel)]="newParametr.sliderMin" />
       </mat-form-field>
     </div>
   </div>
