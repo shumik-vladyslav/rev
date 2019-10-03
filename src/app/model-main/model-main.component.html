@@ -126,7 +126,7 @@
 
                 <div class="loop-item desc">
                   <mat-form-field class="example-full-width">
-                    <input matInput placeholder="Id" (keydown)="onKeyDown($event)" [(ngModel)]="item.id"
+                    <input matInput placeholder="Id (latin simbols and digits)" (keydown)="onKeyDown($event)" [(ngModel)]="item.id"
                       (ngModelChange)="onFieldChange($event)" />
                   </mat-form-field>
                   <mat-form-field class="example-full-width">
@@ -212,7 +212,7 @@
 
     <div class="loop-item">
       <mat-form-field class="example-full-width">
-        <input matInput placeholder="Id" (keydown)="onKeyDown($event)" [(ngModel)]="newParametr.id" />
+        <input matInput placeholder="Id (latin simbols and digits)" (keydown)="onKeyDown($event)" [(ngModel)]="newParametr.id" />
       </mat-form-field>
       <mat-form-field class="example-full-width">
         <input matInput placeholder="Name" [(ngModel)]="newParametr.name" />

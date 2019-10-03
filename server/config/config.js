@@ -32,7 +32,7 @@ if (error) {
 
 const config = {
   env: envVars.NODE_ENV,
-  port: envVars.SERVER_PORT,
+  // port: envVars.SERVER_PORT,
   // "ng": "ng",
   // "serve": "node server",
   // "start": "concurrently -c \"yellow.bold,green.bold\" -n \"SERVER,BUILD\" \"nodemon server\" \"ng build --watch\"",

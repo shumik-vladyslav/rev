@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy,  HostListener, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, AfterViewInit } from '@angular/core';
 import { ModelService } from '../shared/model.service';
 import { ComponentService } from '../shared/component.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -69,7 +69,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         this.modelList = data;
         this.componentService.getAllById(this.modelId).subscribe((data: any) => {
           this.data = data;
-        console.log(data)
+          console.log(data)
 
           this.calc();
           setTimeout(() => {
@@ -97,21 +97,20 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
           this.componentService.update(id).subscribe((data) => {
           });
 
-          if (!model.drag){
+          if (!model.drag) {
             this.formulaSaver = {};
             this.calc();
           }
         }
         if (!model.drag)
-        setTimeout(() => {
-          this.removeAll();
-          this.drow();
-        }, 1000);
+          setTimeout(() => {
+            this.removeAll();
+            this.drow();
+          }, 1000);
       });
   }
 
   calc() {
-    console.log(5)
     this.data.forEach((comp) => {
       comp.parameters.forEach(element => {
         if (element.value) {
@@ -134,60 +133,77 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener("document:keyup", ["$event"])
   keyEvent(event: KeyboardEvent) {
-      if (
-        (event.keyCode === 46 || event.keyCode === 8) && this.selected
-      ) {
-        this.componentService.delete(this.data[this.selected]).subscribe((data) => {
-          this.data.splice(this.selected, 1);
-      
-          this.selected = null;
-          this.activeArrow = null;
-          this.clickArrow = null;
-          this.selectedLine = null;
-          this.selectedLineId = null;
-          this.selectedLineFrom = null;
-          this.selectedLineTo = null;
-          this.startDrowLine = null;
-          this.removeAll();
-          this.drowLines();
-          this.drow();
+    if (
+      (event.keyCode === 46 || event.keyCode === 8) && this.selected
+    ) {
+      this.componentService.delete(this.data[this.selected]).subscribe((data) => {
+        this.data.splice(this.selected, 1);
 
-        })
+        this.selected = null;
+        this.activeArrow = null;
+        this.clickArrow = null;
+        this.selectedLine = null;
+        this.selectedLineId = null;
+        this.selectedLineFrom = null;
+        this.selectedLineTo = null;
+        this.startDrowLine = null;
+        this.removeAll();
+        this.drowLines();
+        this.drow();
+
+      })
+    }
+
+    if(event.keyCode === 27){
+      
+      if (this.startDrowLine) {
+        this.removeAll();
+        this.selected = null;
+        this.activeArrow = null;
+        this.clickArrow = null;
+        this.selectedLine = null;
+        this.selectedLineId = null;
+        this.selectedLineFrom = null;
+        this.selectedLineTo = null;
+        this.startDrowLine = null;
+        document.documentElement.style.cursor = "default";
+        this.drow();
       }
 
-      if( (event.keyCode === 46 || event.keyCode === 8) && (this.selectedLineId || this.selectedLineId === 0) ){
-          this.selectedLineFrom.selected.forEach((id, index) => {
-            if(id === this.selectedLineTo._id){
-              this.data.forEach((element, i) => {
-              if(element._id === this.selectedLineFrom._id ){
-                 this.data[i].selected.splice(index, 1)
-            
-                  this.txtQueryChanged.next({
-                    value: this.selectedLine,
-                    selected: i
-                  })
-                }
-      
+      if (!this.clickArrow) {
+        this.unselectArrow();
+      }
+    }
+
+    if ((event.keyCode === 46 || event.keyCode === 8) && (this.selectedLineId || this.selectedLineId === 0)) {
+      this.selectedLineFrom.selected.forEach((id, index) => {
+        if (id === this.selectedLineTo._id) {
+          this.data.forEach((element, i) => {
+            if (element._id === this.selectedLineFrom._id) {
+              this.data[i].selected.splice(index, 1)
+
+              this.txtQueryChanged.next({
+                value: this.selectedLine,
+                selected: i
               })
-
             }
-          });
-          this.selected = null;
-          this.activeArrow = null;
-          this.clickArrow = null;
-          this.selectedLine = null;
-          this.selectedLineId = null;
-          this.selectedLineFrom = null;
-          this.selectedLineTo = null;
-          this.startDrowLine = null;
-          this.removeAll();
-          this.drowLines();
-          this.drow();
 
+          })
 
-
-
-      }
+        }
+      });
+      this.selected = null;
+      this.activeArrow = null;
+      this.clickArrow = null;
+      this.selectedLine = null;
+      this.selectedLineId = null;
+      this.selectedLineFrom = null;
+      this.selectedLineTo = null;
+      this.startDrowLine = null;
+      this.removeAll();
+      this.drowLines();
+      this.drow();
+    }
   }
 
   openDialogItem;
@@ -200,7 +216,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
       data: {
         list: this.modelList,
         formula: item.value,
-        modelId:this.modelId
+        modelId: this.modelId
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -215,11 +231,11 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     clearInterval(this.setInterval);
   }
 
-  ngAfterViewInit(){
+  ngAfterViewInit() {
     this.init();
   }
 
@@ -253,19 +269,18 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         // if (!this.readOnly) {
         //   this.unselect();
 
-        //   if (this.startDrowLine) {
-        //     this.removeAll();
-        //     this.startDrowLine = null;
-        //     this.activeArrow = null;
-        //     document.documentElement.style.cursor = "default";
-        //     this.drow();
-        //   }
+          if (this.startDrowLine) {
+            this.removeAll();
+            this.startDrowLine = null;
+            this.activeArrow = null;
+            document.documentElement.style.cursor = "default";
+            this.drow();
+          }
 
-        //   if (!this.clickArrow) {
-        //     this.unselectArrow();
-        //   }
-        //   this.clickArrow = false;
-        // }
+          if (!this.clickArrow) {
+            this.unselectArrow();
+          }
+     
 
       });
     this.vis.call(this.zoom).on("dblclick.zoom", null);
@@ -529,7 +544,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             })
             .on("dblclick", (d, i, s) => {
               this.selectedModal = s[0].id;
-              this.newParametr = new ParameterClass("par" + (this.data[this.selectedModal].parameters.length + 1), "" , "0")
+              this.newParametr = new ParameterClass("par" + (this.data[this.selectedModal].parameters.length + 1), "", "0")
               this.showSide = !this.showSide;
               this.removeAll();
               this.drow();
@@ -545,7 +560,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                 .on("end", dragended)
             );
 
-            g.append("text")
+          g.append("text")
             .attr("x", element.x + 40)
             .attr("y", element.y - 90)
             .text((element.name || element.id));
@@ -648,10 +663,10 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     });
                   gR.append("text")
                     .attr("font-size", "10px")
-                    .attr("x", element.x+40)
-                    .attr("y", py-10)
+                    .attr("x", element.x + 40)
+                    .attr("y", py - 10)
                     .text((param.name || param.id) + "-" + (param.value));
-                    
+
                   self = this;
                   let rangeElement: any = document.getElementById(`${index}-${paramIndex}`);
                   rangeElement.onchange = function (e) {
@@ -669,7 +684,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                   rangeElementleft.onclick = function (e) {
                     setTimeout(() => {
                       let value = +rangeElement.value - +param.sliderStep;
-                      if(value > param.sliderMin){
+                      if (value > param.sliderMin) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
                         self.txtQueryChanged.next({
@@ -685,7 +700,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     setTimeout(() => {
                       let value = +rangeElement.value + +param.sliderStep;
                       console.log(value)
-                      if(value < param.sliderMax){
+                      if (value < param.sliderMax) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
                         self.txtQueryChanged.next({
@@ -763,7 +778,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         self.txtQueryChanged.next({
           value: self.zoomTrans,
           selected: self.dragSelected,
-          drag : 1
+          drag: 1
         });
 
       }
@@ -873,28 +888,28 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             .attr("stroke-width", 15)
             .on("click", () => {
 
-                this.selected = undefined;
+              this.selected = undefined;
 
-                this.removeAll();
-                this.drow();
-                // if (this.selectedLine) {
-                //   this.unselectArrow();
-                // }
-                this.clickArrow = true;
+              this.removeAll();
+              this.drow();
+              // if (this.selectedLine) {
+              //   this.unselectArrow();
+              // }
+              this.clickArrow = true;
 
-                this.selectedLine = from.id + to.id;
-                this.selectedLineId = index;
-                this.selectedLineFrom = from;
-                this.selectedLineTo = to;
+              this.selectedLine = from.id + to.id;
+              this.selectedLineId = index;
+              this.selectedLineFrom = from;
+              this.selectedLineTo = to;
 
-                d3.select(document.getElementById(from.id + to.id)).style(
-                  "stroke-width",
-                  2.5
-                );
-                d3.select(document.getElementById(from.id + to.id)).style(
-                  "stroke",
-                  "black"
-                );
+              d3.select(document.getElementById(from.id + to.id)).style(
+                "stroke-width",
+                2.5
+              );
+              d3.select(document.getElementById(from.id + to.id)).style(
+                "stroke",
+                "black"
+              );
 
             });
 
@@ -925,40 +940,46 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   shepClick(s) {
     this.selected = s[0].id;
     let id = this.selected;
-      if (!this.activeArrow) {
-          this.activeArrow = id;
-          this.startDrowLine = id;
-      } else {
-        if(this.data[id].selected[0] && 
-          this.data[id].selected[0] === this.data[this.activeArrow]._id){
-          return;
+    if (!this.activeArrow) {
+      this.activeArrow = id;
+      this.startDrowLine = id;
+    } else {
+      let count = 0;
+      this.data[id].selected.forEach((element, index) => {
+        if (this.data[this.activeArrow]._id === element) {
+          count++;
         }
-        let count = 0 ;
-        this.data.forEach((element, index) => {
-          if(this.data[this.activeArrow].selected[0] &&
-            this.data[this.activeArrow].selected[0] === this.data[index]._id){
-              count++;
-         }
-        });
-        if(count){
-          return;
+      });
+      this.data[this.activeArrow].selected.forEach((element, index) => {
+        if (this.data[id]._id === element) {
+          count++;
         }
-
-          if (id !== this.activeArrow) {
-            this.data[this.activeArrow].selected.push(this.data[id]._id);
-            this.txtQueryChanged.next({
-              value: "query",
-              selected: this.activeArrow
-            });
-          }
-          this.activeArrow = null;
-          this.startDrowLine = null;
+      });
+      if (count) {
+        this.activeArrow = null;
+        this.startDrowLine = null;
+        this.removeAll();
+        this.drowLines();
+        this.drow();
+    
+        return;
       }
-  
-      this.removeAll();
-      this.drowLines();
-      this.drow();
-  
+
+      if (id !== this.activeArrow) {
+        this.data[this.activeArrow].selected.push(this.data[id]._id);
+        this.txtQueryChanged.next({
+          value: "query",
+          selected: this.activeArrow
+        });
+      }
+      this.activeArrow = null;
+      this.startDrowLine = null;
+    }
+
+    this.removeAll();
+    this.drowLines();
+    this.drow();
+
 
   }
 
@@ -1001,7 +1022,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  newParametr = new ParameterClass("","", "0","");
+  newParametr = new ParameterClass("", "", "0", "");
 
   addParametr() {
     this.data[this.selectedModal].parameters.unshift(this.newParametr);
@@ -1014,7 +1035,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onKeyDown(e) {
     let re = /^(\d*[a-zA-Z]*\d*[a-zA-Z]*)*$/mg;
-    if (!re.test(e.key)){
+    if (!re.test(e.key)) {
       return false;
     }
   }
@@ -1034,6 +1055,23 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
       let width;
       width = (input["value"] / 2) * 100;
       document.getElementById("lineZoomRange").style.width = width + "%";
+    }
+  }
+
+  unselectArrow() {
+    if (this.selectedLine) {
+      this.data.forEach((element, index) => {
+        d3.select(document.getElementById(this.selectedLine)).style(
+          "stroke-width",
+          1.5
+        );
+        d3.select(document.getElementById(this.selectedLine)).style(
+          "stroke",
+          "#555"
+        );
+      });
+      this.selectedLine = null;
+      this.clickArrow = false;
     }
   }
 }
