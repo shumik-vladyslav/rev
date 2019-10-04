@@ -131,6 +131,20 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
+  clear(){
+    this.selected = null;
+    this.activeArrow = null;
+    this.clickArrow = null;
+    this.selectedLine = null;
+    this.selectedLineId = null;
+    this.selectedLineFrom = null;
+    this.selectedLineTo = null;
+    this.startDrowLine = null;
+    this.removeAll();
+    this.drowLines();
+    this.drow();
+  }
+
   @HostListener("document:keyup", ["$event"])
   keyEvent(event: KeyboardEvent) {
     if (
@@ -139,35 +153,16 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
       this.componentService.delete(this.data[this.selected]).subscribe((data) => {
         this.data.splice(this.selected, 1);
 
-        this.selected = null;
-        this.activeArrow = null;
-        this.clickArrow = null;
-        this.selectedLine = null;
-        this.selectedLineId = null;
-        this.selectedLineFrom = null;
-        this.selectedLineTo = null;
-        this.startDrowLine = null;
-        this.removeAll();
-        this.drowLines();
-        this.drow();
-
-      })
+        this.clear();
+      });
     }
 
     if(event.keyCode === 27){
       
       if (this.startDrowLine) {
         this.removeAll();
-        this.selected = null;
-        this.activeArrow = null;
-        this.clickArrow = null;
-        this.selectedLine = null;
-        this.selectedLineId = null;
-        this.selectedLineFrom = null;
-        this.selectedLineTo = null;
-        this.startDrowLine = null;
         document.documentElement.style.cursor = "default";
-        this.drow();
+        this.clear();
       }
 
       if (!this.clickArrow) {
@@ -192,17 +187,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
         }
       });
-      this.selected = null;
-      this.activeArrow = null;
-      this.clickArrow = null;
-      this.selectedLine = null;
-      this.selectedLineId = null;
-      this.selectedLineFrom = null;
-      this.selectedLineTo = null;
-      this.startDrowLine = null;
-      this.removeAll();
-      this.drowLines();
-      this.drow();
+      this.clear();
     }
   }
 
@@ -503,8 +488,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
           });
 
           let h = (60 + (count > 3 ? ((count - 3) * 16 + (count * 5)) : 0));
-
-
           let selected = +this.selected === +index ? "stroke-width:1;stroke:rgb(0,0,0)" : "";
           let g = this.conteiner.append("g").attr("class", "g");
           g.append("rect")
@@ -512,8 +495,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             .attr("id", index)
             .attr("style", selected)
             .attr("fill", color)
-            .attr("x", element.x - 25)
-            .attr("y", element.y - 80)
+            .attr("x", element.x - 5)
+            .attr("y", element.y - 10)
             .attr("width", 160)
             .attr("height", h)
             .attr("rx", 10)
@@ -540,7 +523,11 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             })
             .on("click", (d, i, s) => {
               d3.event.stopPropagation();
-              this.shepClick(s);
+              this.selected = s[0].id;
+              this.removeAll();
+              this.drow();
+              if(this.activeArrow)
+                this.shepClick(s[0].id);
             })
             .on("dblclick", (d, i, s) => {
               this.selectedModal = s[0].id;
@@ -551,6 +538,54 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
               this.activeArrow = null;
               this.startDrowLine = null;
               this.selected = null;
+            });
+
+          g.append("text")
+            .attr("x", element.x - 5)
+            .attr("y", element.y - 13)
+            .text((element.name || element.id));
+          
+          g.append("text")
+            .attr("id", index + "-remove")
+            .attr("x", element.x + 140)
+            .attr("y", element.y - 13)
+            .text("X")            
+            .on("click", (d, i, s) => {
+              d3.event.stopPropagation();
+              let id = s[0].id.split("-")[0];
+              
+              this.componentService.delete(this.data[id]).subscribe((data) => {
+                this.data.splice(id, 1);
+        
+                this.clear();
+              });
+            });
+
+            g.append("text")
+            .attr("id", index + "-arrow")
+            .attr("x", element.x + 135)
+            .attr("y", element.y + 5)
+            .text("=>")            
+            .on("click", (d, i, s) => {
+                d3.event.stopPropagation(); 
+                let id = s[0].id.split("-")[0];
+                this.shepClick(id);
+            });
+
+            g.append("text")
+            .attr("id", index + "-drag")
+            .attr("x", element.x )
+            .attr("y", element.y + 5)
+            .text("|||")            
+            .on("click", (d, i, s) => {
+              d3.event.stopPropagation();
+              let id = s[0].id.split("-")[0];
+              
+              this.componentService.delete(this.data[id]).subscribe((data) => {
+                this.data.splice(id, 1);
+        
+                this.clear();
+              });
             })
             .call(
               d3
@@ -560,15 +595,11 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                 .on("end", dragended)
             );
 
-          g.append("text")
-            .attr("x", element.x + 40)
-            .attr("y", element.y - 90)
-            .text((element.name || element.id));
           let countIndex = 0;
           let parameters = element.parameters.slice();
           parameters.forEach((param, paramIndex) => {
             if (param.showOnDiagram) {
-              let py = element.y - 50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
+              let py = element.y + 70 - 50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
               switch (param.controlType) {
                 case "Value":
                 case "":
@@ -595,13 +626,13 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
 
                     g.append("text")
-                      .attr("x", element.x)
+                      .attr("x", element.x + 20)
                       .attr("y", py)
                       .text((param.name || param.id) + " - " + (this.formulaSaver[param.id] || ""));
 
                   } else {
                     g.append("text")
-                      .attr("x", element.x)
+                      .attr("x", element.x + 20)
                       .attr("y", py)
                       .text((param.name || param.id) + " - " + (v || ""));
                   }
@@ -761,8 +792,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
         }
 
-        self.dragSelected = this.getAttribute("id");
-        self.data[this.getAttribute("id")].x =
+        self.dragSelected = this.getAttribute("id").split("-")[0];
+        self.data[self.dragSelected].x =
           (d3.event.x - self.zoomTrans.x) / self.zoomTrans.k;
         // self.start_x + (d3.event.x - self.start_x) / current_scale;
         // (e.offsetX - this.zoomTrans.x) / this.zoomTrans.k;
@@ -770,8 +801,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         if (self.zoomTrans.k < 0.33) {
           scale = 50;
         }
-        self.data[this.getAttribute("id")].y =
-          (d3.event.y - self.zoomTrans.y) / self.zoomTrans.k - (scale / self.zoomTrans.k);
+        self.data[self.dragSelected].y =(
+          (d3.event.y - self.zoomTrans.y) / self.zoomTrans.k - (scale / self.zoomTrans.k)) - 25;
         // self.start_y + (d3.event.y - self.start_y) / current_scale;
         self.removeAll();
         self.drow();
@@ -803,9 +834,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
               }
             });
           });
-
         });
-
       }
     });
   }
@@ -849,12 +878,12 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
           var d = {
             source: {
-              x: x,
-              y: y - 50
+              x: x + 30,
+              y: y + 15
             },
             target: {
-              x: x2,
-              y: y2 - 50
+              x: x2 + 30,
+              y: y2 + 15
             }
           };
 
@@ -933,12 +962,12 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             .attr("marker-mid", "url(#triangle)");
         }
 
-      })
-    })
+      });
+    });
   }
 
   shepClick(s) {
-    this.selected = s[0].id;
+    this.selected = s;
     let id = this.selected;
     if (!this.activeArrow) {
       this.activeArrow = id;
@@ -961,7 +990,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         this.removeAll();
         this.drowLines();
         this.drow();
-    
         return;
       }
 
@@ -979,8 +1007,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     this.removeAll();
     this.drowLines();
     this.drow();
-
-
   }
 
   removeAll() {

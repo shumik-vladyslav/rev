@@ -1491,37 +1491,32 @@ var ModelMainComponent = /** @class */ (function () {
             });
         });
     };
+    ModelMainComponent.prototype.clear = function () {
+        this.selected = null;
+        this.activeArrow = null;
+        this.clickArrow = null;
+        this.selectedLine = null;
+        this.selectedLineId = null;
+        this.selectedLineFrom = null;
+        this.selectedLineTo = null;
+        this.startDrowLine = null;
+        this.removeAll();
+        this.drowLines();
+        this.drow();
+    };
     ModelMainComponent.prototype.keyEvent = function (event) {
         var _this = this;
         if ((event.keyCode === 46 || event.keyCode === 8) && this.selected) {
             this.componentService.delete(this.data[this.selected]).subscribe(function (data) {
                 _this.data.splice(_this.selected, 1);
-                _this.selected = null;
-                _this.activeArrow = null;
-                _this.clickArrow = null;
-                _this.selectedLine = null;
-                _this.selectedLineId = null;
-                _this.selectedLineFrom = null;
-                _this.selectedLineTo = null;
-                _this.startDrowLine = null;
-                _this.removeAll();
-                _this.drowLines();
-                _this.drow();
+                _this.clear();
             });
         }
         if (event.keyCode === 27) {
             if (this.startDrowLine) {
                 this.removeAll();
-                this.selected = null;
-                this.activeArrow = null;
-                this.clickArrow = null;
-                this.selectedLine = null;
-                this.selectedLineId = null;
-                this.selectedLineFrom = null;
-                this.selectedLineTo = null;
-                this.startDrowLine = null;
                 document.documentElement.style.cursor = "default";
-                this.drow();
+                this.clear();
             }
             if (!this.clickArrow) {
                 this.unselectArrow();
@@ -1541,17 +1536,7 @@ var ModelMainComponent = /** @class */ (function () {
                     });
                 }
             });
-            this.selected = null;
-            this.activeArrow = null;
-            this.clickArrow = null;
-            this.selectedLine = null;
-            this.selectedLineId = null;
-            this.selectedLineFrom = null;
-            this.selectedLineTo = null;
-            this.startDrowLine = null;
-            this.removeAll();
-            this.drowLines();
-            this.drow();
+            this.clear();
         }
     };
     ModelMainComponent.prototype.openDialog = function (item) {
@@ -1808,8 +1793,8 @@ var ModelMainComponent = /** @class */ (function () {
                         .attr("id", index)
                         .attr("style", selected)
                         .attr("fill", color)
-                        .attr("x", element.x - 25)
-                        .attr("y", element.y - 80)
+                        .attr("x", element.x - 5)
+                        .attr("y", element.y - 10)
                         .attr("width", 160)
                         .attr("height", h)
                         .attr("rx", 10)
@@ -1830,7 +1815,11 @@ var ModelMainComponent = /** @class */ (function () {
                     })
                         .on("click", function (d, i, s) {
                         d3.event.stopPropagation();
-                        _this.shepClick(s);
+                        _this.selected = s[0].id;
+                        _this.removeAll();
+                        _this.drow();
+                        if (_this.activeArrow)
+                            _this.shepClick(s[0].id);
                     })
                         .on("dblclick", function (d, i, s) {
                         _this.selectedModal = s[0].id;
@@ -1841,21 +1830,57 @@ var ModelMainComponent = /** @class */ (function () {
                         _this.activeArrow = null;
                         _this.startDrowLine = null;
                         _this.selected = null;
+                    });
+                    g_1.append("text")
+                        .attr("x", element.x - 5)
+                        .attr("y", element.y - 13)
+                        .text((element.name || element.id));
+                    g_1.append("text")
+                        .attr("id", index + "-remove")
+                        .attr("x", element.x + 140)
+                        .attr("y", element.y - 13)
+                        .text("X")
+                        .on("click", function (d, i, s) {
+                        d3.event.stopPropagation();
+                        var id = s[0].id.split("-")[0];
+                        _this.componentService.delete(_this.data[id]).subscribe(function (data) {
+                            _this.data.splice(id, 1);
+                            _this.clear();
+                        });
+                    });
+                    g_1.append("text")
+                        .attr("id", index + "-arrow")
+                        .attr("x", element.x + 135)
+                        .attr("y", element.y + 5)
+                        .text("=>")
+                        .on("click", function (d, i, s) {
+                        d3.event.stopPropagation();
+                        var id = s[0].id.split("-")[0];
+                        _this.shepClick(id);
+                    });
+                    g_1.append("text")
+                        .attr("id", index + "-drag")
+                        .attr("x", element.x)
+                        .attr("y", element.y + 5)
+                        .text("|||")
+                        .on("click", function (d, i, s) {
+                        d3.event.stopPropagation();
+                        var id = s[0].id.split("-")[0];
+                        _this.componentService.delete(_this.data[id]).subscribe(function (data) {
+                            _this.data.splice(id, 1);
+                            _this.clear();
+                        });
                     })
                         .call(d3
                         .drag()
                         .on("start", dragstarted)
                         .on("drag", dragged)
                         .on("end", dragended));
-                    g_1.append("text")
-                        .attr("x", element.x + 40)
-                        .attr("y", element.y - 90)
-                        .text((element.name || element.id));
                     var countIndex_1 = 0;
                     var parameters = element.parameters.slice();
                     parameters.forEach(function (param, paramIndex) {
                         if (param.showOnDiagram) {
-                            var py = element.y - 50 - (countIndex_1 * 20) + (count_1 >= 3 ? ((count_1 - 3) * 16 + (count_1 * 7)) : (count_1 > 1) ? (count_1 * 4) : -9);
+                            var py = element.y + 70 - 50 - (countIndex_1 * 20) + (count_1 >= 3 ? ((count_1 - 3) * 16 + (count_1 * 7)) : (count_1 > 1) ? (count_1 * 4) : -9);
                             switch (param.controlType) {
                                 case "Value":
                                 case "":
@@ -1881,13 +1906,13 @@ var ModelMainComponent = /** @class */ (function () {
                                             _this.calc();
                                         }
                                         g_1.append("text")
-                                            .attr("x", element.x)
+                                            .attr("x", element.x + 20)
                                             .attr("y", py)
                                             .text((param.name || param.id) + " - " + (_this.formulaSaver[param.id] || ""));
                                     }
                                     else {
                                         g_1.append("text")
-                                            .attr("x", element.x)
+                                            .attr("x", element.x + 20)
                                             .attr("y", py)
                                             .text((param.name || param.id) + " - " + (v || ""));
                                     }
@@ -2022,8 +2047,8 @@ var ModelMainComponent = /** @class */ (function () {
                         k: 1,
                     };
                 }
-                self.dragSelected = this.getAttribute("id");
-                self.data[this.getAttribute("id")].x =
+                self.dragSelected = this.getAttribute("id").split("-")[0];
+                self.data[self.dragSelected].x =
                     (d3.event.x - self.zoomTrans.x) / self.zoomTrans.k;
                 // self.start_x + (d3.event.x - self.start_x) / current_scale;
                 // (e.offsetX - this.zoomTrans.x) / this.zoomTrans.k;
@@ -2031,8 +2056,7 @@ var ModelMainComponent = /** @class */ (function () {
                 if (self.zoomTrans.k < 0.33) {
                     scale = 50;
                 }
-                self.data[this.getAttribute("id")].y =
-                    (d3.event.y - self.zoomTrans.y) / self.zoomTrans.k - (scale / self.zoomTrans.k);
+                self.data[self.dragSelected].y = ((d3.event.y - self.zoomTrans.y) / self.zoomTrans.k - (scale / self.zoomTrans.k)) - 25;
                 // self.start_y + (d3.event.y - self.start_y) / current_scale;
                 self.removeAll();
                 self.drow();
@@ -2099,12 +2123,12 @@ var ModelMainComponent = /** @class */ (function () {
                     }
                     var d = {
                         source: {
-                            x: x,
-                            y: y - 50
+                            x: x + 30,
+                            y: y + 15
                         },
                         target: {
-                            x: x2,
-                            y: y2 - 50
+                            x: x2 + 30,
+                            y: y2 + 15
                         }
                     };
                     var link = d3
@@ -2169,7 +2193,7 @@ var ModelMainComponent = /** @class */ (function () {
     };
     ModelMainComponent.prototype.shepClick = function (s) {
         var _this = this;
-        this.selected = s[0].id;
+        this.selected = s;
         var id = this.selected;
         if (!this.activeArrow) {
             this.activeArrow = id;
