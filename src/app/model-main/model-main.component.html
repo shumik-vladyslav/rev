@@ -8,7 +8,7 @@
     </div>
   </div>
   <div class="coco-bpm-graph" id="graph" style="height: calc(100vh - 60px);"></div>
-  <div class="clickShield" *ngIf="showSide" (click)="showSide = false"></div>
+  <!-- <div class="clickShield" *ngIf="showSide" (click)="showSide = false"></div> -->
   <div (click)="showSide = !showSide" class="toggle-sidebar-btn" [ngClass]="{ 'active': showSide }">
     <a mat-raised-button>
       <i class="material-icons">

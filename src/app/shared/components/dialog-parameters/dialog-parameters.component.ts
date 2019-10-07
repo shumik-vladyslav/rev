@@ -43,7 +43,7 @@ export class DialogParametersComponent implements OnInit {
           element.objectClass = item.objectClass;
           element.objectType = item.id;
         });
-        this.listParams = [...this.listParams, ...item.parameters]
+        this.listParams = [...this.listParams, ...item.parameters];
       });
       this.listClass = [...this.listClass.filter(this.onlyUnique)];
       this.listObjects = [...this.listObjects.filter(this.onlyUnique)];
@@ -101,10 +101,13 @@ export class DialogParametersComponent implements OnInit {
   paramsChange(e) {
     let item = this.searchById(e, this.listParams);
     let model = this.searchById(this.sleectedModel, this.listModel);
-    console.log(this.selectedObject, this.listObjects)
     let object = this.searchById(this.selectedObject, this.listObjects);
-    console.log(this.selectedObject)
-    this.selectedFormulaVar = model.id + "." + this.selectedObject + "." + item.id
+    console.log(this.sleectedModel , model.id)
+    // if(this.sleectedModel === model.id) {
+    //   this.selectedFormulaVar = item.id;
+    // } else {
+      this.selectedFormulaVar = model.id + "." + this.selectedObject + "." + item.id;
+    // }
   }
 
   add() {

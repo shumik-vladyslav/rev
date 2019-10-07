@@ -8,6 +8,7 @@ export class ModelClass{
 export class ComponentClass{
     id = "";
     modelId = "";
+    userId = "";
     name = "";
     objectClass = "";
     objectType = "";

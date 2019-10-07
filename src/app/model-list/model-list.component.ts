@@ -41,14 +41,14 @@ export class ModelListComponent implements OnInit {
       }
     });
     dialogRef.afterClosed().subscribe(model => {
-      if(model){
+      if (model) {
         model.userId = this.user._id;
-        this.modelService.create(model).subscribe((data:any ) => {
+        this.modelService.create(model).subscribe((data: any) => {
           console.log(data)
           this.router.navigate(["model/" + data._id])
         })
       }
     });
   }
-  
+
 }

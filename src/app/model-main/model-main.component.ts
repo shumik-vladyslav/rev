@@ -53,6 +53,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   user;
   modelList;
   setInterval;
+  formulaSaverOld = {};
 
   constructor(
     private modelService: ModelService,
@@ -65,11 +66,14 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     this.authService.me().subscribe(data => {
       this.user = data.user;
       this.modelService.getAllById(this.user._id).subscribe((data: any) => {
-        console.log(data)
+        console.log(data);
+        this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
+          this.formulaData = data;
+        });
         this.modelList = data;
         this.componentService.getAllById(this.modelId).subscribe((data: any) => {
           this.data = data;
-          console.log(data)
+          console.log(data);
 
           this.calc();
           setTimeout(() => {
@@ -79,17 +83,15 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     });
 
-
-
     // this.setInterval = setInterval(() => {
     //   this.removeAll()
     //   this.drowLines()
     //   this.drow();
     //   this.txtQueryChanged.next(this.uuidv4());
-    // }, 5000)
+    // }, 5000);
 
     this.txtQueryChanged
-      .pipe(debounceTime(1800), distinctUntilChanged())
+      .pipe(debounceTime(800), distinctUntilChanged())
       .subscribe(model => {
         console.log(model)
         let id = this.data[model.selected];
@@ -98,8 +100,12 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
           });
 
           if (!model.drag) {
-            this.formulaSaver = {};
-            this.calc();
+            this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
+              this.formulaData = data;
+              this.formulaSaverOld = Object.assign(this.formulaSaver, {});
+              this.formulaSaver = {};
+              this.calc();
+            });
           }
         }
         if (!model.drag)
@@ -114,7 +120,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     this.data.forEach((comp) => {
       comp.parameters.forEach(element => {
         if (element.value) {
-          let v = element.value
+          let v = element.value;
           let spcaSpit = v.split(" ");
 
           spcaSpit.forEach((element, index) => {
@@ -127,11 +133,11 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
           });
         }
       });
-    })
+    });
 
   }
 
-  clear(){
+  clear() {
     this.selected = null;
     this.activeArrow = null;
     this.clickArrow = null;
@@ -157,8 +163,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
 
-    if(event.keyCode === 27){
-      
+    if (event.keyCode === 27) {
       if (this.startDrowLine) {
         this.removeAll();
         document.documentElement.style.cursor = "default";
@@ -175,15 +180,14 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         if (id === this.selectedLineTo._id) {
           this.data.forEach((element, i) => {
             if (element._id === this.selectedLineFrom._id) {
-              this.data[i].selected.splice(index, 1)
+              this.data[i].selected.splice(index, 1);
 
               this.txtQueryChanged.next({
                 value: this.selectedLine,
                 selected: i
-              })
+              });
             }
-
-          })
+          });
 
         }
       });
@@ -254,18 +258,18 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         // if (!this.readOnly) {
         //   this.unselect();
 
-          if (this.startDrowLine) {
-            this.removeAll();
-            this.startDrowLine = null;
-            this.activeArrow = null;
-            document.documentElement.style.cursor = "default";
-            this.drow();
-          }
+        if (this.startDrowLine) {
+          this.removeAll();
+          this.startDrowLine = null;
+          this.activeArrow = null;
+          document.documentElement.style.cursor = "default";
+          this.drow();
+        }
 
-          if (!this.clickArrow) {
-            this.unselectArrow();
-          }
-     
+        if (!this.clickArrow) {
+          this.unselectArrow();
+        }
+
 
       });
     this.vis.call(this.zoom).on("dblclick.zoom", null);
@@ -342,8 +346,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
         var d = {
           source: {
-            x: this.data[this.startDrowLine].x,
-            y: this.data[this.startDrowLine].y - 50
+            x: this.data[this.startDrowLine].x + 20,
+            y: this.data[this.startDrowLine].y
           },
           target: {
             x: x,
@@ -442,23 +446,23 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
           y = (ev.offsetY - this.zoomTrans.y) / this.zoomTrans.k;
         }
         ev.preventDefault();
-        let model = new ComponentClass()
+        let model = new ComponentClass();
         model.x = x;
         model.y = y;
         model.objectClass = this.dragType;
         model.modelId = this.modelId;
+        model.userId = this.user._id;
         model.id = this.dragType + (this.data.filter(value => value.objectClass === this.dragType).length + 1);
-        let p1 = new ParameterClass("Price" + model.id, "Price", "0", 1)
-        let p2 = new ParameterClass("Speed" + model.id, "Speed", "0", 1)
-        let p3 = new ParameterClass("CostPrice" + model.id, "CostPrice", "0", 1)
-        model.parameters = [p1, p2, p3]
+        let p1 = new ParameterClass("Price" + model.id, "Price", "0", 1);
+        let p2 = new ParameterClass("Speed" + model.id, "Speed", "0", 1);
+        let p3 = new ParameterClass("CostPrice" + model.id, "CostPrice", "0", 1);
+        model.parameters = [p1, p2, p3];
         this.componentService.create(model).subscribe((data) => {
           this.data.push(data);
           this.removeAll();
           this.drow();
           this.dragType = null;
-        })
-
+        });
       },
       false
     );
@@ -526,13 +530,14 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
               this.selected = s[0].id;
               this.removeAll();
               this.drow();
-              if(this.activeArrow)
+              if (this.activeArrow)
                 this.shepClick(s[0].id);
             })
             .on("dblclick", (d, i, s) => {
               this.selectedModal = s[0].id;
-              this.newParametr = new ParameterClass("par" + (this.data[this.selectedModal].parameters.length + 1), "", "0")
-              this.showSide = !this.showSide;
+              let name = this.data[this.selectedModal].objectClass + (this.data[this.selectedModal].parameters.length + 1);
+              this.newParametr = new ParameterClass("Par" + (this.data.filter(value => value.objectClass === this.data[this.selectedModal].objectClass).length + 1) + name, "", "0")
+              this.showSide = true;
               this.removeAll();
               this.drow();
               this.activeArrow = null;
@@ -544,46 +549,46 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             .attr("x", element.x - 5)
             .attr("y", element.y - 13)
             .text((element.name || element.id));
-          
+
           g.append("text")
             .attr("id", index + "-remove")
             .attr("x", element.x + 140)
             .attr("y", element.y - 13)
-            .text("X")            
+            .text("X")
             .on("click", (d, i, s) => {
               d3.event.stopPropagation();
               let id = s[0].id.split("-")[0];
-              
+
               this.componentService.delete(this.data[id]).subscribe((data) => {
                 this.data.splice(id, 1);
-        
+
                 this.clear();
               });
             });
 
-            g.append("text")
+          g.append("text")
             .attr("id", index + "-arrow")
             .attr("x", element.x + 135)
             .attr("y", element.y + 5)
-            .text("=>")            
-            .on("click", (d, i, s) => {
-                d3.event.stopPropagation(); 
-                let id = s[0].id.split("-")[0];
-                this.shepClick(id);
-            });
-
-            g.append("text")
-            .attr("id", index + "-drag")
-            .attr("x", element.x )
-            .attr("y", element.y + 5)
-            .text("|||")            
+            .text("=>")
             .on("click", (d, i, s) => {
               d3.event.stopPropagation();
               let id = s[0].id.split("-")[0];
-              
+              this.shepClick(id);
+            });
+
+          g.append("text")
+            .attr("id", index + "-drag")
+            .attr("x", element.x)
+            .attr("y", element.y + 5)
+            .text("|||")
+            .on("click", (d, i, s) => {
+              d3.event.stopPropagation();
+              let id = s[0].id.split("-")[0];
+
               this.componentService.delete(this.data[id]).subscribe((data) => {
                 this.data.splice(id, 1);
-        
+
                 this.clear();
               });
             })
@@ -628,7 +633,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     g.append("text")
                       .attr("x", element.x + 20)
                       .attr("y", py)
-                      .text((param.name || param.id) + " - " + (this.formulaSaver[param.id] || ""));
+                      .text((param.name || param.id) + " - " + (this.formulaSaver[param.id] || (this.formulaSaverOld[param.id] || "")));
 
                   } else {
                     g.append("text")
@@ -730,7 +735,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                   rangeElementright.onclick = function (e) {
                     setTimeout(() => {
                       let value = +rangeElement.value + +param.sliderStep;
-                      console.log(value)
                       if (value < param.sliderMax) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
@@ -788,8 +792,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             x: 0,
             y: 0,
             k: 1,
-          }
-
+          };
         }
 
         self.dragSelected = this.getAttribute("id").split("-")[0];
@@ -801,7 +804,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         if (self.zoomTrans.k < 0.33) {
           scale = 50;
         }
-        self.data[self.dragSelected].y =(
+        self.data[self.dragSelected].y = (
           (d3.event.y - self.zoomTrans.y) / self.zoomTrans.k - (scale / self.zoomTrans.k)) - 25;
         // self.start_y + (d3.event.y - self.start_y) / current_scale;
         self.removeAll();
@@ -821,22 +824,32 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   formulaSaver = {};
+  formulaSearchRun;
+  formulaData;
 
   formulaSearch(element) {
     let arr = element.split(".");
-    this.modelList.forEach(model => {
-      if (model.id === arr[0]) {
-        this.componentService.getAllById(model._id).subscribe((data: any) => {
-          data.forEach(comp => {
-            comp.parameters.forEach(param => {
-              if (param.id === arr[2]) {
-                this.formulaSaver[element] = param.value;
-              }
-            });
-          });
-        });
-      }
+    if (!this.formulaSearchRun) {
+      this.formulaSearchRun = true;
+      this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
+        this.formulaData = data;
+        this.formulaDataSearch(data, arr, element);
+      });
+    } else if (this.formulaData) {
+      this.formulaDataSearch(this.formulaData, arr, element);
+    }
+  }
+
+  formulaDataSearch(data, arr, element) {
+    data.forEach(comp => {
+      comp.parameters.forEach(param => {
+        if (param.id === arr[2]) {
+          this.formulaSaver[element] = param.value;
+        }
+      });
     });
+
+    this.clear();
   }
 
   clickArrow;
