@@ -54,6 +54,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   modelList;
   setInterval;
   formulaSaverOld = {};
+  saverComponent = [];
 
   constructor(
     private modelService: ModelService,
@@ -73,6 +74,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         this.modelList = data;
         this.componentService.getAllById(this.modelId).subscribe((data: any) => {
           this.data = data;
+          this.saverComponent = [JSON.parse(JSON.stringify( this.data ))];
           console.log(data);
 
           this.calc();
@@ -93,7 +95,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     this.txtQueryChanged
       .pipe(debounceTime(800), distinctUntilChanged())
       .subscribe(model => {
-        console.log(model)
+        this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
+
         let id = this.data[model.selected];
         if (id) {
           this.componentService.update(id).subscribe((data) => {
@@ -156,11 +159,27 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     if (
       (event.keyCode === 46 || event.keyCode === 8) && this.selected
     ) {
+      this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
       this.componentService.delete(this.data[this.selected]).subscribe((data) => {
         this.data.splice(this.selected, 1);
 
         this.clear();
       });
+    }
+
+    if (event.keyCode === 90 && event.ctrlKey) {
+      if (this.saverComponent) {
+        let arr = this.saverComponent[this.saverComponent.length - 2];
+        if (arr && this.saverComponent.length > 1) {
+          this.data = JSON.parse(JSON.stringify( arr ));
+          this.saverComponent.pop();
+          this.clear();
+          this.data.forEach(element => {
+            this.componentService.update(element).subscribe((data) => {
+            });
+          });
+        }
+      }
     }
 
     if (event.keyCode === 27) {
@@ -178,6 +197,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     if ((event.keyCode === 46 || event.keyCode === 8) && (this.selectedLineId || this.selectedLineId === 0)) {
       this.selectedLineFrom.selected.forEach((id, index) => {
         if (id === this.selectedLineTo._id) {
+          this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
           this.data.forEach((element, i) => {
             if (element._id === this.selectedLineFrom._id) {
               this.data[i].selected.splice(index, 1);
@@ -236,7 +256,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
       .zoom()
       .scaleExtent([0.1, 2])
       .on("zoom", () => {
-        this.zoomTrans = d3.event.transform
+        this.zoomTrans = d3.event.transform;
         // this.conteiner.attr("transform", d3.event.transform);
         const currentTransform = d3.event.transform;
         if (!currentTransform.x) {
@@ -458,6 +478,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         let p3 = new ParameterClass("CostPrice" + model.id, "CostPrice", "0", 1);
         model.parameters = [p1, p2, p3];
         this.componentService.create(model).subscribe((data) => {
+          this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
           this.data.push(data);
           this.removeAll();
           this.drow();
@@ -470,6 +491,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
   drow() {
     this.drowLines();
+    console.log(123123)
 
     this.data.forEach((element, index, arr) => {
       switch (element.objectClass) {
@@ -585,7 +607,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             .on("click", (d, i, s) => {
               d3.event.stopPropagation();
               let id = s[0].id.split("-")[0];
-
+              this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
               this.componentService.delete(this.data[id]).subscribe((data) => {
                 this.data.splice(id, 1);
 
@@ -602,6 +624,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
           let countIndex = 0;
           let parameters = element.parameters.slice();
+          console.log(parameters)
           parameters.forEach((param, paramIndex) => {
             if (param.showOnDiagram) {
               let py = element.y + 70 - 50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
@@ -1064,6 +1087,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   newParametr = new ParameterClass("", "", "0", "");
 
   addParametr() {
+    this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
     this.data[this.selectedModal].parameters.unshift(this.newParametr);
     this.newParametr = new ParameterClass("", "", "0", "");
     this.txtQueryChanged.next({

@@ -1428,6 +1428,7 @@ var ModelMainComponent = /** @class */ (function () {
         this.data = [];
         this.optionsModal = {};
         this.formulaSaverOld = {};
+        this.saverComponent = [];
         this.formulaSaver = {};
         this.txtQueryChanged = new rxjs__WEBPACK_IMPORTED_MODULE_7__["Subject"]();
         this.newParametr = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("", "", "0", "");
@@ -1442,6 +1443,7 @@ var ModelMainComponent = /** @class */ (function () {
                 _this.modelList = data;
                 _this.componentService.getAllById(_this.modelId).subscribe(function (data) {
                     _this.data = data;
+                    _this.saverComponent = [JSON.parse(JSON.stringify(_this.data))];
                     console.log(data);
                     _this.calc();
                     setTimeout(function () {
@@ -1459,7 +1461,7 @@ var ModelMainComponent = /** @class */ (function () {
         this.txtQueryChanged
             .pipe(Object(rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8__["debounceTime"])(800), Object(rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8__["distinctUntilChanged"])())
             .subscribe(function (model) {
-            console.log(model);
+            _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
             var id = _this.data[model.selected];
             if (id) {
                 _this.componentService.update(id).subscribe(function (data) {
@@ -1515,10 +1517,25 @@ var ModelMainComponent = /** @class */ (function () {
     ModelMainComponent.prototype.keyEvent = function (event) {
         var _this = this;
         if ((event.keyCode === 46 || event.keyCode === 8) && this.selected) {
+            this.saverComponent.push(JSON.parse(JSON.stringify(this.data)));
             this.componentService.delete(this.data[this.selected]).subscribe(function (data) {
                 _this.data.splice(_this.selected, 1);
                 _this.clear();
             });
+        }
+        if (event.keyCode === 90 && event.ctrlKey) {
+            if (this.saverComponent) {
+                var arr = this.saverComponent[this.saverComponent.length - 2];
+                if (arr && this.saverComponent.length > 1) {
+                    this.data = JSON.parse(JSON.stringify(arr));
+                    this.saverComponent.pop();
+                    this.clear();
+                    this.data.forEach(function (element) {
+                        _this.componentService.update(element).subscribe(function (data) {
+                        });
+                    });
+                }
+            }
         }
         if (event.keyCode === 27) {
             if (this.startDrowLine) {
@@ -1533,6 +1550,7 @@ var ModelMainComponent = /** @class */ (function () {
         if ((event.keyCode === 46 || event.keyCode === 8) && (this.selectedLineId || this.selectedLineId === 0)) {
             this.selectedLineFrom.selected.forEach(function (id, index) {
                 if (id === _this.selectedLineTo._id) {
+                    _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
                     _this.data.forEach(function (element, i) {
                         if (element._id === _this.selectedLineFrom._id) {
                             _this.data[i].selected.splice(index, 1);
@@ -1767,6 +1785,7 @@ var ModelMainComponent = /** @class */ (function () {
             var p3 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("CostPrice" + model.id, "CostPrice", "0", 1);
             model.parameters = [p1, p2, p3];
             _this.componentService.create(model).subscribe(function (data) {
+                _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
                 _this.data.push(data);
                 _this.removeAll();
                 _this.drow();
@@ -1777,6 +1796,7 @@ var ModelMainComponent = /** @class */ (function () {
     ModelMainComponent.prototype.drow = function () {
         var _this = this;
         this.drowLines();
+        console.log(123123);
         this.data.forEach(function (element, index, arr) {
             switch (element.objectClass) {
                 case "Input":
@@ -1876,6 +1896,7 @@ var ModelMainComponent = /** @class */ (function () {
                         .on("click", function (d, i, s) {
                         d3.event.stopPropagation();
                         var id = s[0].id.split("-")[0];
+                        _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
                         _this.componentService.delete(_this.data[id]).subscribe(function (data) {
                             _this.data.splice(id, 1);
                             _this.clear();
@@ -1888,6 +1909,7 @@ var ModelMainComponent = /** @class */ (function () {
                         .on("end", dragended));
                     var countIndex_1 = 0;
                     var parameters = element.parameters.slice();
+                    console.log(parameters);
                     parameters.forEach(function (param, paramIndex) {
                         if (param.showOnDiagram) {
                             var py = element.y + 70 - 50 - (countIndex_1 * 20) + (count_1 >= 3 ? ((count_1 - 3) * 16 + (count_1 * 7)) : (count_1 > 1) ? (count_1 * 4) : -9);
@@ -2282,6 +2304,7 @@ var ModelMainComponent = /** @class */ (function () {
         });
     };
     ModelMainComponent.prototype.addParametr = function () {
+        this.saverComponent.push(JSON.parse(JSON.stringify(this.data)));
         this.data[this.selectedModal].parameters.unshift(this.newParametr);
         this.newParametr = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("", "", "0", "");
         this.txtQueryChanged.next({
