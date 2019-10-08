@@ -167,7 +167,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
 
-    if (event.keyCode === 90 && event.ctrlKey) {
+    if (event.keyCode === 90 && (event.ctrlKey || event.metaKey)) {
       if (this.saverComponent) {
         let arr = this.saverComponent[this.saverComponent.length - 2];
         if (arr && this.saverComponent.length > 1) {
