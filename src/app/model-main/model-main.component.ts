@@ -93,7 +93,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     // }, 5000);
 
     this.txtQueryChanged
-      .pipe(debounceTime(800), distinctUntilChanged())
+      // .pipe(debounceTime(800), distinctUntilChanged())
       .subscribe(model => {
         this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
 
@@ -156,16 +156,16 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener("document:keyup", ["$event"])
   keyEvent(event: KeyboardEvent) {
-    if (
-      (event.keyCode === 46 || event.keyCode === 8) && this.selected
-    ) {
-      this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
-      this.componentService.delete(this.data[this.selected]).subscribe((data) => {
-        this.data.splice(this.selected, 1);
+    // if (
+    //   (event.keyCode === 46 || event.keyCode === 8) && this.selected
+    // ) {
+    //   this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
+    //   this.componentService.delete(this.data[this.selected]).subscribe((data) => {
+    //     this.data.splice(this.selected, 1);
 
-        this.clear();
-      });
-    }
+    //     this.clear();
+    //   });
+    // }
 
     if (event.keyCode === 90 && (event.ctrlKey || event.metaKey)) {
       if (this.saverComponent) {
@@ -491,7 +491,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
   drow() {
     this.drowLines();
-    console.log(123123)
 
     this.data.forEach((element, index, arr) => {
       switch (element.objectClass) {
@@ -624,7 +623,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
           let countIndex = 0;
           let parameters = element.parameters.slice();
-          console.log(parameters)
           parameters.forEach((param, paramIndex) => {
             if (param.showOnDiagram) {
               let py = element.y + 70 - 50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
