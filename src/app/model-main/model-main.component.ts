@@ -473,9 +473,9 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         model.modelId = this.modelId;
         model.userId = this.user._id;
         model.id = this.dragType + (this.data.filter(value => value.objectClass === this.dragType).length + 1);
-        let p1 = new ParameterClass("Price" + model.id, "Price", "0", 1);
-        let p2 = new ParameterClass("Speed" + model.id, "Speed", "0", 1);
-        let p3 = new ParameterClass("CostPrice" + model.id, "CostPrice", "0", 1);
+        let p1 = new ParameterClass("Cost" + model.id, "Cost", "0", 1);
+        let p2 = new ParameterClass("Rate" + model.id, "Rate", "0", 1);
+        let p3 = new ParameterClass("Price" + model.id, "Price", "0", 1);
         model.parameters = [p1, p2, p3];
         this.componentService.create(model).subscribe((data) => {
           this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
@@ -654,24 +654,25 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     g.append("text")
                       .attr("x", element.x + 20)
                       .attr("y", py)
-                      .text((param.name || param.id) + " - " + (this.formulaSaver[param.id] || (this.formulaSaverOld[param.id] || "")));
+                      .text((param.name || param.id) + " - " + (parseFloat(this.formulaSaver[param.id] || (this.formulaSaverOld[param.id]) || "").toFixed(1)));
 
                   } else {
                     g.append("text")
                       .attr("x", element.x + 20)
                       .attr("y", py)
-                      .text((param.name || param.id) + " - " + (v || ""));
+                      .text((param.name || param.id) + " - " + parseFloat(v || "").toFixed(1));
                   }
 
                   break;
                 case "Input":
                   let gI = g.append("g");
                   gI.append("text")
-                    .attr("x", element.x)
+                    .attr("x", element.x + 15)
                     .attr("y", py)
                     .text((param.name || param.id) + " - ");
+                  let l = (param.name || param.id).length;
                   gI.append("foreignObject")
-                    .attr("x", element.x + ((param.name || param.id).length * 11))
+                    .attr("x", element.x + (l < 7 ? l * 9 : l * 7) + 15)
                     .attr("y", py - 15)
                     .attr("width", 50)
                     .attr("height", 16)
@@ -681,7 +682,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     });
                   let inputElement: any = document.getElementById(`${index}-${paramIndex}`);
                   let self = this;
-                  inputElement.onkeypress = function (e) {
+                  inputElement.onchange = function (e) {
                     setTimeout(() => {
                       self.dragSelected = index;
                       self.data[index].parameters[paramIndex].value = inputElement.value.toString();
@@ -698,9 +699,10 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                   //   .attr("x", element.x)
                   //   .attr("y", py)
                   //   .text((param.name || param.id) + " - ");
+                  let l = (param.name || param.id).length;
                   gR.append("foreignObject")
-                    .attr("x", element.x + ((param.name || param.id).length * 10) - 50)
-                    .attr("y", py - 15)
+                    .attr("x", element.x + ((param.name || param.id).length) + 5)
+                    .attr("y", py - 10)
                     .attr("width", 120)
                     .attr("height", 16)
                     .attr("class", "foreignObject-input-bmp")
@@ -720,8 +722,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     });
                   gR.append("text")
                     .attr("font-size", "10px")
-                    .attr("x", element.x + 40)
-                    .attr("y", py - 10)
+                    .attr("x", element.x + 50)
+                    .attr("y", py - 7)
                     .text((param.name || param.id) + "-" + (param.value));
 
                   self = this;
@@ -734,7 +736,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                         value: rangeElement.value,
                         selected: self.dragSelected
                       });
-                    }, 500);
+                    }, 50);
                   };
 
                   let rangeElementleft: any = document.getElementById(`${index}-${paramIndex}-left`);
@@ -749,7 +751,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                           selected: self.dragSelected
                         });
                       }
-                    }, 200);
+                    }, 20);
                   };
 
                   let rangeElementright: any = document.getElementById(`${index}-${paramIndex}-right`);
@@ -764,7 +766,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                           selected: self.dragSelected
                         });
                       }
-                    }, 200);
+                    }, 20);
                   };
                   break;
                 default:

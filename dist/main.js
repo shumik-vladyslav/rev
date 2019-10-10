@@ -1779,9 +1779,9 @@ var ModelMainComponent = /** @class */ (function () {
             model.modelId = _this.modelId;
             model.userId = _this.user._id;
             model.id = _this.dragType + (_this.data.filter(function (value) { return value.objectClass === _this.dragType; }).length + 1);
-            var p1 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Price" + model.id, "Price", "0", 1);
-            var p2 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Speed" + model.id, "Speed", "0", 1);
-            var p3 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("CostPrice" + model.id, "CostPrice", "0", 1);
+            var p1 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Cost" + model.id, "Cost", "0", 1);
+            var p2 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Rate" + model.id, "Rate", "0", 1);
+            var p3 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Price" + model.id, "Price", "0", 1);
             model.parameters = [p1, p2, p3];
             _this.componentService.create(model).subscribe(function (data) {
                 _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
@@ -1937,23 +1937,24 @@ var ModelMainComponent = /** @class */ (function () {
                                         g_1.append("text")
                                             .attr("x", element.x + 20)
                                             .attr("y", py)
-                                            .text((param.name || param.id) + " - " + (_this.formulaSaver[param.id] || (_this.formulaSaverOld[param.id] || "")));
+                                            .text((param.name || param.id) + " - " + (parseFloat(_this.formulaSaver[param.id] || (_this.formulaSaverOld[param.id]) || "").toFixed(1)));
                                     }
                                     else {
                                         g_1.append("text")
                                             .attr("x", element.x + 20)
                                             .attr("y", py)
-                                            .text((param.name || param.id) + " - " + (v || ""));
+                                            .text((param.name || param.id) + " - " + parseFloat(v || "").toFixed(1));
                                     }
                                     break;
                                 case "Input":
                                     var gI = g_1.append("g");
                                     gI.append("text")
-                                        .attr("x", element.x)
+                                        .attr("x", element.x + 15)
                                         .attr("y", py)
                                         .text((param.name || param.id) + " - ");
+                                    var l = (param.name || param.id).length;
                                     gI.append("foreignObject")
-                                        .attr("x", element.x + ((param.name || param.id).length * 11))
+                                        .attr("x", element.x + (l < 7 ? l * 9 : l * 7) + 15)
                                         .attr("y", py - 15)
                                         .attr("width", 50)
                                         .attr("height", 16)
@@ -1963,7 +1964,7 @@ var ModelMainComponent = /** @class */ (function () {
                                     });
                                     var inputElement_1 = document.getElementById(index + "-" + paramIndex);
                                     var self_1 = _this;
-                                    inputElement_1.onkeypress = function (e) {
+                                    inputElement_1.onchange = function (e) {
                                         setTimeout(function () {
                                             self_1.dragSelected = index;
                                             self_1.data[index].parameters[paramIndex].value = inputElement_1.value.toString();
@@ -1980,9 +1981,10 @@ var ModelMainComponent = /** @class */ (function () {
                                     //   .attr("x", element.x)
                                     //   .attr("y", py)
                                     //   .text((param.name || param.id) + " - ");
+                                    var l = (param.name || param.id).length;
                                     gR.append("foreignObject")
-                                        .attr("x", element.x + ((param.name || param.id).length * 10) - 50)
-                                        .attr("y", py - 15)
+                                        .attr("x", element.x + ((param.name || param.id).length) + 5)
+                                        .attr("y", py - 10)
                                         .attr("width", 120)
                                         .attr("height", 16)
                                         .attr("class", "foreignObject-input-bmp")
@@ -1991,8 +1993,8 @@ var ModelMainComponent = /** @class */ (function () {
                                     });
                                     gR.append("text")
                                         .attr("font-size", "10px")
-                                        .attr("x", element.x + 40)
-                                        .attr("y", py - 10)
+                                        .attr("x", element.x + 50)
+                                        .attr("y", py - 7)
                                         .text((param.name || param.id) + "-" + (param.value));
                                     self_1 = _this;
                                     var rangeElement_1 = document.getElementById(index + "-" + paramIndex);
@@ -2004,7 +2006,7 @@ var ModelMainComponent = /** @class */ (function () {
                                                 value: rangeElement_1.value,
                                                 selected: self_1.dragSelected
                                             });
-                                        }, 500);
+                                        }, 50);
                                     };
                                     var rangeElementleft = document.getElementById(index + "-" + paramIndex + "-left");
                                     rangeElementleft.onclick = function (e) {
@@ -2018,7 +2020,7 @@ var ModelMainComponent = /** @class */ (function () {
                                                     selected: self_1.dragSelected
                                                 });
                                             }
-                                        }, 200);
+                                        }, 20);
                                     };
                                     var rangeElementright = document.getElementById(index + "-" + paramIndex + "-right");
                                     rangeElementright.onclick = function (e) {
@@ -2032,7 +2034,7 @@ var ModelMainComponent = /** @class */ (function () {
                                                     selected: self_1.dragSelected
                                                 });
                                             }
-                                        }, 200);
+                                        }, 20);
                                     };
                                     break;
                                 default:
