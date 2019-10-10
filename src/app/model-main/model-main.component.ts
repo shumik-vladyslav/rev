@@ -168,18 +168,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     // }
 
     if (event.keyCode === 90 && (event.ctrlKey || event.metaKey)) {
-      if (this.saverComponent) {
-        let arr = this.saverComponent[this.saverComponent.length - 2];
-        if (arr && this.saverComponent.length > 1) {
-          this.data = JSON.parse(JSON.stringify( arr ));
-          this.saverComponent.pop();
-          this.clear();
-          this.data.forEach(element => {
-            this.componentService.update(element).subscribe((data) => {
-            });
-          });
-        }
-      }
+      this.undo();
     }
 
     if (event.keyCode === 27) {
@@ -248,6 +237,21 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     this.init();
   }
 
+  undo(){
+    if (this.saverComponent) {
+      let arr = this.saverComponent[this.saverComponent.length - 2];
+      if (arr && this.saverComponent.length > 1) {
+        this.data = JSON.parse(JSON.stringify( arr ));
+        this.saverComponent.pop();
+        this.clear();
+        this.data.forEach(element => {
+          this.componentService.update(element).subscribe((data) => {
+          });
+        });
+      }
+    }
+  }
+
   init() {
 
     this.menuInit();
@@ -301,6 +305,30 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
       .datum({})
       .attr("class", "coco-bpm-d3-zoom-wrap");
     let g1 = g;
+    let icon1 = g1
+    .append("svg")
+    .attr("width", "14")
+    .attr("height", "14")
+    .attr("viewBox", "0 0 14 14")
+    .on("click", () => {
+      console.log(23);
+      this.undo();
+    })
+    .append("g")
+    .attr("fill", "#2196F3")
+    .attr("transform", "translate(-384.000000, -144.000000)")
+    .attr("fill-rule", "nonzero");
+
+    icon1
+      .append("path")
+      .attr(
+        "d",
+        "M391.5,157 C389.014719,157 387,154.985281 387,152.5 C387,152.331018 387.009314,152.164211 387.027464,152 L385.018945,152 C385.00639,152.165053 385,152.33178 385,152.5 C385,156.089851 387.910149,159 391.5,159 C395.089851,159 398,156.089851 398,152.5 C398,149.078368 395.356198,146.27423 392,146.018945 L392,148.027464 C394.249941,148.27615 396,150.183701 396,152.5 C396,154.985281 393.985281,157 391.5,157 L391.5,157 Z M388,147 L392,150 L392,144 L388,147 L388,147 Z M388,147"
+      );
+
+
+
+
     let icon = g1
       .append("svg")
       .attr("width", "14")
@@ -673,7 +701,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                   let l = (param.name || param.id).length;
                   gI.append("foreignObject")
                     .attr("x", element.x + (l < 7 ? l * 9 : l * 7) + 15)
-                    .attr("y", py - 15)
+                    .attr("y", py - 13)
                     .attr("width", 50)
                     .attr("height", 16)
                     .attr("class", "foreignObject-input-bmp")
@@ -699,7 +727,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                   //   .attr("x", element.x)
                   //   .attr("y", py)
                   //   .text((param.name || param.id) + " - ");
-                  let l = (param.name || param.id).length;
+                   l = (param.name || param.id).length;
                   gR.append("foreignObject")
                     .attr("x", element.x + ((param.name || param.id).length) + 5)
                     .attr("y", py - 10)
@@ -723,7 +751,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                   gR.append("text")
                     .attr("font-size", "10px")
                     .attr("x", element.x + 50)
-                    .attr("y", py - 7)
+                    .attr("y", py - 6)
                     .text((param.name || param.id) + "-" + (param.value));
 
                   self = this;
@@ -832,16 +860,17 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         // self.start_y + (d3.event.y - self.start_y) / current_scale;
         self.removeAll();
         self.drow();
-        self.txtQueryChanged.next({
-          value: self.zoomTrans,
-          selected: self.dragSelected,
-          drag: 1
-        });
+
 
       }
 
       function dragended(d) {
         d3.select(this).classed("active", false);
+        self.txtQueryChanged.next({
+          value: self.zoomTrans,
+          selected: self.dragSelected,
+          drag: 1
+        });
       }
     });
   }
