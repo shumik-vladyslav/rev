@@ -1426,6 +1426,7 @@ var ModelMainComponent = /** @class */ (function () {
         this.optionsModal = {};
         this.formulaSaverOld = {};
         this.saverComponent = [];
+        this.modelsKeys = {};
         this.formulaSaver = {};
         this.txtQueryChanged = new rxjs__WEBPACK_IMPORTED_MODULE_7__["Subject"]();
         this.newParametr = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("", "", "0", "");
@@ -1438,12 +1439,17 @@ var ModelMainComponent = /** @class */ (function () {
                     _this.formulaData = data;
                 });
                 _this.modelList = data;
+                _this.modelList.forEach(function (model) {
+                    _this.modelsKeys[model._id] = model.id;
+                });
                 _this.componentService.getAllById(_this.modelId).subscribe(function (data) {
                     _this.data = data;
                     _this.saverComponent = [JSON.parse(JSON.stringify(_this.data))];
                     console.log(data);
                     _this.calc();
                     setTimeout(function () {
+                        _this.removeAll();
+                        _this.drowLines();
                         _this.drow();
                     }, 1000);
                 });
@@ -1466,7 +1472,6 @@ var ModelMainComponent = /** @class */ (function () {
                 if (!model.drag) {
                     _this.componentService.getAllByUserId(_this.user._id).subscribe(function (data) {
                         _this.formulaData = data;
-                        _this.formulaSaverOld = Object.assign(_this.formulaSaver, {});
                         _this.formulaSaver = {};
                         _this.calc();
                     });
@@ -1587,10 +1592,18 @@ var ModelMainComponent = /** @class */ (function () {
             if (arr && this.saverComponent.length > 1) {
                 this.data = JSON.parse(JSON.stringify(arr));
                 this.saverComponent.pop();
-                this.clear();
                 this.data.forEach(function (element) {
                     _this.componentService.update(element).subscribe(function (data) {
                     });
+                });
+                this.componentService.getAllByUserId(this.user._id).subscribe(function (data) {
+                    _this.formulaData = data;
+                    _this.formulaSaver = {};
+                    _this.calc();
+                    // this.removeAll();
+                    // this.drowLines();
+                    // this.clear();
+                    // this.drow();
                 });
             }
         }
@@ -1646,7 +1659,6 @@ var ModelMainComponent = /** @class */ (function () {
             .attr("height", "14")
             .attr("viewBox", "0 0 14 14")
             .on("click", function () {
-            console.log(23);
             _this.undo();
         })
             .append("g")
@@ -1799,9 +1811,9 @@ var ModelMainComponent = /** @class */ (function () {
             model.modelId = _this.modelId;
             model.userId = _this.user._id;
             model.id = _this.dragType + (_this.data.filter(function (value) { return value.objectClass === _this.dragType; }).length + 1);
-            var p1 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Cost" + model.id, "Cost", "0", 1);
-            var p2 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Rate" + model.id, "Rate", "0", 1);
-            var p3 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Price" + model.id, "Price", "0", 1);
+            var p1 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Cost", "Cost", "0", 1);
+            var p2 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Rate", "Rate", "0", 1);
+            var p3 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Price", "Price", "0", 1);
             model.parameters = [p1, p2, p3];
             _this.componentService.create(model).subscribe(function (data) {
                 _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
@@ -1833,7 +1845,7 @@ var ModelMainComponent = /** @class */ (function () {
                         }
                     });
                     var h = (60 + (count_1 > 3 ? ((count_1 - 3) * 16 + (count_1 * 5)) : 0));
-                    var selected = +_this.selected === +index ? "stroke-width:1;stroke:rgb(0,0,0)" : "";
+                    var selected = (_this.selected !== null && (+_this.selected === +index)) ? "stroke-width:1;stroke:rgb(0,0,0)" : "";
                     var g_1 = _this.conteiner.append("g").attr("class", "g");
                     g_1.append("rect")
                         .attr("class", "nodes")
@@ -1862,22 +1874,19 @@ var ModelMainComponent = /** @class */ (function () {
                     })
                         .on("click", function (d, i, s) {
                         d3.event.stopPropagation();
-                        _this.selected = s[0].id;
-                        _this.removeAll();
-                        _this.drow();
                         if (_this.activeArrow)
                             _this.shepClick(s[0].id);
                     })
                         .on("dblclick", function (d, i, s) {
                         _this.selectedModal = s[0].id;
                         var name = _this.data[_this.selectedModal].objectClass + (_this.data[_this.selectedModal].parameters.length + 1);
-                        _this.newParametr = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Par" + (_this.data.filter(function (value) { return value.objectClass === _this.data[_this.selectedModal].objectClass; }).length + 1) + name, "", "0");
+                        _this.newParametr = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Par" + (_this.data.filter(function (value) { return value.objectClass === _this.data[_this.selectedModal].objectClass; }).length + 1), "", "0");
                         _this.showSide = true;
+                        _this.selected = s[0].id;
                         _this.removeAll();
                         _this.drow();
                         _this.activeArrow = null;
                         _this.startDrowLine = null;
-                        _this.selected = null;
                     });
                     g_1.append("text")
                         .attr("x", element.x - 5)
@@ -1939,12 +1948,7 @@ var ModelMainComponent = /** @class */ (function () {
                                         spcaSpit_1.forEach(function (element, index) {
                                             var earr = element.split(".");
                                             if (earr.length == 3) {
-                                                if (_this.formulaSaver[earr[2]]) {
-                                                    spcaSpit_1[index] = _this.formulaSaver[earr[2]];
-                                                }
-                                                else {
-                                                    spcaSpit_1[index] = _this.formulaSaver[element];
-                                                }
+                                                spcaSpit_1[index] = _this.formulaSaver[element];
                                             }
                                         });
                                         spcaSpit_1.shift();
@@ -2020,17 +2024,19 @@ var ModelMainComponent = /** @class */ (function () {
                                     var rangeElement_1 = document.getElementById(index + "-" + paramIndex);
                                     rangeElement_1.onchange = function (e) {
                                         setTimeout(function () {
-                                            self_1.dragSelected = index;
-                                            self_1.data[index].parameters[paramIndex].value = rangeElement_1.value.toString();
-                                            self_1.txtQueryChanged.next({
+                                            console.log(22);
+                                            _this.dragSelected = index;
+                                            _this.data[index].parameters[paramIndex].value = rangeElement_1.value.toString();
+                                            _this.txtQueryChanged.next({
                                                 value: rangeElement_1.value,
-                                                selected: self_1.dragSelected
+                                                selected: _this.dragSelected
                                             });
-                                        }, 50);
+                                        }, 150);
                                     };
                                     var rangeElementleft = document.getElementById(index + "-" + paramIndex + "-left");
                                     rangeElementleft.onclick = function (e) {
                                         setTimeout(function () {
+                                            console.log(2);
                                             var value = +rangeElement_1.value - +param.sliderStep;
                                             if (value > param.sliderMin) {
                                                 self_1.dragSelected = index;
@@ -2139,7 +2145,7 @@ var ModelMainComponent = /** @class */ (function () {
         var _this = this;
         data.forEach(function (comp) {
             comp.parameters.forEach(function (param) {
-                if (param.id === arr[2]) {
+                if (_this.modelsKeys[comp.modelId] === arr[0] && comp.id === arr[1] && param.id === arr[2]) {
                     _this.formulaSaver[element] = param.value;
                 }
             });

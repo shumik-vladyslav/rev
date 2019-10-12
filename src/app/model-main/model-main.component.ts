@@ -55,6 +55,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   setInterval;
   formulaSaverOld = {};
   saverComponent = [];
+  modelsKeys = {};
 
   constructor(
     private modelService: ModelService,
@@ -72,6 +73,9 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
           this.formulaData = data;
         });
         this.modelList = data;
+        this.modelList.forEach((model) => {
+          this.modelsKeys[model._id] = model.id;
+        })
         this.componentService.getAllById(this.modelId).subscribe((data: any) => {
           this.data = data;
           this.saverComponent = [JSON.parse(JSON.stringify( this.data ))];
@@ -79,6 +83,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
           this.calc();
           setTimeout(() => {
+            this.removeAll();
+            this.drowLines();
             this.drow();
           }, 1000);
         });
@@ -105,7 +111,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
           if (!model.drag) {
             this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
               this.formulaData = data;
-              this.formulaSaverOld = Object.assign(this.formulaSaver, {});
               this.formulaSaver = {};
               this.calc();
             });
@@ -125,7 +130,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         if (element.value) {
           let v = element.value;
           let spcaSpit = v.split(" ");
-
           spcaSpit.forEach((element, index) => {
             let earr = element.split(".");
             if (earr.length == 3) {
@@ -137,7 +141,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     });
-
   }
 
   clear() {
@@ -243,10 +246,19 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
       if (arr && this.saverComponent.length > 1) {
         this.data = JSON.parse(JSON.stringify( arr ));
         this.saverComponent.pop();
-        this.clear();
+
         this.data.forEach(element => {
           this.componentService.update(element).subscribe((data) => {
           });
+        });
+        this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
+          this.formulaData = data;
+          this.formulaSaver = {};
+          this.calc();
+          // this.removeAll();
+          // this.drowLines();
+          // this.clear();
+          // this.drow();
         });
       }
     }
@@ -311,7 +323,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     .attr("height", "14")
     .attr("viewBox", "0 0 14 14")
     .on("click", () => {
-      console.log(23);
       this.undo();
     })
     .append("g")
@@ -325,9 +336,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         "d",
         "M391.5,157 C389.014719,157 387,154.985281 387,152.5 C387,152.331018 387.009314,152.164211 387.027464,152 L385.018945,152 C385.00639,152.165053 385,152.33178 385,152.5 C385,156.089851 387.910149,159 391.5,159 C395.089851,159 398,156.089851 398,152.5 C398,149.078368 395.356198,146.27423 392,146.018945 L392,148.027464 C394.249941,148.27615 396,150.183701 396,152.5 C396,154.985281 393.985281,157 391.5,157 L391.5,157 Z M388,147 L392,150 L392,144 L388,147 L388,147 Z M388,147"
       );
-
-
-
 
     let icon = g1
       .append("svg")
@@ -501,9 +509,9 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         model.modelId = this.modelId;
         model.userId = this.user._id;
         model.id = this.dragType + (this.data.filter(value => value.objectClass === this.dragType).length + 1);
-        let p1 = new ParameterClass("Cost" + model.id, "Cost", "0", 1);
-        let p2 = new ParameterClass("Rate" + model.id, "Rate", "0", 1);
-        let p3 = new ParameterClass("Price" + model.id, "Price", "0", 1);
+        let p1 = new ParameterClass("Cost", "Cost", "0", 1);
+        let p2 = new ParameterClass("Rate", "Rate", "0", 1);
+        let p3 = new ParameterClass("Price", "Price", "0", 1);
         model.parameters = [p1, p2, p3];
         this.componentService.create(model).subscribe((data) => {
           this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
@@ -541,7 +549,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
           });
 
           let h = (60 + (count > 3 ? ((count - 3) * 16 + (count * 5)) : 0));
-          let selected = +this.selected === +index ? "stroke-width:1;stroke:rgb(0,0,0)" : "";
+          let selected = (this.selected !== null && (+this.selected === +index)) ? "stroke-width:1;stroke:rgb(0,0,0)" : "";
           let g = this.conteiner.append("g").attr("class", "g");
           g.append("rect")
             .attr("class", "nodes")
@@ -576,22 +584,19 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             })
             .on("click", (d, i, s) => {
               d3.event.stopPropagation();
-              this.selected = s[0].id;
-              this.removeAll();
-              this.drow();
               if (this.activeArrow)
                 this.shepClick(s[0].id);
             })
             .on("dblclick", (d, i, s) => {
               this.selectedModal = s[0].id;
               let name = this.data[this.selectedModal].objectClass + (this.data[this.selectedModal].parameters.length + 1);
-              this.newParametr = new ParameterClass("Par" + (this.data.filter(value => value.objectClass === this.data[this.selectedModal].objectClass).length + 1) + name, "", "0")
+              this.newParametr = new ParameterClass("Par" + (this.data.filter(value => value.objectClass === this.data[this.selectedModal].objectClass).length + 1), "", "0")
               this.showSide = true;
+              this.selected = s[0].id;
               this.removeAll();
               this.drow();
               this.activeArrow = null;
               this.startDrowLine = null;
-              this.selected = null;
             });
 
           g.append("text")
@@ -665,11 +670,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     spcaSpit.forEach((element, index) => {
                       let earr = element.split(".");
                       if (earr.length == 3) {
-                        if (this.formulaSaver[earr[2]]) {
-                          spcaSpit[index] = this.formulaSaver[earr[2]];
-                        } else {
                           spcaSpit[index] = this.formulaSaver[element];
-                        }
                       }
                     });
                     spcaSpit.shift();
@@ -756,21 +757,23 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
                   self = this;
                   let rangeElement: any = document.getElementById(`${index}-${paramIndex}`);
-                  rangeElement.onchange = function (e) {
+                  rangeElement.onchange =  (e) => {
                     setTimeout(() => {
-                      self.dragSelected = index;
-                      self.data[index].parameters[paramIndex].value = rangeElement.value.toString();
-                      self.txtQueryChanged.next({
+                      console.log(22);   this.dragSelected = index;
+                      this.data[index].parameters[paramIndex].value = rangeElement.value.toString();
+                      this.txtQueryChanged.next({
                         value: rangeElement.value,
-                        selected: self.dragSelected
+                        selected: this.dragSelected
                       });
-                    }, 50);
+                    }, 150);
                   };
 
                   let rangeElementleft: any = document.getElementById(`${index}-${paramIndex}-left`);
                   rangeElementleft.onclick = function (e) {
+                    
                     setTimeout(() => {
-                      let value = +rangeElement.value - +param.sliderStep;
+                    console.log(2);
+                    let value = +rangeElement.value - +param.sliderStep;
                       if (value > param.sliderMin) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
@@ -895,7 +898,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   formulaDataSearch(data, arr, element) {
     data.forEach(comp => {
       comp.parameters.forEach(param => {
-        if (param.id === arr[2]) {
+        if (this.modelsKeys[comp.modelId] === arr[0] && comp.id === arr[1] && param.id === arr[2]) {
           this.formulaSaver[element] = param.value;
         }
       });
