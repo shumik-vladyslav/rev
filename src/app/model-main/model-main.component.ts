@@ -154,6 +154,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     this.startDrowLine = null;
     this.removeAll();
     this.drowLines();
+    console.log(8)
     this.drow();
   }
 
@@ -528,6 +529,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   drow() {
     this.drowLines();
 
+    console.log(2323)
+
     this.data.forEach((element, index, arr) => {
       switch (element.objectClass) {
         case "Input":
@@ -675,7 +678,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     });
                     spcaSpit.shift();
                     try {
-                      this.formulaSaver[param.id] = this.notEval(spcaSpit.join(''));
+                      this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] = this.notEval(spcaSpit.join(''));
                     } catch {
                       this.calc();
                     }
@@ -683,7 +686,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     g.append("text")
                       .attr("x", element.x + 20)
                       .attr("y", py)
-                      .text((param.name || param.id) + " - " + (parseFloat(this.formulaSaver[param.id] || (this.formulaSaverOld[param.id]) || "").toFixed(1)));
+                      .text((param.name || param.id) + " - " + (parseFloat(this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] || "").toFixed(1)));
 
                   } else {
                     g.append("text")
@@ -729,6 +732,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                   //   .attr("y", py)
                   //   .text((param.name || param.id) + " - ");
                    l = (param.name || param.id).length;
+                   console.log(param)
                   gR.append("foreignObject")
                     .attr("x", element.x + ((param.name || param.id).length) + 5)
                     .attr("y", py - 10)
@@ -741,8 +745,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                       <input id="${index}-${paramIndex}-left" class="range-button" type="button" value="<">
                       </input>
                       <input id="${index}-${paramIndex}" type="range" 
-                      min="${param.sliderMin}" max="${param.sliderMax}" 
-                      step="${param.Step}" value="${param.value}" />
+                      min="${+param.sliderMin - 1}" max="${+param.sliderMax + 1}" 
+                      step="${param.sliderStep}" value="${param.value}" />
                       <input id="${index}-${paramIndex}-right" class="range-button" type="button" value=">">
                       </input>
                       </div>
@@ -753,13 +757,13 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     .attr("font-size", "10px")
                     .attr("x", element.x + 50)
                     .attr("y", py - 6)
-                    .text((param.name || param.id) + "-" + (param.value));
+                    .text((param.name || param.id) + "-" + parseFloat(param.value || "").toFixed(1));
 
                   self = this;
                   let rangeElement: any = document.getElementById(`${index}-${paramIndex}`);
                   rangeElement.onchange =  (e) => {
                     setTimeout(() => {
-                      console.log(22);   this.dragSelected = index;
+                      this.dragSelected = index;
                       this.data[index].parameters[paramIndex].value = rangeElement.value.toString();
                       this.txtQueryChanged.next({
                         value: rangeElement.value,
@@ -772,9 +776,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                   rangeElementleft.onclick = function (e) {
                     
                     setTimeout(() => {
-                    console.log(2);
                     let value = +rangeElement.value - +param.sliderStep;
-                      if (value > param.sliderMin) {
+                      if (value >= param.sliderMin) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
                         self.txtQueryChanged.next({
@@ -789,7 +792,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                   rangeElementright.onclick = function (e) {
                     setTimeout(() => {
                       let value = +rangeElement.value + +param.sliderStep;
-                      if (value < param.sliderMax) {
+                      if (value <= param.sliderMax) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
                         self.txtQueryChanged.next({
@@ -899,12 +902,13 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     data.forEach(comp => {
       comp.parameters.forEach(param => {
         if (this.modelsKeys[comp.modelId] === arr[0] && comp.id === arr[1] && param.id === arr[2]) {
-          this.formulaSaver[element] = param.value;
+          this.formulaSaver[element] = +param.value;
         }
       });
     });
-
-    this.clear();
+    setTimeout(() => {
+      this.clear();
+    }, 200);
   }
 
   clickArrow;

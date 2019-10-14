@@ -32,7 +32,7 @@ if (error) {
 
 const config = {
   env: envVars.NODE_ENV,
-  // port: envVars.SERVER_PORT,
+  port: envVars.SERVER_PORT,
   // "ng": "ng",
   // "serve": "node server",
   // "start": "concurrently -c \"yellow.bold,green.bold\" -n \"SERVER,BUILD\" \"nodemon server\" \"ng build --watch\"",
@@ -47,7 +47,7 @@ const config = {
 //  JWT_SECRET=0a6b944d-d2fb-46fc-a85e-0295c986cd9g               
 //   MONGO_HOST=mongodb://localhost:27017/cogintech                                                                          
 //   MEAN_FRONTEND=angular 
-  port: process.env.PORT,
+  // port: process.env.PORT,
   mongooseDebug: envVars.MONGOOSE_DEBUG,
   jwtSecret: envVars.JWT_SECRET,
   frontend: envVars.MEAN_FRONTEND || 'angular',
