@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { DialogCreateModelComponent } from '../shared/components/dialog-create-model/dialog-create-model.component';
 import { ModelClass } from '../shared/model';
+import { UI } from 'formulize';
 
 @Component({
   selector: 'app-model-list',
@@ -31,6 +32,20 @@ export class ModelListComponent implements OnInit {
         this.data = data;
       });
     });
+
+    setTimeout(() => {
+      
+const target = document.getElementById('formulize');
+const formulize = new UI(target, {
+});
+
+const data = {
+  operator: '*',
+  operand1: { value: { type: 'unit', unit: 1 } },
+  operand2: { value: { type: 'unit', unit: 2 } }
+};
+formulize.setData(data);
+    }, 5000);
   }
 
   openDialog(): void {

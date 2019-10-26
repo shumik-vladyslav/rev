@@ -1922,15 +1922,6 @@ var ModelMainComponent = /** @class */ (function () {
                         .attr("x", element.x)
                         .attr("y", element.y + 5)
                         .text("|||")
-                        .on("click", function (d, i, s) {
-                        d3.event.stopPropagation();
-                        var id = s[0].id.split("-")[0];
-                        _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
-                        _this.componentService.delete(_this.data[id]).subscribe(function (data) {
-                            _this.data.splice(id, 1);
-                            _this.clear();
-                        });
-                    })
                         .call(d3
                         .drag()
                         .on("start", dragstarted)

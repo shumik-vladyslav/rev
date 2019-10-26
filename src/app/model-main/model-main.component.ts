@@ -639,16 +639,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             .attr("x", element.x)
             .attr("y", element.y + 5)
             .text("|||")
-            .on("click", (d, i, s) => {
-              d3.event.stopPropagation();
-              let id = s[0].id.split("-")[0];
-              this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
-              this.componentService.delete(this.data[id]).subscribe((data) => {
-                this.data.splice(id, 1);
-
-                this.clear();
-              });
-            })
             .call(
               d3
                 .drag()
