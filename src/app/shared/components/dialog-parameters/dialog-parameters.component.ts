@@ -26,9 +26,62 @@ export class DialogParametersComponent implements OnInit {
   ngOnInit(): void {
     this.listModel = this.data.list;
     // this.formula = this.data.formula;
-    this.formula = this.data.formula.charAt(0) !== '=' ? ("=" + this.data.formula) : this.data.formula;
+    this.formula = this.data.formula.charAt(0) !== '=' ? this.data.formula : this.data.formula.slice(2); 
+    this.formulaArr = this.formula.split(' ');
     this.sleectedModel = this.data.modelId;
     this.modelChange(this.sleectedModel);
+  }
+  formulaData = "";
+  formulaArr;
+  formulaIndex;
+  formulaItemClick(item, i){
+    let fiend = this.formulaArr.indexOf("|");
+    if(fiend > -1 && fiend < i ){
+      i--
+    }
+    console.log(item, i);
+    this.removeSpace();
+    this.formulaIndex = i ;
+    this.formulaArr.splice(i, 0, "|");
+  }
+
+  removeSpace(){
+    this.formulaArr.forEach((e, i) => {
+      if(e === "|") {
+        this.formulaArr.splice(i, 1);
+      }
+    });
+  }
+
+  keyFormula(e) {
+    console.log(e)
+    // backspace
+      if ((e.keyCode === 8 || e.keyCode === 46)) {
+        console.log(2)
+        this.formulaArr.splice(this.formulaIndex - 1 , 1);
+        this.formulaIndex--;
+      }
+  }
+
+  changeForumula(e) {
+    let char = e.substr(e.length - 1);
+    console.log(e)
+    if (this.reOperator.test(char)) {
+      this.formulaArr.splice(this.formulaIndex, 0, char);
+      this.formulaIndex++;
+    }
+    if (this.reNumber.test(char)) {
+      if (this.reNumber.test(this.formulaArr[this.formulaIndex - 1])) {
+        this.formulaArr[this.formulaIndex - 1] += char;
+      } else {
+        this.formulaArr.splice(this.formulaIndex, 0, char);
+        this.formulaIndex++;
+      }
+    }
+  }
+
+  formulaWrapClick(){
+    console.log(23)
   }
 
   modelChange(id) {
@@ -63,36 +116,41 @@ export class DialogParametersComponent implements OnInit {
   }
 
   ok() {
-    let spcaSpit = this.formula.split(" ");
-    let valid = true;
-    spcaSpit.forEach((item) => {
-      let arr = item.split(".");
-      if (arr.length == 2) {
-        this.listModel.forEach((model, modelIndex) => {
-          let validModel;
-          if (model.id === arr[0]) {
-            validModel = true;
-            let validParam = false;
-            this.listParams.forEach((comp, index) => {
-              if (comp.id === arr[1]) {
-                validParam = true
-              }
+    this.removeSpace();
+    this.formulaArr.unshift("=");
+    console.log(this.formulaArr, this.formulaArr.join(" "));
+    this.formula = this.formulaArr.join(" ");
+    this.dialogRef.close({ formula: this.formula });
+    // let spcaSpit = this.formula.split(" ");
+    // let valid = true;
+    // spcaSpit.forEach((item) => {
+    //   let arr = item.split(".");
+    //   if (arr.length == 2) {
+    //     this.listModel.forEach((model, modelIndex) => {
+    //       let validModel;
+    //       if (model.id === arr[0]) {
+    //         validModel = true;
+    //         let validParam = false;
+    //         this.listParams.forEach((comp, index) => {
+    //           if (comp.id === arr[1]) {
+    //             validParam = true
+    //           }
 
-              if (this.listParams.length === (index + 1) && !validParam) {
-                valid = false;
-              }
-            })
-          }
-          if (this.listModel.length === (modelIndex + 1) && !validModel) {
-            valid = false;
-          }
-        })
-      }
-    })
+    //           if (this.listParams.length === (index + 1) && !validParam) {
+    //             valid = false;
+    //           }
+    //         })
+    //       }
+    //       if (this.listModel.length === (modelIndex + 1) && !validModel) {
+    //         valid = false;
+    //       }
+    //     })
+    //   }
+    // })
 
-    if (valid) {
-      this.dialogRef.close({ formula: this.formula });
-    }
+    // if (valid) {
+    //   this.dialogRef.close({ formula: this.formula });
+    // }
   }
 
   selectedFormulaVar = "";
@@ -131,8 +189,8 @@ export class DialogParametersComponent implements OnInit {
   }
 
   re = /^\s{0,1}\d+[.]?(\d+)?(\s{0,1}[+|(\-)|*|/]+\s{0,1}\d+[.]?(\d+)?)*\s{0,1}$/;
-  reOperator = /^[+\-*/]$/mg;
-  reNumber = /[0-9]/;
+  reOperator = /^[+\-*/]/;
+  reNumber = /^\d/;
   reDigit = /^[0-9]*.([0-9]+)?$/mg;
   keyPeriod = true;
   boolLastOperator;

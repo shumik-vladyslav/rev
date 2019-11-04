@@ -32,27 +32,39 @@
       </mat-option>
     </mat-select>
   </mat-form-field>
+  <div style="width: 40%; padding: 20px 0 0 20px;">
+    <div class="full-width">
+      <!-- [disabled]="!boolLastOperator" -->
+      <button [matTooltip]="!boolLastOperator ? 'Before add math operator: +, -, *, /' : null" (click)="add()" class="full-width" mat-raised-button color="primary" mat-button>
+        <= ADD</button> </div>
+          <button (click)="test()" class="func" mat-raised-button color="primary" mat-button>
+            <i>
+              f(x)
+            </i>
+          </button>
+  </div>
   <div class="textarea-wrap">
-    <div style="width: 60%; position: relative;">
-      <mat-form-field style="width: 100%" class="example-full-width">
-        <!-- (ngModelChange)="change($event)" -->
-        <textarea #textArea [(ngModel)]="formula" (ngModelChange)="change($event)" (keydown)="checkPattern($event)"
-          matInput></textarea>
-      </mat-form-field>
-      <div (click)="textArea.focus()" class="text-area-shield"></div>
-    </div>
-    <div style="width: 40%; padding: 20px 0 0 20px;">
-      <div class="full-width">
-        <!-- [disabled]="!boolLastOperator" -->
-        <button [matTooltip]="!boolLastOperator ? 'Before add math operator: +, -, *, /' : null" (click)="add()" class="full-width" mat-raised-button color="primary" mat-button>
-          <= ADD</button> </div> <div class="df jc-c">
-            <button (click)="test()" class="func" mat-raised-button color="primary" mat-button>
-              <i>
-                f(x)
-              </i>
-            </button>
+    <div style="width: 100%; position: relative;">
+      <div (click)="formulaWrapClick();textArea.focus()" class="formula-wrap">
+        <div class="formula-item-wrap" *ngFor="let item of formulaArr;let i = index">
+            <div *ngIf="(item !== '|') && (i === 0 || (formulaArr[i - 1] && formulaArr[i - 1] !== '|'))" (click)="formulaItemClick(item, i)" class="formula-item-space"></div>
+            <div class="formula-item">
+              {{item}}
+            </div>
+            <div *ngIf="(i === (formulaArr.length - 1)) && item !== '|'" (click)="formulaItemClick(item, i+1)" class="formula-item-space"></div>
+        </div>
       </div>
+      <!-- formula-text -->
+      <mat-form-field style="width: 100%" class=" example-full-width">
+        <!-- (ngModelChange)="change($event)" -->
+        <!-- [(ngModel)]="formula" (ngModelChange)="change($event)" (keydown)="checkPattern($event)" -->
+        <textarea #textArea matInput [(ngModel)]="formulaData" 
+        (ngModelChange)="changeForumula($event)" (keydown)="keyFormula($event)"></textarea>
+          
+      </mat-form-field>
+      <!-- <div (click)="textArea.focus()" class="text-area-shield"></div> -->
     </div>
+
   </div>
 </div>
 <div mat-dialog-actions class="jc-c df">

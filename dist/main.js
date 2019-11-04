@@ -1238,7 +1238,7 @@ var CatchErrorInterceptor = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"wrap\">\r\n  <div class=\"head\">\r\n    <div class=\"df ai-c\">\r\n      <div class=\"title\">\r\n        Recently Active\r\n      </div>\r\n      <!-- <div class=\"subtitle\">\r\n        Diagrams last changed by you\r\n      </div> -->\r\n    </div>\r\n    <div>\r\n      <button\r\n        (click)=\"openDialog()\"\r\n        mat-raised-button\r\n        color=\"primary\"\r\n      >\r\n        New project\r\n      </button>\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"model-list\">\r\n    <div *ngFor=\"let item of data\" class=\"model-wrap\">\r\n      <div [routerLink]=\"['/model/'+item._id]\" class=\"model\">\r\n        <div class=\"img-wrap\">\r\n          <img src=\"http://www.ucodice.com/kinglinkr/front/img/circle.png\" alt=\"\" />\r\n        </div>\r\n        <div>\r\n          <div class=\"name\">\r\n            {{item.name}}\r\n          </div>\r\n          <div class=\"desc\">\r\n            {{item.description}}\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n"
+module.exports = "<div class=\"wrap\">\r\n  <div class=\"head\">\r\n    <div class=\"df ai-c\">\r\n      <div class=\"title\">\r\n        Recently Active\r\n      </div>\r\n      <div id=\"formulize\"></div>\r\n      <!-- <div class=\"subtitle\">\r\n        Diagrams last changed by you\r\n      </div> -->\r\n    </div>\r\n    <div>\r\n      <button\r\n        (click)=\"openDialog()\"\r\n        mat-raised-button\r\n        color=\"primary\"\r\n      >\r\n        New project\r\n      </button>\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"model-list\">\r\n    <div *ngFor=\"let item of data\" class=\"model-wrap\">\r\n      <div [routerLink]=\"['/model/'+item._id]\" class=\"model\">\r\n        <div class=\"img-wrap\">\r\n          <img src=\"http://www.ucodice.com/kinglinkr/front/img/circle.png\" alt=\"\" />\r\n        </div>\r\n        <div>\r\n          <div class=\"name\">\r\n            {{item.name}}\r\n          </div>\r\n          <div class=\"desc\">\r\n            {{item.description}}\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -1270,6 +1270,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
 /* harmony import */ var _shared_components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../shared/components/dialog-create-model/dialog-create-model.component */ "./src/app/shared/components/dialog-create-model/dialog-create-model.component.ts");
 /* harmony import */ var _shared_model__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../shared/model */ "./src/app/shared/model.ts");
+/* harmony import */ var formulize__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! formulize */ "./node_modules/formulize/dist/formulize.umd.js");
+/* harmony import */ var formulize__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(formulize__WEBPACK_IMPORTED_MODULE_7__);
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1279,6 +1281,7 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 var __metadata = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 
 
 
@@ -1304,6 +1307,16 @@ var ModelListComponent = /** @class */ (function () {
                 _this.data = data;
             });
         });
+        setTimeout(function () {
+            var target = document.getElementById('formulize');
+            var formulize = new formulize__WEBPACK_IMPORTED_MODULE_7__["UI"](target, {});
+            var data = {
+                operator: '*',
+                operand1: { value: { type: 'unit', unit: 1 } },
+                operand2: { value: { type: 'unit', unit: 2 } }
+            };
+            formulize.setData(data);
+        }, 5000);
     };
     ModelListComponent.prototype.openDialog = function () {
         var _this = this;
@@ -2536,7 +2549,7 @@ var DialogCreateModelComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\r\n<div mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>Model</mat-label>\r\n    <mat-select [(ngModel)]=\"sleectedModel\" (ngModelChange)=\"modelChange($event)\">\r\n      <mat-option *ngFor=\"let item of listModel\" [value]=\"item._id\">\r\n        {{item.name}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Class</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedClass\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listClass\" [value]=\"item\">\r\n        {{item}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Object</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedObject\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listObjects | filtrListParam: selectedClass\" [value]=\"item.id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Parameter</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedParam\" (ngModelChange)=\"paramsChange($event)\">\r\n      <mat-option *ngFor=\"let item of listParams | filtrListParam: selectedClass: selectedObject\" [value]=\"item._id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <div class=\"textarea-wrap\">\r\n    <div style=\"width: 60%; position: relative;\">\r\n      <mat-form-field style=\"width: 100%\" class=\"example-full-width\">\r\n        <!-- (ngModelChange)=\"change($event)\" -->\r\n        <textarea #textArea [(ngModel)]=\"formula\" (ngModelChange)=\"change($event)\" (keydown)=\"checkPattern($event)\"\r\n          matInput></textarea>\r\n      </mat-form-field>\r\n      <div (click)=\"textArea.focus()\" class=\"text-area-shield\"></div>\r\n    </div>\r\n    <div style=\"width: 40%; padding: 20px 0 0 20px;\">\r\n      <div class=\"full-width\">\r\n        <!-- [disabled]=\"!boolLastOperator\" -->\r\n        <button [matTooltip]=\"!boolLastOperator ? 'Before add math operator: +, -, *, /' : null\" (click)=\"add()\" class=\"full-width\" mat-raised-button color=\"primary\" mat-button>\r\n          <= ADD</button> </div> <div class=\"df jc-c\">\r\n            <button (click)=\"test()\" class=\"func\" mat-raised-button color=\"primary\" mat-button>\r\n              <i>\r\n                f(x)\r\n              </i>\r\n            </button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button mat-button (click)=\"ok()\" mat-raised-button color=\"primary\" cdkFocusInitial>\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>"
+module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\r\n<div mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>Model</mat-label>\r\n    <mat-select [(ngModel)]=\"sleectedModel\" (ngModelChange)=\"modelChange($event)\">\r\n      <mat-option *ngFor=\"let item of listModel\" [value]=\"item._id\">\r\n        {{item.name}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Class</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedClass\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listClass\" [value]=\"item\">\r\n        {{item}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Object</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedObject\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listObjects | filtrListParam: selectedClass\" [value]=\"item.id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Parameter</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedParam\" (ngModelChange)=\"paramsChange($event)\">\r\n      <mat-option *ngFor=\"let item of listParams | filtrListParam: selectedClass: selectedObject\" [value]=\"item._id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <div style=\"width: 40%; padding: 20px 0 0 20px;\">\r\n    <div class=\"full-width\">\r\n      <!-- [disabled]=\"!boolLastOperator\" -->\r\n      <button [matTooltip]=\"!boolLastOperator ? 'Before add math operator: +, -, *, /' : null\" (click)=\"add()\" class=\"full-width\" mat-raised-button color=\"primary\" mat-button>\r\n        <= ADD</button> </div>\r\n          <button (click)=\"test()\" class=\"func\" mat-raised-button color=\"primary\" mat-button>\r\n            <i>\r\n              f(x)\r\n            </i>\r\n          </button>\r\n  </div>\r\n  <div class=\"textarea-wrap\">\r\n    <div style=\"width: 100%; position: relative;\">\r\n      <div (click)=\"formulaWrapClick();textArea.focus()\" class=\"formula-wrap\">\r\n        <div class=\"formula-item-wrap\" *ngFor=\"let item of formulaArr;let i = index\">\r\n            <div *ngIf=\"(item !== '|') && (i === 0 || (formulaArr[i - 1] && formulaArr[i - 1] !== '|'))\" (click)=\"formulaItemClick(item, i)\" class=\"formula-item-space\"></div>\r\n            <div class=\"formula-item\">\r\n              {{item}}\r\n            </div>\r\n            <div *ngIf=\"(i === (formulaArr.length - 1)) && item !== '|'\" (click)=\"formulaItemClick(item, i+1)\" class=\"formula-item-space\"></div>\r\n        </div>\r\n      </div>\r\n      <!-- formula-text -->\r\n      <mat-form-field style=\"width: 100%\" class=\" example-full-width\">\r\n        <!-- (ngModelChange)=\"change($event)\" -->\r\n        <!-- [(ngModel)]=\"formula\" (ngModelChange)=\"change($event)\" (keydown)=\"checkPattern($event)\" -->\r\n        <textarea #textArea matInput [(ngModel)]=\"formulaData\" \r\n        (ngModelChange)=\"changeForumula($event)\" (keydown)=\"keyFormula($event)\"></textarea>\r\n          \r\n      </mat-form-field>\r\n      <!-- <div (click)=\"textArea.focus()\" class=\"text-area-shield\"></div> -->\r\n    </div>\r\n\r\n  </div>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button mat-button (click)=\"ok()\" mat-raised-button color=\"primary\" cdkFocusInitial>\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>"
 
 /***/ }),
 
@@ -2547,7 +2560,7 @@ module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\r\n<div mat-dialog-co
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".textarea-wrap {\n  display: flex; }\n  .textarea-wrap textarea {\n    height: 170px;\n    border: 1px solid #949494;\n    margin-bottom: -8px;\n    resize: none;\n    background: white;\n    position: relative;\n    z-index: 1;\n    padding: 5px;\n    box-sizing: border-box; }\n  .mat-form-field {\n  display: block; }\n  button.func {\n  min-width: 0;\n  padding: 0 7px;\n  margin-top: 35px; }\n  .text-area-shield {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1; }\n"
+module.exports = ".textarea-wrap {\n  display: flex; }\n  .textarea-wrap textarea {\n    height: 170px;\n    border: 1px solid #949494;\n    margin-bottom: -8px;\n    resize: none;\n    background: white;\n    position: relative;\n    z-index: 1;\n    padding: 5px;\n    box-sizing: border-box; }\n  .mat-form-field {\n  display: block; }\n  button.func {\n  min-width: 0;\n  padding: 0 7px;\n  margin-top: 35px; }\n  .text-area-shield {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1; }\n  .formula-wrap {\n  background-color: #f2f2f2;\n  height: 300px; }\n  .formula-text {\n  opacity: 0;\n  color: transparent;\n  position: absolute;\n  font-size: 0;\n  top: 0;\n  right: 0;\n  width: 100%;\n  height: 100%;\n  text-indent: -10000px;\n  z-index: 20; }\n  .formula-item-wrap {\n  display: inline-flex;\n  position: relative;\n  overflow: hidden; }\n  .formula-item {\n  display: inline;\n  vertical-align: middle;\n  padding: 4px 10px;\n  word-break: break-all;\n  background-color: #ffffff;\n  border-radius: 999px;\n  color: #333333;\n  position: relative;\n  overflow: hidden; }\n  .formula-item-space {\n  width: 10px;\n  height: 25px; }\n"
 
 /***/ }),
 
@@ -2591,20 +2604,69 @@ var DialogParametersComponent = /** @class */ (function () {
         this.listClass = [];
         this.listObjects = [];
         this.listParams = [];
+        this.formulaData = "";
         this.selectedFormulaVar = "";
         this.formula = "= ";
         this.re = /^\s{0,1}\d+[.]?(\d+)?(\s{0,1}[+|(\-)|*|/]+\s{0,1}\d+[.]?(\d+)?)*\s{0,1}$/;
-        this.reOperator = /^[+\-*/]$/mg;
-        this.reNumber = /[0-9]/;
+        this.reOperator = /^[+\-*/]/;
+        this.reNumber = /^\d/;
         this.reDigit = /^[0-9]*.([0-9]+)?$/mg;
         this.keyPeriod = true;
     }
     DialogParametersComponent.prototype.ngOnInit = function () {
         this.listModel = this.data.list;
         // this.formula = this.data.formula;
-        this.formula = this.data.formula.charAt(0) !== '=' ? ("=" + this.data.formula) : this.data.formula;
+        this.formula = this.data.formula.charAt(0) !== '=' ? this.data.formula : this.data.formula.slice(2);
+        this.formulaArr = this.formula.split(' ');
         this.sleectedModel = this.data.modelId;
         this.modelChange(this.sleectedModel);
+    };
+    DialogParametersComponent.prototype.formulaItemClick = function (item, i) {
+        var fiend = this.formulaArr.indexOf("|");
+        if (fiend > -1 && fiend < i) {
+            i--;
+        }
+        console.log(item, i);
+        this.removeSpace();
+        this.formulaIndex = i;
+        this.formulaArr.splice(i, 0, "|");
+    };
+    DialogParametersComponent.prototype.removeSpace = function () {
+        var _this = this;
+        this.formulaArr.forEach(function (e, i) {
+            if (e === "|") {
+                _this.formulaArr.splice(i, 1);
+            }
+        });
+    };
+    DialogParametersComponent.prototype.keyFormula = function (e) {
+        console.log(e);
+        // backspace
+        if ((e.keyCode === 8 || e.keyCode === 46)) {
+            console.log(2);
+            this.formulaArr.splice(this.formulaIndex - 1, 1);
+            this.formulaIndex--;
+        }
+    };
+    DialogParametersComponent.prototype.changeForumula = function (e) {
+        var char = e.substr(e.length - 1);
+        console.log(e);
+        if (this.reOperator.test(char)) {
+            this.formulaArr.splice(this.formulaIndex, 0, char);
+            this.formulaIndex++;
+        }
+        if (this.reNumber.test(char)) {
+            if (this.reNumber.test(this.formulaArr[this.formulaIndex - 1])) {
+                this.formulaArr[this.formulaIndex - 1] += char;
+            }
+            else {
+                this.formulaArr.splice(this.formulaIndex, 0, char);
+                this.formulaIndex++;
+            }
+        }
+    };
+    DialogParametersComponent.prototype.formulaWrapClick = function () {
+        console.log(23);
     };
     DialogParametersComponent.prototype.modelChange = function (id) {
         var _this = this;
@@ -2634,35 +2696,39 @@ var DialogParametersComponent = /** @class */ (function () {
     DialogParametersComponent.prototype.paramsFilter = function (e) {
     };
     DialogParametersComponent.prototype.ok = function () {
-        var _this = this;
-        var spcaSpit = this.formula.split(" ");
-        var valid = true;
-        spcaSpit.forEach(function (item) {
-            var arr = item.split(".");
-            if (arr.length == 2) {
-                _this.listModel.forEach(function (model, modelIndex) {
-                    var validModel;
-                    if (model.id === arr[0]) {
-                        validModel = true;
-                        var validParam_1 = false;
-                        _this.listParams.forEach(function (comp, index) {
-                            if (comp.id === arr[1]) {
-                                validParam_1 = true;
-                            }
-                            if (_this.listParams.length === (index + 1) && !validParam_1) {
-                                valid = false;
-                            }
-                        });
-                    }
-                    if (_this.listModel.length === (modelIndex + 1) && !validModel) {
-                        valid = false;
-                    }
-                });
-            }
-        });
-        if (valid) {
-            this.dialogRef.close({ formula: this.formula });
-        }
+        this.removeSpace();
+        this.formulaArr.unshift("=");
+        console.log(this.formulaArr, this.formulaArr.join(" "));
+        this.formula = this.formulaArr.join(" ");
+        this.dialogRef.close({ formula: this.formula });
+        // let spcaSpit = this.formula.split(" ");
+        // let valid = true;
+        // spcaSpit.forEach((item) => {
+        //   let arr = item.split(".");
+        //   if (arr.length == 2) {
+        //     this.listModel.forEach((model, modelIndex) => {
+        //       let validModel;
+        //       if (model.id === arr[0]) {
+        //         validModel = true;
+        //         let validParam = false;
+        //         this.listParams.forEach((comp, index) => {
+        //           if (comp.id === arr[1]) {
+        //             validParam = true
+        //           }
+        //           if (this.listParams.length === (index + 1) && !validParam) {
+        //             valid = false;
+        //           }
+        //         })
+        //       }
+        //       if (this.listModel.length === (modelIndex + 1) && !validModel) {
+        //         valid = false;
+        //       }
+        //     })
+        //   }
+        // })
+        // if (valid) {
+        //   this.dialogRef.close({ formula: this.formula });
+        // }
     };
     DialogParametersComponent.prototype.paramsChange = function (e) {
         var item = this.searchById(e, this.listParams);
