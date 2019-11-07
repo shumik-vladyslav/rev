@@ -1797,6 +1797,7 @@ var ModelMainComponent = /** @class */ (function () {
         this.types.forEach(function (type) {
             if (document.getElementById(type)) {
                 document.getElementById(type).addEventListener("dragstart", function (ev) {
+                    ev.dataTransfer.setData('text', 'foo');
                     _this.dragType = type;
                     if (_this.isStart && type === "Start") {
                         event.preventDefault();
@@ -2620,6 +2621,9 @@ var DialogParametersComponent = /** @class */ (function () {
         // this.formula = this.data.formula;
         this.formula = this.data.formula.charAt(0) !== '=' ? this.data.formula : this.data.formula.slice(2);
         this.formulaArr = this.formula.split(' ');
+        if (this.formulaArr.length === 1 && this.formulaArr[0] === "0") {
+            this.formulaArr = [];
+        }
         this.sleectedModel = this.data.modelId;
         this.modelChange(this.sleectedModel);
     };

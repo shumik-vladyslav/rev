@@ -257,3 +257,7 @@ button.table-more-btn {
   width: 10px;
   height: 20px;
 }
+
+[draggable=true] {
+  -khtml-user-drag: element;
+}

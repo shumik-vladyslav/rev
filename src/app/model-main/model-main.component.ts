@@ -476,6 +476,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         document.getElementById(type).addEventListener(
           "dragstart",
           ev => {
+            ev.dataTransfer.setData('text', 'foo');
             this.dragType = type;
             if (this.isStart && type === "Start") {
               event.preventDefault();

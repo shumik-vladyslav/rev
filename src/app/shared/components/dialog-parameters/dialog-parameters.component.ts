@@ -28,6 +28,9 @@ export class DialogParametersComponent implements OnInit {
     // this.formula = this.data.formula;
     this.formula = this.data.formula.charAt(0) !== '=' ? this.data.formula : this.data.formula.slice(2); 
     this.formulaArr = this.formula.split(' ');
+    if (this.formulaArr.length === 1 && this.formulaArr[0] === "0") {
+      this.formulaArr = [];
+    }
     this.sleectedModel = this.data.modelId;
     this.modelChange(this.sleectedModel);
   }
