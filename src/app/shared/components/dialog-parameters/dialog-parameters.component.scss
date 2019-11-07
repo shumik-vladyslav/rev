@@ -1,3 +1,16 @@
+@-webkit-keyframes blinker {
+  from {opacity: 1.0;}
+  to {opacity: 0.0;}
+}
+.blink{
+	text-decoration: blink;
+	-webkit-animation-name: blinker;
+	-webkit-animation-duration: 0.6s;
+	-webkit-animation-iteration-count:infinite;
+	-webkit-animation-timing-function:ease-in-out;
+	-webkit-animation-direction: alternate;
+}
+
 .textarea-wrap {
   display: flex;
   textarea {
@@ -28,10 +41,18 @@ button.func{
   height: 100%;
   z-index: 1;
 }
-
-.formula-wrap{
+.formula-wrap-outer{
+  width: 100%;
+  position: relative;
   background-color: #f2f2f2;
-  height: 300px;
+  padding: 10px;
+}
+.formula-wrap{
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  height: unset;
+
 }
 
 .formula-text{
@@ -51,6 +72,7 @@ button.func{
   display: inline-flex;
   position: relative;
   overflow: hidden;
+  margin-bottom: 10px;
 }
 
 .formula-item {
@@ -68,4 +90,10 @@ button.func{
 .formula-item-space {
   width: 10px;
   height: 25px;
+}
+.blink-item{
+  padding: 4px 0px;
+  width: 10px;
+  text-align: center;
+  background: none;
 }

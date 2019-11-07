@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from "@angular/core";
+import { Component, OnInit, Inject, ChangeDetectorRef, ViewChild } from "@angular/core";
 import { MatDialogRef } from "@angular/material/dialog";
 import { MAT_DIALOG_DATA } from '@angular/material';
 import { ComponentService } from "../../component.service";
@@ -20,7 +20,7 @@ export class DialogParametersComponent implements OnInit {
   selectedClass;
   sleectedModel;
   constructor(public dialogRef: MatDialogRef<DialogParametersComponent>,
-    private componentService: ComponentService,
+    private componentService: ComponentService, private chRef: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit(): void {
@@ -31,6 +31,8 @@ export class DialogParametersComponent implements OnInit {
     this.sleectedModel = this.data.modelId;
     this.modelChange(this.sleectedModel);
   }
+
+  @ViewChild("textArea") textArea;
   formulaData = "";
   formulaArr;
   formulaIndex;
@@ -39,7 +41,6 @@ export class DialogParametersComponent implements OnInit {
     if(fiend > -1 && fiend < i ){
       i--
     }
-    console.log(item, i);
     this.removeSpace();
     this.formulaIndex = i ;
     this.formulaArr.splice(i, 0, "|");
@@ -54,10 +55,8 @@ export class DialogParametersComponent implements OnInit {
   }
 
   keyFormula(e) {
-    console.log(e)
     // backspace
       if ((e.keyCode === 8 || e.keyCode === 46)) {
-        console.log(2)
         this.formulaArr.splice(this.formulaIndex - 1 , 1);
         this.formulaIndex--;
       }
@@ -70,14 +69,18 @@ export class DialogParametersComponent implements OnInit {
       this.formulaArr.splice(this.formulaIndex, 0, char);
       this.formulaIndex++;
     }
-    if (this.reNumber.test(char)) {
-      if (this.reNumber.test(this.formulaArr[this.formulaIndex - 1])) {
+    if (this.reNumber.test(char) || char === '.') {
+      console.log(e)
+      if (this.reNumber.test(this.formulaArr[this.formulaIndex - 1]) || char === '.') {
         this.formulaArr[this.formulaIndex - 1] += char;
       } else {
         this.formulaArr.splice(this.formulaIndex, 0, char);
         this.formulaIndex++;
       }
     }
+
+    this.textArea.nativeElement.value = "";
+    this.chRef.detectChanges();
   }
 
   formulaWrapClick(){
@@ -160,7 +163,6 @@ export class DialogParametersComponent implements OnInit {
     let item = this.searchById(e, this.listParams);
     let model = this.searchById(this.sleectedModel, this.listModel);
     let object = this.searchById(this.selectedObject, this.listObjects);
-    console.log(this.sleectedModel , model.id)
     // if(this.sleectedModel === model.id) {
     //   this.selectedFormulaVar = item.id;
     // } else {
@@ -169,16 +171,12 @@ export class DialogParametersComponent implements OnInit {
   }
 
   add() {
-    setTimeout(() => {
-      if (this.boolLastOperator && this.selectedFormulaVar) {
-        if (this.reOperator.test(this.formula[this.formula.length - 1])) {
-          this.formula = this.formula + ' ' + this.selectedFormulaVar;
-        } else {
-          this.formula += this.selectedFormulaVar;
-        }
-        this.boolLastOperator = false;
-      }
-    }, 2);
+        // if (this.reOperator.test(this.formula[this.formula.length - 1])) {
+        //   this.formula = this.formula + ' ' + this.selectedFormulaVar;
+        // } else {
+        //   this.formula += this.selectedFormulaVar;
+        // }
+        this.formulaArr.splice(this.formulaIndex, 0, this.selectedFormulaVar);
   }
 
   searchById(id, arr) {
@@ -189,8 +187,9 @@ export class DialogParametersComponent implements OnInit {
   }
 
   re = /^\s{0,1}\d+[.]?(\d+)?(\s{0,1}[+|(\-)|*|/]+\s{0,1}\d+[.]?(\d+)?)*\s{0,1}$/;
-  reOperator = /^[+\-*/]/;
+  reOperator = /^[+\-*()/]/;
   reNumber = /^\d/;
+  // reNumber = /(?<=^| )\d+(\.\d+)?(?=$| )/;
   reDigit = /^[0-9]*.([0-9]+)?$/mg;
   keyPeriod = true;
   boolLastOperator;

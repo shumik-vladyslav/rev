@@ -2549,7 +2549,7 @@ var DialogCreateModelComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\r\n<div mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>Model</mat-label>\r\n    <mat-select [(ngModel)]=\"sleectedModel\" (ngModelChange)=\"modelChange($event)\">\r\n      <mat-option *ngFor=\"let item of listModel\" [value]=\"item._id\">\r\n        {{item.name}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Class</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedClass\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listClass\" [value]=\"item\">\r\n        {{item}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Object</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedObject\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listObjects | filtrListParam: selectedClass\" [value]=\"item.id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Parameter</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedParam\" (ngModelChange)=\"paramsChange($event)\">\r\n      <mat-option *ngFor=\"let item of listParams | filtrListParam: selectedClass: selectedObject\" [value]=\"item._id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <div style=\"width: 40%; padding: 20px 0 0 20px;\">\r\n    <div class=\"full-width\">\r\n      <!-- [disabled]=\"!boolLastOperator\" -->\r\n      <button [matTooltip]=\"!boolLastOperator ? 'Before add math operator: +, -, *, /' : null\" (click)=\"add()\" class=\"full-width\" mat-raised-button color=\"primary\" mat-button>\r\n        <= ADD</button> </div>\r\n          <button (click)=\"test()\" class=\"func\" mat-raised-button color=\"primary\" mat-button>\r\n            <i>\r\n              f(x)\r\n            </i>\r\n          </button>\r\n  </div>\r\n  <div class=\"textarea-wrap\">\r\n    <div style=\"width: 100%; position: relative;\">\r\n      <div (click)=\"formulaWrapClick();textArea.focus()\" class=\"formula-wrap\">\r\n        <div class=\"formula-item-wrap\" *ngFor=\"let item of formulaArr;let i = index\">\r\n            <div *ngIf=\"(item !== '|') && (i === 0 || (formulaArr[i - 1] && formulaArr[i - 1] !== '|'))\" (click)=\"formulaItemClick(item, i)\" class=\"formula-item-space\"></div>\r\n            <div class=\"formula-item\">\r\n              {{item}}\r\n            </div>\r\n            <div *ngIf=\"(i === (formulaArr.length - 1)) && item !== '|'\" (click)=\"formulaItemClick(item, i+1)\" class=\"formula-item-space\"></div>\r\n        </div>\r\n      </div>\r\n      <!-- formula-text -->\r\n      <mat-form-field style=\"width: 100%\" class=\" example-full-width\">\r\n        <!-- (ngModelChange)=\"change($event)\" -->\r\n        <!-- [(ngModel)]=\"formula\" (ngModelChange)=\"change($event)\" (keydown)=\"checkPattern($event)\" -->\r\n        <textarea #textArea matInput [(ngModel)]=\"formulaData\" \r\n        (ngModelChange)=\"changeForumula($event)\" (keydown)=\"keyFormula($event)\"></textarea>\r\n          \r\n      </mat-form-field>\r\n      <!-- <div (click)=\"textArea.focus()\" class=\"text-area-shield\"></div> -->\r\n    </div>\r\n\r\n  </div>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button mat-button (click)=\"ok()\" mat-raised-button color=\"primary\" cdkFocusInitial>\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>"
+module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\r\n<div mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>Model</mat-label>\r\n    <mat-select [(ngModel)]=\"sleectedModel\" (ngModelChange)=\"modelChange($event)\">\r\n      <mat-option *ngFor=\"let item of listModel\" [value]=\"item._id\">\r\n        {{item.name}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Class</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedClass\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listClass\" [value]=\"item\">\r\n        {{item}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Object</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedObject\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listObjects | filtrListParam: selectedClass\" [value]=\"item.id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Parameter</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedParam\" (ngModelChange)=\"paramsChange($event)\">\r\n      <mat-option *ngFor=\"let item of listParams | filtrListParam: selectedClass: selectedObject\" [value]=\"item._id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <div style=\"width: 40%; padding: 20px 0 0 20px;\">\r\n    <div class=\"full-width\">\r\n      <!-- [disabled]=\"!boolLastOperator\" -->\r\n      <!-- [matTooltip]=\"!boolLastOperator ? 'Before add math operator: +, -, *, /' : null\"? -->\r\n      <button\r\n       (click)=\"add()\" class=\"full-width\" mat-raised-button color=\"primary\" mat-button>\r\n        <= ADD</button> </div>\r\n          <!-- <button (click)=\"test()\" class=\"func\" mat-raised-button color=\"primary\" mat-button>\r\n            <i>\r\n              f(x)\r\n            </i>\r\n          </button> -->\r\n  </div>\r\n  <div class=\"textarea-wrap\">\r\n    <div class=\"formula-wrap-outer\">\r\n      <div (click)=\"formulaWrapClick();textArea.focus()\" class=\"formula-wrap\">\r\n        <div class=\"formula-item-wrap\" *ngFor=\"let item of formulaArr;let i = index\">\r\n            <div *ngIf=\"(item !== '|') && (i === 0 || (formulaArr[i - 1] && formulaArr[i - 1] !== '|'))\" \r\n            (click)=\"formulaItemClick(item, i)\" class=\"formula-item-space\"\r\n             ></div>\r\n            <div class=\"formula-item\" [ngClass]=\"{'blink blink-item': item === '|'}\">\r\n              {{item}}\r\n            </div>\r\n            <div *ngIf=\"(i === (formulaArr.length - 1)) && item !== '|'\" (click)=\"formulaItemClick(item, i+1)\" class=\"formula-item-space\"></div>\r\n        </div>\r\n      </div>\r\n      <!-- formula-text -->\r\n      <mat-form-field style=\"width: 100%;position: absolute;top: 0; z-index: -1;\" class=\" example-full-width\">\r\n        <!-- (ngModelChange)=\"change($event)\" -->\r\n        <!-- [(ngModel)]=\"formula\" (ngModelChange)=\"change($event)\" (keydown)=\"checkPattern($event)\" -->\r\n        <textarea #textArea matInput [(ngModel)]=\"formulaData\" \r\n        (ngModelChange)=\"changeForumula($event)\" (keydown)=\"keyFormula($event)\"></textarea>\r\n          \r\n      </mat-form-field>\r\n      <!-- <div (click)=\"textArea.focus()\" class=\"text-area-shield\"></div> -->\r\n    </div>\r\n\r\n  </div>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button mat-button (click)=\"ok()\" mat-raised-button color=\"primary\" cdkFocusInitial>\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>"
 
 /***/ }),
 
@@ -2560,7 +2560,7 @@ module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\r\n<div mat-dialog-co
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".textarea-wrap {\n  display: flex; }\n  .textarea-wrap textarea {\n    height: 170px;\n    border: 1px solid #949494;\n    margin-bottom: -8px;\n    resize: none;\n    background: white;\n    position: relative;\n    z-index: 1;\n    padding: 5px;\n    box-sizing: border-box; }\n  .mat-form-field {\n  display: block; }\n  button.func {\n  min-width: 0;\n  padding: 0 7px;\n  margin-top: 35px; }\n  .text-area-shield {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1; }\n  .formula-wrap {\n  background-color: #f2f2f2;\n  height: 300px; }\n  .formula-text {\n  opacity: 0;\n  color: transparent;\n  position: absolute;\n  font-size: 0;\n  top: 0;\n  right: 0;\n  width: 100%;\n  height: 100%;\n  text-indent: -10000px;\n  z-index: 20; }\n  .formula-item-wrap {\n  display: inline-flex;\n  position: relative;\n  overflow: hidden; }\n  .formula-item {\n  display: inline;\n  vertical-align: middle;\n  padding: 4px 10px;\n  word-break: break-all;\n  background-color: #ffffff;\n  border-radius: 999px;\n  color: #333333;\n  position: relative;\n  overflow: hidden; }\n  .formula-item-space {\n  width: 10px;\n  height: 25px; }\n"
+module.exports = "@-webkit-keyframes blinker {\n  from {\n    opacity: 1.0; }\n  to {\n    opacity: 0.0; } }\n\n.blink {\n  text-decoration: blink;\n  -webkit-animation-name: blinker;\n  -webkit-animation-duration: 0.6s;\n  -webkit-animation-iteration-count: infinite;\n  -webkit-animation-timing-function: ease-in-out;\n  -webkit-animation-direction: alternate; }\n\n.textarea-wrap {\n  display: flex; }\n\n.textarea-wrap textarea {\n    height: 170px;\n    border: 1px solid #949494;\n    margin-bottom: -8px;\n    resize: none;\n    background: white;\n    position: relative;\n    z-index: 1;\n    padding: 5px;\n    box-sizing: border-box; }\n\n.mat-form-field {\n  display: block; }\n\nbutton.func {\n  min-width: 0;\n  padding: 0 7px;\n  margin-top: 35px; }\n\n.text-area-shield {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1; }\n\n.formula-wrap-outer {\n  width: 100%;\n  position: relative;\n  background-color: #f2f2f2;\n  padding: 10px; }\n\n.formula-wrap {\n  display: flex;\n  align-items: flex-start;\n  flex-wrap: wrap;\n  height: unset; }\n\n.formula-text {\n  opacity: 0;\n  color: transparent;\n  position: absolute;\n  font-size: 0;\n  top: 0;\n  right: 0;\n  width: 100%;\n  height: 100%;\n  text-indent: -10000px;\n  z-index: 20; }\n\n.formula-item-wrap {\n  display: inline-flex;\n  position: relative;\n  overflow: hidden;\n  margin-bottom: 10px; }\n\n.formula-item {\n  display: inline;\n  vertical-align: middle;\n  padding: 4px 10px;\n  word-break: break-all;\n  background-color: #ffffff;\n  border-radius: 999px;\n  color: #333333;\n  position: relative;\n  overflow: hidden; }\n\n.formula-item-space {\n  width: 10px;\n  height: 25px; }\n\n.blink-item {\n  padding: 4px 0px;\n  width: 10px;\n  text-align: center;\n  background: none; }\n"
 
 /***/ }),
 
@@ -2595,9 +2595,10 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 var DialogParametersComponent = /** @class */ (function () {
-    function DialogParametersComponent(dialogRef, componentService, data) {
+    function DialogParametersComponent(dialogRef, componentService, chRef, data) {
         this.dialogRef = dialogRef;
         this.componentService = componentService;
+        this.chRef = chRef;
         this.data = data;
         this.listModel = [];
         this.listComponents = [];
@@ -2608,8 +2609,9 @@ var DialogParametersComponent = /** @class */ (function () {
         this.selectedFormulaVar = "";
         this.formula = "= ";
         this.re = /^\s{0,1}\d+[.]?(\d+)?(\s{0,1}[+|(\-)|*|/]+\s{0,1}\d+[.]?(\d+)?)*\s{0,1}$/;
-        this.reOperator = /^[+\-*/]/;
+        this.reOperator = /^[+\-*()/]/;
         this.reNumber = /^\d/;
+        // reNumber = /(?<=^| )\d+(\.\d+)?(?=$| )/;
         this.reDigit = /^[0-9]*.([0-9]+)?$/mg;
         this.keyPeriod = true;
     }
@@ -2626,7 +2628,6 @@ var DialogParametersComponent = /** @class */ (function () {
         if (fiend > -1 && fiend < i) {
             i--;
         }
-        console.log(item, i);
         this.removeSpace();
         this.formulaIndex = i;
         this.formulaArr.splice(i, 0, "|");
@@ -2640,10 +2641,8 @@ var DialogParametersComponent = /** @class */ (function () {
         });
     };
     DialogParametersComponent.prototype.keyFormula = function (e) {
-        console.log(e);
         // backspace
         if ((e.keyCode === 8 || e.keyCode === 46)) {
-            console.log(2);
             this.formulaArr.splice(this.formulaIndex - 1, 1);
             this.formulaIndex--;
         }
@@ -2655,8 +2654,9 @@ var DialogParametersComponent = /** @class */ (function () {
             this.formulaArr.splice(this.formulaIndex, 0, char);
             this.formulaIndex++;
         }
-        if (this.reNumber.test(char)) {
-            if (this.reNumber.test(this.formulaArr[this.formulaIndex - 1])) {
+        if (this.reNumber.test(char) || char === '.') {
+            console.log(e);
+            if (this.reNumber.test(this.formulaArr[this.formulaIndex - 1]) || char === '.') {
                 this.formulaArr[this.formulaIndex - 1] += char;
             }
             else {
@@ -2664,6 +2664,8 @@ var DialogParametersComponent = /** @class */ (function () {
                 this.formulaIndex++;
             }
         }
+        this.textArea.nativeElement.value = "";
+        this.chRef.detectChanges();
     };
     DialogParametersComponent.prototype.formulaWrapClick = function () {
         console.log(23);
@@ -2734,7 +2736,6 @@ var DialogParametersComponent = /** @class */ (function () {
         var item = this.searchById(e, this.listParams);
         var model = this.searchById(this.sleectedModel, this.listModel);
         var object = this.searchById(this.selectedObject, this.listObjects);
-        console.log(this.sleectedModel, model.id);
         // if(this.sleectedModel === model.id) {
         //   this.selectedFormulaVar = item.id;
         // } else {
@@ -2742,18 +2743,12 @@ var DialogParametersComponent = /** @class */ (function () {
         // }
     };
     DialogParametersComponent.prototype.add = function () {
-        var _this = this;
-        setTimeout(function () {
-            if (_this.boolLastOperator && _this.selectedFormulaVar) {
-                if (_this.reOperator.test(_this.formula[_this.formula.length - 1])) {
-                    _this.formula = _this.formula + ' ' + _this.selectedFormulaVar;
-                }
-                else {
-                    _this.formula += _this.selectedFormulaVar;
-                }
-                _this.boolLastOperator = false;
-            }
-        }, 2);
+        // if (this.reOperator.test(this.formula[this.formula.length - 1])) {
+        //   this.formula = this.formula + ' ' + this.selectedFormulaVar;
+        // } else {
+        //   this.formula += this.selectedFormulaVar;
+        // }
+        this.formulaArr.splice(this.formulaIndex, 0, this.selectedFormulaVar);
     };
     DialogParametersComponent.prototype.searchById = function (id, arr) {
         if (arr) {
@@ -2918,15 +2913,19 @@ var DialogParametersComponent = /** @class */ (function () {
         //   }
         // }
     };
+    __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChild"])("textArea"),
+        __metadata("design:type", Object)
+    ], DialogParametersComponent.prototype, "textArea", void 0);
     DialogParametersComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: "app-dialog-parameters",
             template: __webpack_require__(/*! ./dialog-parameters.component.html */ "./src/app/shared/components/dialog-parameters/dialog-parameters.component.html"),
             styles: [__webpack_require__(/*! ./dialog-parameters.component.scss */ "./src/app/shared/components/dialog-parameters/dialog-parameters.component.scss")]
         }),
-        __param(2, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(_angular_material__WEBPACK_IMPORTED_MODULE_2__["MAT_DIALOG_DATA"])),
+        __param(3, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(_angular_material__WEBPACK_IMPORTED_MODULE_2__["MAT_DIALOG_DATA"])),
         __metadata("design:paramtypes", [_angular_material_dialog__WEBPACK_IMPORTED_MODULE_1__["MatDialogRef"],
-            _component_service__WEBPACK_IMPORTED_MODULE_3__["ComponentService"], Object])
+            _component_service__WEBPACK_IMPORTED_MODULE_3__["ComponentService"], _angular_core__WEBPACK_IMPORTED_MODULE_0__["ChangeDetectorRef"], Object])
     ], DialogParametersComponent);
     return DialogParametersComponent;
 }());

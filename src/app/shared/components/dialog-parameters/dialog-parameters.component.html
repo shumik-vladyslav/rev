@@ -35,27 +35,31 @@
   <div style="width: 40%; padding: 20px 0 0 20px;">
     <div class="full-width">
       <!-- [disabled]="!boolLastOperator" -->
-      <button [matTooltip]="!boolLastOperator ? 'Before add math operator: +, -, *, /' : null" (click)="add()" class="full-width" mat-raised-button color="primary" mat-button>
+      <!-- [matTooltip]="!boolLastOperator ? 'Before add math operator: +, -, *, /' : null"? -->
+      <button
+       (click)="add()" class="full-width" mat-raised-button color="primary" mat-button>
         <= ADD</button> </div>
-          <button (click)="test()" class="func" mat-raised-button color="primary" mat-button>
+          <!-- <button (click)="test()" class="func" mat-raised-button color="primary" mat-button>
             <i>
               f(x)
             </i>
-          </button>
+          </button> -->
   </div>
   <div class="textarea-wrap">
-    <div style="width: 100%; position: relative;">
+    <div class="formula-wrap-outer">
       <div (click)="formulaWrapClick();textArea.focus()" class="formula-wrap">
         <div class="formula-item-wrap" *ngFor="let item of formulaArr;let i = index">
-            <div *ngIf="(item !== '|') && (i === 0 || (formulaArr[i - 1] && formulaArr[i - 1] !== '|'))" (click)="formulaItemClick(item, i)" class="formula-item-space"></div>
-            <div class="formula-item">
+            <div *ngIf="(item !== '|') && (i === 0 || (formulaArr[i - 1] && formulaArr[i - 1] !== '|'))" 
+            (click)="formulaItemClick(item, i)" class="formula-item-space"
+             ></div>
+            <div class="formula-item" [ngClass]="{'blink blink-item': item === '|'}">
               {{item}}
             </div>
             <div *ngIf="(i === (formulaArr.length - 1)) && item !== '|'" (click)="formulaItemClick(item, i+1)" class="formula-item-space"></div>
         </div>
       </div>
       <!-- formula-text -->
-      <mat-form-field style="width: 100%" class=" example-full-width">
+      <mat-form-field style="width: 100%;position: absolute;top: 0; z-index: -1;" class=" example-full-width">
         <!-- (ngModelChange)="change($event)" -->
         <!-- [(ngModel)]="formula" (ngModelChange)="change($event)" (keydown)="checkPattern($event)" -->
         <textarea #textArea matInput [(ngModel)]="formulaData" 
