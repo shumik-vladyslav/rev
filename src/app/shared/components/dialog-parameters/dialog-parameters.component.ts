@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ChangeDetectorRef, ViewChild } from "@angular/core";
+import { Component, OnInit, Inject, ChangeDetectorRef, ViewChild, AfterViewInit, ElementRef } from "@angular/core";
 import { MatDialogRef } from "@angular/material/dialog";
 import { MAT_DIALOG_DATA } from '@angular/material';
 import { ComponentService } from "../../component.service";
@@ -8,7 +8,7 @@ import { ComponentService } from "../../component.service";
   templateUrl: "./dialog-parameters.component.html",
   styleUrls: ["./dialog-parameters.component.scss"]
 })
-export class DialogParametersComponent implements OnInit {
+export class DialogParametersComponent implements OnInit, AfterViewInit {
 
   listModel = [];
   listComponents = [];
@@ -22,6 +22,7 @@ export class DialogParametersComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<DialogParametersComponent>,
     private componentService: ComponentService, private chRef: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
+  @ViewChild("textArea") textArea: ElementRef;
 
   ngOnInit(): void {
     this.listModel = this.data.list;
@@ -31,11 +32,25 @@ export class DialogParametersComponent implements OnInit {
     if (this.formulaArr.length === 1 && this.formulaArr[0] === "0") {
       this.formulaArr = [];
     }
+
     this.sleectedModel = this.data.modelId;
     this.modelChange(this.sleectedModel);
   }
 
-  @ViewChild("textArea") textArea;
+  ngAfterViewInit() {
+    setTimeout(() => {
+      if (!this.formulaArr.length) {
+        this.formulaArr = ["|"];
+        this.formulaIndex = this.formulaArr.length - 1;
+      } else {
+        this.formulaIndex = this.formulaArr.length;
+        this.formulaArr.splice(this.formulaIndex, 0, "|");
+      }
+      this.textArea.nativeElement.focus();
+      this.chRef.detectChanges();
+    }, 500);
+  }
+
   formulaData = "";
   formulaArr;
   formulaIndex;

@@ -52,7 +52,7 @@
             <div *ngIf="(item !== '|') && (i === 0 || (formulaArr[i - 1] && formulaArr[i - 1] !== '|'))" 
             (click)="formulaItemClick(item, i)" class="formula-item-space"
              ></div>
-            <div class="formula-item" [ngClass]="{'blink blink-item': item === '|'}">
+            <div (click)="formulaItemClick(item, i + 1)" class="formula-item" [ngClass]="{'blink blink-item': item === '|'}">
               {{item}}
             </div>
             <div *ngIf="(i === (formulaArr.length - 1)) && item !== '|'" (click)="formulaItemClick(item, i+1)" class="formula-item-space"></div>
