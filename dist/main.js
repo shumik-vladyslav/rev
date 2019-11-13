@@ -1458,13 +1458,11 @@ var ModelMainComponent = /** @class */ (function () {
                 _this.componentService.getAllById(_this.modelId).subscribe(function (data) {
                     _this.data = data;
                     _this.saverComponent = [JSON.parse(JSON.stringify(_this.data))];
-                    console.log(data);
-                    _this.calc();
-                    setTimeout(function () {
+                    new Promise(function (resolve, reject) { _this.calc(resolve, reject); }).then(function () {
                         _this.removeAll();
                         _this.drowLines();
                         _this.drow();
-                    }, 1000);
+                    });
                 });
             });
         });
@@ -1486,30 +1484,32 @@ var ModelMainComponent = /** @class */ (function () {
                     _this.componentService.getAllByUserId(_this.user._id).subscribe(function (data) {
                         _this.formulaData = data;
                         _this.formulaSaver = {};
-                        _this.calc();
+                        new Promise(function (resolve, reject) { _this.calc(resolve, reject); }).then(function () {
+                            _this.removeAll();
+                            _this.drow();
+                        });
                     });
                 }
             }
-            if (!model.drag)
-                setTimeout(function () {
-                    _this.removeAll();
-                    _this.drow();
-                }, 1000);
         });
     }
-    ModelMainComponent.prototype.calc = function () {
+    ModelMainComponent.prototype.calc = function (resolve, reject) {
         var _this = this;
         this.data.forEach(function (comp) {
-            comp.parameters.forEach(function (element) {
+            comp.parameters.forEach(function (element, i) {
                 if (element.value) {
                     var v = element.value;
-                    var spcaSpit = v.split(" ");
-                    spcaSpit.forEach(function (element, index) {
+                    var spcaSpit_1 = v.split(" ");
+                    spcaSpit_1.forEach(function (element, index) {
                         var earr = element.split(".");
                         if (earr.length == 3) {
                             if (!_this.formulaSaver[earr[2]] && !_this.formulaSaver[element]) {
                                 _this.formulaSearch(element);
                             }
+                        }
+                        if (comp.parameters.length === (i + 1) && spcaSpit_1.length === (index + 1)) {
+                            if (resolve)
+                                resolve();
                         }
                     });
                 }
@@ -1527,7 +1527,6 @@ var ModelMainComponent = /** @class */ (function () {
         this.startDrowLine = null;
         this.removeAll();
         this.drowLines();
-        console.log(8);
         this.drow();
     };
     ModelMainComponent.prototype.keyEvent = function (event) {
@@ -1842,7 +1841,6 @@ var ModelMainComponent = /** @class */ (function () {
     ModelMainComponent.prototype.drow = function () {
         var _this = this;
         this.drowLines();
-        console.log(2323);
         this.data.forEach(function (element, index, arr) {
             switch (element.objectClass) {
                 case "Input":
@@ -1951,16 +1949,16 @@ var ModelMainComponent = /** @class */ (function () {
                                 case "":
                                     var v = param.value;
                                     if (v && v.charAt(0) === "=") {
-                                        var spcaSpit_1 = v.split(" ");
-                                        spcaSpit_1.forEach(function (element, index) {
+                                        var spcaSpit_2 = v.split(" ");
+                                        spcaSpit_2.forEach(function (element, index) {
                                             var earr = element.split(".");
                                             if (earr.length == 3) {
-                                                spcaSpit_1[index] = _this.formulaSaver[element];
+                                                spcaSpit_2[index] = _this.formulaSaver[element];
                                             }
                                         });
-                                        spcaSpit_1.shift();
+                                        spcaSpit_2.shift();
                                         try {
-                                            _this.formulaSaver[_this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] = _this.notEval(spcaSpit_1.join(''));
+                                            _this.formulaSaver[_this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] = _this.notEval(spcaSpit_2.join(''));
                                         }
                                         catch (_a) {
                                             _this.calc();
@@ -2013,7 +2011,6 @@ var ModelMainComponent = /** @class */ (function () {
                                     //   .attr("y", py)
                                     //   .text((param.name || param.id) + " - ");
                                     l = (param.name || param.id).length;
-                                    console.log(param);
                                     gR.append("foreignObject")
                                         .attr("x", element.x + ((param.name || param.id).length) + 5)
                                         .attr("y", py - 10)
@@ -2021,52 +2018,50 @@ var ModelMainComponent = /** @class */ (function () {
                                         .attr("height", 16)
                                         .attr("class", "foreignObject-input-bmp")
                                         .html(function (d) {
-                                        return "\n                      <div style=\"display:flex;align-items: center;\">\n                      <input id=\"" + index + "-" + paramIndex + "-left\" class=\"range-button\" type=\"button\" value=\"<\">\n                      </input>\n                      <input id=\"" + index + "-" + paramIndex + "\" type=\"range\" \n                      min=\"" + (+param.sliderMin - 1) + "\" max=\"" + (+param.sliderMax + 1) + "\" \n                      step=\"" + param.sliderStep + "\" value=\"" + param.value + "\" />\n                      <input id=\"" + index + "-" + paramIndex + "-right\" class=\"range-button\" type=\"button\" value=\">\">\n                      </input>\n                      </div>\n                \n                      ";
+                                        return "\n                      <div id=\"" + index + "-" + paramIndex + "-slider\" class=\"cust-slider\">\n                      <div class=\"slider-value\">\n                      " + (param.name || param.id) + " - " + parseFloat(param.value || "").toFixed(1) + "\n                      </div>\n                      <div class=\"slider-wrap-outer\">\n                        <button id=\"" + index + "-" + paramIndex + "-left\" class=\"left\">\n                          <i class=\"material-icons\">\n                            keyboard_arrow_left\n                          </i>\n                        </button>\n                        <div id=\"" + index + "-" + paramIndex + "-slider-wrap\" class=\"slider-wrap\">\n                          <div id=\"" + index + "-" + paramIndex + "-sliderFillBg\" class=\"fill-bg\"></div>\n                          <div id=\"" + index + "-" + paramIndex + "-sliderIndecator\" class=\"indecator\">\n                            <div class=\"bg-inside\"></div>\n                          </div>\n                        </div>\n                        <button id=\"" + index + "-" + paramIndex + "-right\" class=\"right\">\n                          <i class=\"material-icons\">\n                            keyboard_arrow_right\n                          </i>\n                        </button>\n                      </div>\n                    </div>\n                      ";
                                     });
-                                    gR.append("text")
-                                        .attr("font-size", "10px")
-                                        .attr("x", element.x + 50)
-                                        .attr("y", py - 6)
-                                        .text((param.name || param.id) + "-" + parseFloat(param.value || "").toFixed(1));
                                     self_1 = _this;
-                                    var rangeElement_1 = document.getElementById(index + "-" + paramIndex);
-                                    rangeElement_1.onchange = function (e) {
-                                        setTimeout(function () {
-                                            _this.dragSelected = index;
-                                            _this.data[index].parameters[paramIndex].value = rangeElement_1.value.toString();
-                                            _this.txtQueryChanged.next({
-                                                value: rangeElement_1.value,
-                                                selected: _this.dragSelected
-                                            });
-                                        }, 150);
-                                    };
+                                    var rangeElement = document.getElementById(index + "-" + paramIndex);
+                                    self_1.sladerChange(param, paramIndex, index);
                                     var rangeElementleft = document.getElementById(index + "-" + paramIndex + "-left");
                                     rangeElementleft.onclick = function (e) {
-                                        setTimeout(function () {
-                                            var value = +rangeElement_1.value - +param.sliderStep;
-                                            if (value >= param.sliderMin) {
-                                                self_1.dragSelected = index;
-                                                self_1.data[index].parameters[paramIndex].value = value.toString();
-                                                self_1.txtQueryChanged.next({
-                                                    value: value,
-                                                    selected: self_1.dragSelected
-                                                });
-                                            }
-                                        }, 20);
+                                        var value = +param.value - +param.sliderStep;
+                                        if (value >= param.sliderMin) {
+                                            self_1.dragSelected = index;
+                                            self_1.data[index].parameters[paramIndex].value = value.toString();
+                                            self_1.txtQueryChanged.next({
+                                                value: value,
+                                                selected: self_1.dragSelected
+                                            });
+                                            self_1.sladerChange(param, paramIndex, index);
+                                        }
                                     };
                                     var rangeElementright = document.getElementById(index + "-" + paramIndex + "-right");
                                     rangeElementright.onclick = function (e) {
-                                        setTimeout(function () {
-                                            var value = +rangeElement_1.value + +param.sliderStep;
-                                            if (value <= param.sliderMax) {
-                                                self_1.dragSelected = index;
-                                                self_1.data[index].parameters[paramIndex].value = value.toString();
-                                                self_1.txtQueryChanged.next({
-                                                    value: value,
-                                                    selected: self_1.dragSelected
-                                                });
-                                            }
-                                        }, 20);
+                                        var value = +param.value + +param.sliderStep;
+                                        if (value <= (param.sliderMax + 1)) {
+                                            self_1.dragSelected = index;
+                                            self_1.data[index].parameters[paramIndex].value = value.toString();
+                                            self_1.txtQueryChanged.next({
+                                                value: value,
+                                                selected: self_1.dragSelected
+                                            });
+                                            self_1.sladerChange(param, paramIndex, index);
+                                        }
+                                    };
+                                    var sliderwrapElementright = document.getElementById(index + "-" + paramIndex + "-slider-wrap");
+                                    sliderwrapElementright.onclick = function (e) {
+                                        var value = ((e.offsetX / 90 * 100) * ((param.sliderMax - param.sliderMin) / 100)) + param.sliderMin;
+                                        value = Math.round(value / param.sliderStep) * param.sliderStep;
+                                        if (value <= (param.sliderMax + 1)) {
+                                            self_1.dragSelected = index;
+                                            self_1.data[index].parameters[paramIndex].value = value.toString();
+                                            self_1.txtQueryChanged.next({
+                                                value: value,
+                                                selected: self_1.dragSelected
+                                            });
+                                            self_1.sladerChange(param, paramIndex, index);
+                                        }
                                     };
                                     break;
                                 default:
@@ -2133,6 +2128,15 @@ var ModelMainComponent = /** @class */ (function () {
             }
         });
     };
+    ModelMainComponent.prototype.sladerChange = function (param, paramIndex, index) {
+        var otions = {
+            min: param.sliderMin,
+            max: param.sliderMax,
+            value: param.value
+        };
+        document.getElementById(index + "-" + paramIndex + "-sliderIndecator").style.left = "calc(" + ((otions.value - otions.min) / (otions.max - otions.min)) * 100 + "% - " + 15 * ((otions.value - otions.min) / (otions.max - otions.min)) + "px)";
+        document.getElementById(index + "-" + paramIndex + "-sliderFillBg").style.width = "calc(" + ((otions.value - otions.min) / (otions.max - otions.min)) * 100 + "% - " + 15 * ((otions.value - otions.min) / (otions.max - otions.min)) + "px)";
+    };
     ModelMainComponent.prototype.formulaSearch = function (element) {
         var _this = this;
         var arr = element.split(".");
@@ -2149,16 +2153,20 @@ var ModelMainComponent = /** @class */ (function () {
     };
     ModelMainComponent.prototype.formulaDataSearch = function (data, arr, element) {
         var _this = this;
-        data.forEach(function (comp) {
-            comp.parameters.forEach(function (param) {
-                if (_this.modelsKeys[comp.modelId] === arr[0] && comp.id === arr[1] && param.id === arr[2]) {
-                    _this.formulaSaver[element] = +param.value;
-                }
+        new Promise(function (resolve, reject) {
+            data.forEach(function (comp) {
+                comp.parameters.forEach(function (param, i) {
+                    if (_this.modelsKeys[comp.modelId] === arr[0] && comp.id === arr[1] && param.id === arr[2]) {
+                        _this.formulaSaver[element] = +param.value;
+                    }
+                    if ((comp.parameters.length - 1) === i) {
+                        resolve();
+                    }
+                });
             });
-        });
-        setTimeout(function () {
+        }).then(function () {
             _this.clear();
-        }, 200);
+        });
     };
     ModelMainComponent.prototype.drowLines = function () {
         var _this = this;

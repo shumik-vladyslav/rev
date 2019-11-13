@@ -79,14 +79,11 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         this.componentService.getAllById(this.modelId).subscribe((data: any) => {
           this.data = data;
           this.saverComponent = [JSON.parse(JSON.stringify( this.data ))];
-          console.log(data);
-
-          this.calc();
-          setTimeout(() => {
+          new Promise((resolve, reject) => {this.calc(resolve, reject)}).then(() => {
             this.removeAll();
             this.drowLines();
             this.drow();
-          }, 1000);
+          });
         });
       });
     });
@@ -112,21 +109,19 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
               this.formulaData = data;
               this.formulaSaver = {};
-              this.calc();
+              new Promise((resolve, reject) => {this.calc(resolve, reject)}).then(() => {
+                this.removeAll();
+                this.drow();
+              });
             });
           }
         }
-        if (!model.drag)
-          setTimeout(() => {
-            this.removeAll();
-            this.drow();
-          }, 1000);
       });
   }
 
-  calc() {
+  calc(resolve?, reject?) {
     this.data.forEach((comp) => {
-      comp.parameters.forEach(element => {
+      comp.parameters.forEach((element, i) => {
         if (element.value) {
           let v = element.value;
           let spcaSpit = v.split(" ");
@@ -136,6 +131,11 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
               if (!this.formulaSaver[earr[2]] && !this.formulaSaver[element]) {
                 this.formulaSearch(element);
               }
+            }
+
+            if(comp.parameters.length === (i+1) && spcaSpit.length === (index+1 )){
+              if(resolve)
+                resolve();
             }
           });
         }
@@ -154,7 +154,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     this.startDrowLine = null;
     this.removeAll();
     this.drowLines();
-    console.log(8)
     this.drow();
   }
 
@@ -530,8 +529,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   drow() {
     this.drowLines();
 
-    console.log(2323)
-
     this.data.forEach((element, index, arr) => {
       switch (element.objectClass) {
         case "Input":
@@ -723,7 +720,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                   //   .attr("y", py)
                   //   .text((param.name || param.id) + " - ");
                    l = (param.name || param.id).length;
-                   console.log(param)
+
                   gR.append("foreignObject")
                     .attr("x", element.x + ((param.name || param.id).length) + 5)
                     .attr("y", py - 10)
@@ -732,42 +729,40 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     .attr("class", "foreignObject-input-bmp")
                     .html((d) => {
                       return `
-                      <div style="display:flex;align-items: center;">
-                      <input id="${index}-${paramIndex}-left" class="range-button" type="button" value="<">
-                      </input>
-                      <input id="${index}-${paramIndex}" type="range" 
-                      min="${+param.sliderMin - 1}" max="${+param.sliderMax + 1}" 
-                      step="${param.sliderStep}" value="${param.value}" />
-                      <input id="${index}-${paramIndex}-right" class="range-button" type="button" value=">">
-                      </input>
+                      <div id="${index}-${paramIndex}-slider" class="cust-slider">
+                      <div class="slider-value">
+                      ${(param.name || param.id)} - ${parseFloat(param.value || "").toFixed(1)}
                       </div>
-                
+                      <div class="slider-wrap-outer">
+                        <button id="${index}-${paramIndex}-left" class="left">
+                          <i class="material-icons">
+                            keyboard_arrow_left
+                          </i>
+                        </button>
+                        <div id="${index}-${paramIndex}-slider-wrap" class="slider-wrap">
+                          <div id="${index}-${paramIndex}-sliderFillBg" class="fill-bg"></div>
+                          <div id="${index}-${paramIndex}-sliderIndecator" class="indecator">
+                            <div class="bg-inside"></div>
+                          </div>
+                        </div>
+                        <button id="${index}-${paramIndex}-right" class="right">
+                          <i class="material-icons">
+                            keyboard_arrow_right
+                          </i>
+                        </button>
+                      </div>
+                    </div>
                       `
                     });
-                  gR.append("text")
-                    .attr("font-size", "10px")
-                    .attr("x", element.x + 50)
-                    .attr("y", py - 6)
-                    .text((param.name || param.id) + "-" + parseFloat(param.value || "").toFixed(1));
-
+               
                   self = this;
                   let rangeElement: any = document.getElementById(`${index}-${paramIndex}`);
-                  rangeElement.onchange =  (e) => {
-                    setTimeout(() => {
-                      this.dragSelected = index;
-                      this.data[index].parameters[paramIndex].value = rangeElement.value.toString();
-                      this.txtQueryChanged.next({
-                        value: rangeElement.value,
-                        selected: this.dragSelected
-                      });
-                    }, 150);
-                  };
 
+                  self.sladerChange(param, paramIndex, index);
                   let rangeElementleft: any = document.getElementById(`${index}-${paramIndex}-left`);
                   rangeElementleft.onclick = function (e) {
                     
-                    setTimeout(() => {
-                    let value = +rangeElement.value - +param.sliderStep;
+                    let value = +param.value - +param.sliderStep;
                       if (value >= param.sliderMin) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
@@ -775,23 +770,39 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                           value: value,
                           selected: self.dragSelected
                         });
+
+                        self.sladerChange(param, paramIndex, index);
                       }
-                    }, 20);
                   };
 
                   let rangeElementright: any = document.getElementById(`${index}-${paramIndex}-right`);
                   rangeElementright.onclick = function (e) {
-                    setTimeout(() => {
-                      let value = +rangeElement.value + +param.sliderStep;
-                      if (value <= param.sliderMax) {
+                      let value = +param.value + +param.sliderStep;
+
+                      if (value <= (param.sliderMax + 1)) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
                         self.txtQueryChanged.next({
                           value: value,
                           selected: self.dragSelected
                         });
+                        self.sladerChange(param, paramIndex, index);
                       }
-                    }, 20);
+                  };
+
+                  let sliderwrapElementright: any = document.getElementById(`${index}-${paramIndex}-slider-wrap`);
+                  sliderwrapElementright.onclick = function (e) {
+                      let value = ((e.offsetX / 90 * 100) * ((param.sliderMax - param.sliderMin) / 100)) + param.sliderMin;
+                      value = Math.round(value / param.sliderStep) * param.sliderStep;
+                      if (value <= (param.sliderMax + 1)) {
+                        self.dragSelected = index;
+                        self.data[index].parameters[paramIndex].value = value.toString();
+                        self.txtQueryChanged.next({
+                          value: value,
+                          selected: self.dragSelected
+                        });
+                        self.sladerChange(param, paramIndex, index);
+                      }
                   };
                   break;
                 default:
@@ -875,6 +886,18 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   formulaSaver = {};
   formulaSearchRun;
   formulaData;
+  event
+
+  sladerChange(param, paramIndex, index){
+    let otions = {
+      min: param.sliderMin,
+      max: param.sliderMax,
+      value: param.value
+    }
+
+    document.getElementById(`${index}-${paramIndex}-sliderIndecator`).style.left = `calc(${((otions.value - otions.min) / (otions.max - otions.min)) * 100}% - ${15 * ((otions.value - otions.min) / (otions.max - otions.min))}px)`
+    document.getElementById(`${index}-${paramIndex}-sliderFillBg`).style.width = `calc(${((otions.value - otions.min) / (otions.max - otions.min)) * 100}% - ${15 * ((otions.value - otions.min) / (otions.max - otions.min))}px)`
+  }
 
   formulaSearch(element) {
     let arr = element.split(".");
@@ -890,16 +913,20 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   formulaDataSearch(data, arr, element) {
-    data.forEach(comp => {
-      comp.parameters.forEach(param => {
+    new Promise((resolve, reject) => { data.forEach(comp => {
+      comp.parameters.forEach((param, i) => {
         if (this.modelsKeys[comp.modelId] === arr[0] && comp.id === arr[1] && param.id === arr[2]) {
           this.formulaSaver[element] = +param.value;
         }
+        if((comp.parameters.length -1)  === i){
+          resolve();
+        }
+
       });
     });
-    setTimeout(() => {
+    }).then(() => {
       this.clear();
-    }, 200);
+    });
   }
 
   clickArrow;
