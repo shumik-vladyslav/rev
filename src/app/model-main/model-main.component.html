@@ -85,7 +85,7 @@
           <td>
             <mat-form-field *ngIf="(item.value && item.value.charAt(0) !== '=') || !item.value" class="example-full-width table-input">
               <input matInput [(ngModel)]="item.value" 
-              (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event)" />
+              (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event);validValue(item,index)" />
             </mat-form-field>
             <span *ngIf="item.value && item.value.charAt(0) === '=' ">
               f (x)
@@ -146,7 +146,7 @@
                   <div class="input-btn-wrap">
                     <mat-form-field *ngIf="item.value && item.value.charAt(0) !== '=' " class="example-full-width">
                       <input matInput placeholder="Value" [(ngModel)]="item.value"
-                      (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event)"/>
+                      (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event);validValue(item,index)"/>
                     </mat-form-field>
                     <span *ngIf="item.value && item.value.charAt(0) === '=' " class="example-full-width">Value = f (x)</span>
 
@@ -187,7 +187,7 @@
                   <mat-form-field *ngIf="item.showOnDiagram">
                     <mat-label>Control type</mat-label>
                     <mat-select [(ngModel)]="item.controlType" 
-                    (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event)">
+                    (keyup.enter)="onFieldChange($event);" (blur)="onFieldChange($event);sliderChange($event, item, index)">
                       <mat-option value="Value">
                         Value
                       </mat-option>

@@ -541,15 +541,17 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
           dy = element.y - 8;
           color = this.colors[element.objectClass];
           let count = 0;
+          let countS = 0;
 
           element.parameters.forEach((param, index) => {
             if (param.showOnDiagram) {
-
+              if(param.controlType === "Slider"){
+                countS++;
+              }
               count++;
             }
           });
-
-          let h = (60 + (count > 3 ? ((count - 3) * 16 + (count * 5)) : 0));
+          let h = (65 + (count > 3 ? ((count - 3) * 27 + ( countS * 5) + (count * 5)) : 0+ ( countS * 5)));
           let selected = (this.selected !== null && (+this.selected === +index)) ? "stroke-width:1;stroke:rgb(0,0,0)" : "";
           let g = this.conteiner.append("g").attr("class", "g");
           g.append("rect")
@@ -610,6 +612,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             .attr("x", element.x + 140)
             .attr("y", element.y - 13)
             .text("X")
+            .attr("cursor", "pointer")
             .on("click", (d, i, s) => {
               d3.event.stopPropagation();
               let id = s[0].id.split("-")[0];
@@ -626,6 +629,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             .attr("x", element.x + 135)
             .attr("y", element.y + 5)
             .text("=>")
+            .attr("cursor", "pointer")
             .on("click", (d, i, s) => {
               d3.event.stopPropagation();
               let id = s[0].id.split("-")[0];
@@ -637,6 +641,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             .attr("x", element.x)
             .attr("y", element.y + 5)
             .text("|||")
+            .attr("cursor", "pointer")
             .call(
               d3
                 .drag()
@@ -649,7 +654,9 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
           let parameters = element.parameters.slice();
           parameters.forEach((param, paramIndex) => {
             if (param.showOnDiagram) {
-              let py = element.y + 70 - 50 - (countIndex * 20) + (count >= 3 ? ((count - 3) * 16 + (count * 7)) : (count > 1) ? (count * 4) : -9);
+              let py = element.y + 79 - 50 - (countIndex * 24) + (count >= 3 ?
+                 ((count - 3) * 24 + (count * 7)) :
+                  (count > 1) ? (count * 4) : -9);
               switch (param.controlType) {
                 case "Value":
                 case "":
@@ -720,12 +727,12 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                   //   .attr("y", py)
                   //   .text((param.name || param.id) + " - ");
                    l = (param.name || param.id).length;
-
+                
                   gR.append("foreignObject")
                     .attr("x", element.x + ((param.name || param.id).length) + 5)
-                    .attr("y", py - 10)
+                    .attr("y", py - 5)
                     .attr("width", 120)
-                    .attr("height", 16)
+                    .attr("height", 30)
                     .attr("class", "foreignObject-input-bmp")
                     .html((d) => {
                       return `
@@ -741,7 +748,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                         </button>
                         <div id="${index}-${paramIndex}-slider-wrap" class="slider-wrap">
                           <div id="${index}-${paramIndex}-sliderFillBg" class="fill-bg"></div>
-                          <div id="${index}-${paramIndex}-sliderIndecator" class="indecator">
+                          <div id="${index}-${paramIndex}-sliderIndecator" class="indecator" draggable="true">
                             <div class="bg-inside"></div>
                           </div>
                         </div>
@@ -754,6 +761,14 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     </div>
                       `
                     });
+
+                    document.getElementById(`${index}-${paramIndex}-sliderIndecator`).addEventListener(
+                      "dragstart",
+                      ev => {
+                        console.log("sliderIndecator")
+                      },
+                      false
+                    );
                
                   self = this;
                   let rangeElement: any = document.getElementById(`${index}-${paramIndex}`);
@@ -1189,6 +1204,26 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       this.selectedLine = null;
       this.clickArrow = false;
+    }
+  }
+
+  sliderChange(e, item, i){
+    if(item.controlType === "Slider"){
+      item.value = "0";
+      this.txtQueryChanged.next({
+        value: item.value,
+        selected: i
+      });
+    }
+  }
+
+  validValue(item, i){
+    if(item.controlType === "Slider" && (+item.value < item.sliderMin || +item.value > item.sliderMax)){
+      item.value = item.sliderMin.toString();
+      this.txtQueryChanged.next({
+        value: item.value,
+        selected: i
+      });
     }
   }
 }
