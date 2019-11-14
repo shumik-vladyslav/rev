@@ -2400,20 +2400,38 @@ var ModelMainComponent = /** @class */ (function () {
     };
     ModelMainComponent.prototype.sliderChange = function (e, item, i) {
         if (item.controlType === "Slider") {
-            item.value = "0";
-            this.txtQueryChanged.next({
-                value: item.value,
-                selected: i
-            });
+            if (+item.value < item.sliderMin) {
+                item.value = item.sliderMin.toString();
+                this.txtQueryChanged.next({
+                    value: item.value,
+                    selected: i
+                });
+            }
+            else if (+item.value > item.sliderMax) {
+                item.value = item.sliderMax.toString();
+                this.txtQueryChanged.next({
+                    value: item.value,
+                    selected: i
+                });
+            }
         }
     };
     ModelMainComponent.prototype.validValue = function (item, i) {
-        if (item.controlType === "Slider" && (+item.value < item.sliderMin || +item.value > item.sliderMax)) {
-            item.value = item.sliderMin.toString();
-            this.txtQueryChanged.next({
-                value: item.value,
-                selected: i
-            });
+        if (item.controlType === "Slider") {
+            if (+item.value < item.sliderMin) {
+                item.value = item.sliderMin.toString();
+                this.txtQueryChanged.next({
+                    value: item.value,
+                    selected: i
+                });
+            }
+            else if (+item.value > item.sliderMax) {
+                item.value = item.sliderMax.toString();
+                this.txtQueryChanged.next({
+                    value: item.value,
+                    selected: i
+                });
+            }
         }
     };
     __decorate([

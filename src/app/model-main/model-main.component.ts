@@ -1207,23 +1207,39 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  sliderChange(e, item, i){
+  sliderChange(e, item, i) {
     if(item.controlType === "Slider"){
-      item.value = "0";
-      this.txtQueryChanged.next({
-        value: item.value,
-        selected: i
-      });
+      if (+item.value < item.sliderMin) {
+        item.value = item.sliderMin.toString();
+        this.txtQueryChanged.next({
+          value: item.value,
+          selected: i
+        });
+      } else if (+item.value > item.sliderMax) {
+        item.value = item.sliderMax.toString();
+        this.txtQueryChanged.next({
+          value: item.value,
+          selected: i
+        });
+      }
     }
   }
 
-  validValue(item, i){
-    if(item.controlType === "Slider" && (+item.value < item.sliderMin || +item.value > item.sliderMax)){
-      item.value = item.sliderMin.toString();
-      this.txtQueryChanged.next({
-        value: item.value,
-        selected: i
-      });
+  validValue(item, i) {
+    if(item.controlType === "Slider"){
+      if (+item.value < item.sliderMin) {
+        item.value = item.sliderMin.toString();
+        this.txtQueryChanged.next({
+          value: item.value,
+          selected: i
+        });
+      } else if (+item.value > item.sliderMax) {
+        item.value = item.sliderMax.toString();
+        this.txtQueryChanged.next({
+          value: item.value,
+          selected: i
+        });
+      }
     }
   }
 }
