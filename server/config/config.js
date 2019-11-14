@@ -53,8 +53,8 @@ const config = {
 // MONGO_HOST=mongodb://morovar:aywcz1q8@ds031948.mlab.com:31948/heroku_37kv0jj3
 // MEAN_FRONTEND=angular
 env: envVars.NODE_ENV,
-port: envVars.SERVER_PORT,
-  // port: process.env.PORT,
+// port: envVars.SERVER_PORT,
+  port: process.env.PORT,
   mongooseDebug: envVars.MONGOOSE_DEBUG,
   jwtSecret: envVars.JWT_SECRET,
   frontend: envVars.MEAN_FRONTEND || 'angular',
