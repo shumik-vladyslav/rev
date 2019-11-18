@@ -47,6 +47,12 @@ const config = {
 //   MONGO_HOST=mongodb://localhost:27017/cogintech                                                                          
 //   MEAN_FRONTEND=angular 
 
+//ssh deploy@104.248.142.82
+//newcogintechpassword123 
+//cd projects/bpm/
+// http://cogintech.ru/
+
+
 // NODE_ENV=development
 // SERVER_PORT=4040
 // JWT_SECRET=0a6b944d-d2fb-46fc-a85e-0295c986cd9f
