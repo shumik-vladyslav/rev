@@ -22,19 +22,59 @@
   <div class="model-list">
     <div *ngFor="let item of data" class="model-wrap">
       <div [routerLink]="['/model/'+item._id]" class="model">
+        <div style="padding-left: 10px;">
+          {{item.name}}
+        </div>
         <div class="img-wrap">
           <img src="http://www.ucodice.com/kinglinkr/front/img/circle.png" alt="" />
         </div>
         <div>
-          <div class="name">
+          <!-- <div class="name">
             {{item.name}}
-          </div>
+          </div> -->
           <div class="desc">
             {{item.description}}
           </div>
         </div>
       </div>
-      <div (click)="export(item)">X</div>
+      <button mat-icon-button [matMenuTriggerFor]="menu" class="more-btn">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button (click)="edit(item)" mat-menu-item class="menu-item">
+          <i class="material-icons">
+            edit
+          </i>
+          Edit
+        </button>
+        <button (click)="clone(item)" mat-menu-item class="menu-item">
+          <i class="material-icons">
+            file_copy
+          </i>
+          Copy
+        </button>
+        <button (click)="remove(item)" mat-menu-item class="menu-item">
+          <i class="material-icons">
+            delete_outline
+          </i>
+          Delete
+        </button>
+        <button (click)="export(item)" mat-menu-item class="menu-item">
+          <i class="material-icons">
+            import_export
+          </i>
+          Export
+        </button>
+        <button (click)="file.click();selected = item;" mat-menu-item class="menu-item">
+          <i class="material-icons">
+            import_export
+          </i>
+          Import
+        </button>
+      </mat-menu>
     </div>
   </div>
 </div>
+
+<input #file type="file" (change)="onChange($event)" style="display: none;"/>
+

@@ -32,6 +32,22 @@
 }
 
 //style for model
+.more-btn {
+  position: absolute;
+  z-index: 111;
+  right: 12px;
+  top: 13px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  min-width: 150px;
+
+  .material-icons {
+    margin-right: 10px;
+  }
+}
 
 .model-wrap {
   padding: 12px;
@@ -40,6 +56,7 @@
   height: 182px;
   margin-bottom: 20px;
   outline: none;
+  position: relative;
 
   .model {
     outline: none;

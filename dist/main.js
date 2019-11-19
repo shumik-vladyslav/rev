@@ -1238,7 +1238,7 @@ var CatchErrorInterceptor = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"wrap\">\r\n  <div class=\"head\">\r\n    <div class=\"df ai-c\">\r\n      <div class=\"title\">\r\n        Recently Active\r\n      </div>\r\n      <!-- <div class=\"subtitle\">\r\n        Diagrams last changed by you\r\n      </div> -->\r\n    </div>\r\n    <div>\r\n      <button\r\n        (click)=\"openDialog()\"\r\n        mat-raised-button\r\n        color=\"primary\"\r\n      >\r\n        New project\r\n      </button>\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"model-list\">\r\n    <div *ngFor=\"let item of data\" class=\"model-wrap\">\r\n      <div [routerLink]=\"['/model/'+item._id]\" class=\"model\">\r\n        <div class=\"img-wrap\">\r\n          <img src=\"http://www.ucodice.com/kinglinkr/front/img/circle.png\" alt=\"\" />\r\n        </div>\r\n        <div>\r\n          <div class=\"name\">\r\n            {{item.name}}\r\n          </div>\r\n          <div class=\"desc\">\r\n            {{item.description}}\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div (click)=\"export(item)\">X</div>\r\n    </div>\r\n  </div>\r\n</div>\r\n"
+module.exports = "<div class=\"wrap\">\r\n  <div class=\"head\">\r\n    <div class=\"df ai-c\">\r\n      <div class=\"title\">\r\n        Recently Active\r\n      </div>\r\n      <!-- <div class=\"subtitle\">\r\n        Diagrams last changed by you\r\n      </div> -->\r\n    </div>\r\n    <div>\r\n      <button\r\n        (click)=\"openDialog()\"\r\n        mat-raised-button\r\n        color=\"primary\"\r\n      >\r\n        New project\r\n      </button>\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"model-list\">\r\n    <div *ngFor=\"let item of data\" class=\"model-wrap\">\r\n      <div [routerLink]=\"['/model/'+item._id]\" class=\"model\">\r\n        <div style=\"padding-left: 10px;\">\r\n          {{item.name}}\r\n        </div>\r\n        <div class=\"img-wrap\">\r\n          <img src=\"http://www.ucodice.com/kinglinkr/front/img/circle.png\" alt=\"\" />\r\n        </div>\r\n        <div>\r\n          <!-- <div class=\"name\">\r\n            {{item.name}}\r\n          </div> -->\r\n          <div class=\"desc\">\r\n            {{item.description}}\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <button mat-icon-button [matMenuTriggerFor]=\"menu\" class=\"more-btn\">\r\n        <mat-icon>more_vert</mat-icon>\r\n      </button>\r\n      <mat-menu #menu=\"matMenu\">\r\n        <button (click)=\"edit(item)\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            edit\r\n          </i>\r\n          Edit\r\n        </button>\r\n        <button (click)=\"clone(item)\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            file_copy\r\n          </i>\r\n          Copy\r\n        </button>\r\n        <button (click)=\"remove(item)\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            delete_outline\r\n          </i>\r\n          Delete\r\n        </button>\r\n        <button (click)=\"export(item)\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            import_export\r\n          </i>\r\n          Export\r\n        </button>\r\n        <button (click)=\"file.click();selected = item;\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            import_export\r\n          </i>\r\n          Import\r\n        </button>\r\n      </mat-menu>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n<input #file type=\"file\" (change)=\"onChange($event)\" style=\"display: none;\"/>\r\n\r\n"
 
 /***/ }),
 
@@ -1249,7 +1249,7 @@ module.exports = "<div class=\"wrap\">\r\n  <div class=\"head\">\r\n    <div cla
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".wrap {\n  padding: 20px 40px; }\n  .wrap .head {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    padding: 25px 0;\n    margin-bottom: 20px;\n    border-bottom: 1px solid rgba(0, 0, 0, 0.12); }\n  .wrap .head .title {\n      color: #535353;\n      font-size: 19px;\n      font-family: Helvetica, Arial, sans-serif;\n      font-weight: 600; }\n  .wrap .head .subtitle {\n      font-size: 12px;\n      color: #7d7d7d;\n      margin: 0px 0px 0px 20px; }\n  .model-list {\n  display: flex;\n  flex-wrap: wrap;\n  margin-left: -6px;\n  margin-right: -6px; }\n  .model-wrap {\n  padding: 12px;\n  max-width: 50%;\n  flex-basis: 50%;\n  height: 182px;\n  margin-bottom: 20px;\n  outline: none; }\n  .model-wrap .model {\n    outline: none;\n    color: #535353;\n    transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;\n    background-color: #fff;\n    border-radius: 5px;\n    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.11);\n    border-width: 3px;\n    border-style: solid;\n    border-color: transparent;\n    -o-border-image: initial;\n       border-image: initial;\n    width: 100%;\n    height: 100%;\n    display: flex;\n    flex-flow: column;\n    justify-content: space-between;\n    cursor: pointer; }\n  .model-wrap .model .name {\n      color: #535353;\n      font-size: 14px;\n      font-weight: bold;\n      overflow-wrap: break-word;\n      white-space: nowrap;\n      text-overflow: ellipsis;\n      overflow: hidden;\n      padding-left: 10px;\n      transition: all 0.3s; }\n  .model-wrap .model .desc {\n      padding-left: 10px;\n      padding-bottom: 10px;\n      overflow-wrap: break-word;\n      white-space: nowrap;\n      text-overflow: ellipsis;\n      overflow: hidden;\n      line-height: 1.618;\n      font-size: 0.75em;\n      font-weight: 100;\n      font-family: Helvetica, Arial, sans-serif; }\n  .model-wrap .model .img-wrap {\n      width: 100%;\n      height: 100%;\n      position: relative;\n      display: flex;\n      align-items: center;\n      justify-content: center; }\n  .model-wrap .model .img-wrap img {\n        height: 100%;\n        position: absolute; }\n  .model-wrap .model:hover .name {\n      color: #673ab7; }\n  @media (min-width: 600px) {\n  .model-wrap {\n    flex-grow: 0;\n    max-width: 33.333333%;\n    flex-basis: 33.333333%; } }\n"
+module.exports = ".wrap {\n  padding: 20px 40px; }\n  .wrap .head {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    padding: 25px 0;\n    margin-bottom: 20px;\n    border-bottom: 1px solid rgba(0, 0, 0, 0.12); }\n  .wrap .head .title {\n      color: #535353;\n      font-size: 19px;\n      font-family: Helvetica, Arial, sans-serif;\n      font-weight: 600; }\n  .wrap .head .subtitle {\n      font-size: 12px;\n      color: #7d7d7d;\n      margin: 0px 0px 0px 20px; }\n  .model-list {\n  display: flex;\n  flex-wrap: wrap;\n  margin-left: -6px;\n  margin-right: -6px; }\n  .more-btn {\n  position: absolute;\n  z-index: 111;\n  right: 12px;\n  top: 13px; }\n  .menu-item {\n  display: flex;\n  align-items: center;\n  min-width: 150px; }\n  .menu-item .material-icons {\n    margin-right: 10px; }\n  .model-wrap {\n  padding: 12px;\n  max-width: 50%;\n  flex-basis: 50%;\n  height: 182px;\n  margin-bottom: 20px;\n  outline: none;\n  position: relative; }\n  .model-wrap .model {\n    outline: none;\n    color: #535353;\n    transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;\n    background-color: #fff;\n    border-radius: 5px;\n    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.11);\n    border-width: 3px;\n    border-style: solid;\n    border-color: transparent;\n    -o-border-image: initial;\n       border-image: initial;\n    width: 100%;\n    height: 100%;\n    display: flex;\n    flex-flow: column;\n    justify-content: space-between;\n    cursor: pointer; }\n  .model-wrap .model .name {\n      color: #535353;\n      font-size: 14px;\n      font-weight: bold;\n      overflow-wrap: break-word;\n      white-space: nowrap;\n      text-overflow: ellipsis;\n      overflow: hidden;\n      padding-left: 10px;\n      transition: all 0.3s; }\n  .model-wrap .model .desc {\n      padding-left: 10px;\n      padding-bottom: 10px;\n      overflow-wrap: break-word;\n      white-space: nowrap;\n      text-overflow: ellipsis;\n      overflow: hidden;\n      line-height: 1.618;\n      font-size: 0.75em;\n      font-weight: 100;\n      font-family: Helvetica, Arial, sans-serif; }\n  .model-wrap .model .img-wrap {\n      width: 100%;\n      height: 100%;\n      position: relative;\n      display: flex;\n      align-items: center;\n      justify-content: center; }\n  .model-wrap .model .img-wrap img {\n        height: 100%;\n        position: absolute; }\n  .model-wrap .model:hover .name {\n      color: #673ab7; }\n  @media (min-width: 600px) {\n  .model-wrap {\n    flex-grow: 0;\n    max-width: 33.333333%;\n    flex-basis: 33.333333%; } }\n"
 
 /***/ }),
 
@@ -1271,6 +1271,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shared_components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../shared/components/dialog-create-model/dialog-create-model.component */ "./src/app/shared/components/dialog-create-model/dialog-create-model.component.ts");
 /* harmony import */ var _shared_model__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../shared/model */ "./src/app/shared/model.ts");
 /* harmony import */ var _shared_component_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../shared/component.service */ "./src/app/shared/component.service.ts");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm5/index.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1280,6 +1281,7 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 var __metadata = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 
 
 
@@ -1317,7 +1319,8 @@ var ModelListComponent = /** @class */ (function () {
         var dialogRef = this.dialog.open(_shared_components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_5__["DialogCreateModelComponent"], {
             width: '450px',
             data: {
-                id: "mod" + (this.data.length + 1)
+                id: 'mod' + (this.data.length + 1),
+                label: 'Create Model'
             }
         });
         dialogRef.afterClosed().subscribe(function (model) {
@@ -1325,22 +1328,100 @@ var ModelListComponent = /** @class */ (function () {
                 model.userId = _this.user._id;
                 _this.modelService.create(model).subscribe(function (data) {
                     console.log(data);
-                    _this.router.navigate(["model/" + data._id]);
+                    _this.router.navigate(['model/' + data._id]);
                 });
             }
         });
     };
     ModelListComponent.prototype.remove = function (item) {
         var _this = this;
-        this.modelService.remove(item._id).subscribe(function (data) {
-            console.log(data);
-            _this.getData();
+        var dialogRef = this.dialog.open(_shared_components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_5__["DialogCreateModelComponent"], {
+            width: '450px',
+            data: {
+                label: 'You delete the model! Are you shure?',
+                deleteMode: true
+            }
+        });
+        dialogRef.afterClosed().subscribe(function (model) {
+            if (model) {
+                _this.modelService.remove(item._id).subscribe(function (data) {
+                    console.log(data);
+                    _this.getData();
+                });
+            }
         });
     };
     ModelListComponent.prototype.edit = function (item) {
-        this.router.navigate(["model/" + item._id]);
+        var _this = this;
+        var dialogRef = this.dialog.open(_shared_components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_5__["DialogCreateModelComponent"], {
+            width: '450px',
+            data: {
+                id: item.id,
+                name: item.name,
+                description: item.description,
+                label: 'Edit Model'
+            }
+        });
+        dialogRef.afterClosed().subscribe(function (model) {
+            if (model) {
+                item.id = model.id;
+                item.name = model.name;
+                item.description = model.description;
+                _this.modelService.updateById(item).subscribe(function (data) {
+                    _this.getData();
+                });
+            }
+        });
     };
-    ModelListComponent.prototype.imp = function () {
+    ModelListComponent.prototype.clone = function (item) {
+        var _this = this;
+        var dialogRef = this.dialog.open(_shared_components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_5__["DialogCreateModelComponent"], {
+            width: '450px',
+            data: {
+                id: item.id + '_copy',
+                name: item.name,
+                description: item.description,
+                label: 'Clone Model'
+            }
+        });
+        dialogRef.afterClosed().subscribe(function (model) {
+            if (model) {
+                model.userId = _this.user._id;
+                _this.modelService.create(model).subscribe(function (newModel) {
+                    _this.componentService.getAllById(item._id).subscribe(function (arr) {
+                        var observableList = [];
+                        arr.forEach(function (m) {
+                            m.modelId = newModel._id;
+                            delete m._id;
+                            observableList.push(_this.componentService.create(m));
+                        });
+                        var obs = Object(rxjs__WEBPACK_IMPORTED_MODULE_8__["forkJoin"])(observableList);
+                        obs.subscribe(function (t) {
+                            _this.router.navigate(["model/" + newModel._id]);
+                        });
+                    });
+                });
+            }
+        });
+    };
+    ModelListComponent.prototype.onChange = function (event) {
+        var file = event.srcElement.files[0];
+        if (file) {
+            var reader = new FileReader();
+            var self_1 = this;
+            reader.readAsText(file, "UTF-8");
+            reader.onload = function (evt) {
+                console.log(JSON.parse(evt.target.result));
+                JSON.parse(evt.target.result).forEach(function (element) {
+                    // element.modelId = self.selected.modelId;
+                    self_1.componentService.update(element).subscribe(function () {
+                    });
+                });
+            };
+            reader.onerror = function (evt) {
+                console.log('error reading file');
+            };
+        }
     };
     ModelListComponent.prototype.export = function (item) {
         var _this = this;
@@ -2543,7 +2624,7 @@ var ComponentService = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1 mat-dialog-title>Create Model</h1>\r\n<div mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>ID</mat-label>\r\n    <input matInput (keydown)=\"onKeyDown($event)\" [(ngModel)]=\"model.id\" />\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Name</mat-label>\r\n    <input matInput [(ngModel)]=\"model.name\" />\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Description</mat-label>\r\n    <input matInput [(ngModel)]=\"model.description\" />\r\n  </mat-form-field>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button\r\n    mat-button\r\n    [mat-dialog-close]=\"model\"\r\n    mat-raised-button\r\n    color=\"primary\"\r\n    cdkFocusInitial\r\n  >\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>\r\n"
+module.exports = "<h1 mat-dialog-title>{{label}}</h1>\r\n<div *ngIf=\"!deleteMode\" mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>ID</mat-label>\r\n    <input matInput (keydown)=\"onKeyDown($event)\" [(ngModel)]=\"model.id\" />\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Name</mat-label>\r\n    <input matInput [(ngModel)]=\"model.name\" />\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Description</mat-label>\r\n    <input matInput [(ngModel)]=\"model.description\" />\r\n  </mat-form-field>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button\r\n    mat-button\r\n    [mat-dialog-close]=\"model\"\r\n    mat-raised-button\r\n    color=\"primary\"\r\n    cdkFocusInitial\r\n  >\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -2591,9 +2672,14 @@ var DialogCreateModelComponent = /** @class */ (function () {
         this.dialogRef = dialogRef;
         this.data = data;
         this.model = new _model__WEBPACK_IMPORTED_MODULE_2__["ModelClass"]();
+        this.label = "";
     }
     DialogCreateModelComponent.prototype.ngOnInit = function () {
         this.model.id = this.data.id;
+        this.model.name = this.data.name || "";
+        this.model.description = this.data.description || "";
+        this.label = this.data.label;
+        this.deleteMode = this.data.deleteMode;
     };
     DialogCreateModelComponent.prototype.onNoClick = function () {
         this.dialogRef.close();
@@ -3127,6 +3213,9 @@ var ModelService = /** @class */ (function () {
     };
     ModelService.prototype.remove = function (id) {
         return this.http.delete('/api/model/' + id);
+    };
+    ModelService.prototype.updateById = function (model) {
+        return this.http.put('/api/model', model);
     };
     ModelService = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])(),

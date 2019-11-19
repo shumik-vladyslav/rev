@@ -1,5 +1,5 @@
-<h1 mat-dialog-title>Create Model</h1>
-<div mat-dialog-content>
+<h1 mat-dialog-title>{{label}}</h1>
+<div *ngIf="!deleteMode" mat-dialog-content>
   <mat-form-field>
     <mat-label>ID</mat-label>
     <input matInput (keydown)="onKeyDown($event)" [(ngModel)]="model.id" />

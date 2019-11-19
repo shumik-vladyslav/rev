@@ -1,11 +1,13 @@
 export class ModelClass{
-    id: "";
+    _id?;
+     id: "";
     userId: "";
     name: "";
     description: "";
 }
 
 export class ComponentClass{
+    _id?;
     id = "";
     modelId = "";
     userId = "";

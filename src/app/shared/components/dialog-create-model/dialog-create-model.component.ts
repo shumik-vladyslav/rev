@@ -9,10 +9,16 @@ import { ModelClass } from "../../model";
 })
 export class DialogCreateModelComponent implements OnInit {
   model = new ModelClass();
+  label = ""
+  deleteMode;
   constructor(public dialogRef: MatDialogRef<DialogCreateModelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
   ngOnInit(): void {
     this.model.id = this.data.id;
+    this.model.name = this.data.name || "";
+    this.model.description = this.data.description || "";
+    this.label = this.data.label;
+    this.deleteMode = this.data.deleteMode;
   }
   onNoClick(): void {
     this.dialogRef.close();

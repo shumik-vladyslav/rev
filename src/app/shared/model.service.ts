@@ -25,4 +25,8 @@ export class ModelService {
   remove(id) {
     return this.http.delete('/api/model/' + id);
   }
+
+  updateById(model) {
+    return this.http.put('/api/model', model);
+  }
 }
