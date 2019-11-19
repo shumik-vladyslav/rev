@@ -8,17 +8,21 @@ import { TooltipComponent } from '@angular/material';
 @Injectable()
 export class ModelService {
 
-  constructor(private http : HttpClient) {}
+  constructor(private http: HttpClient) {}
 
-  create(model){
-    return this.http.post('/api/model', model)
+  create(model) {
+    return this.http.post('/api/model', model);
   }
 
-  getAll(){
-    return this.http.get('/api/model')
+  getAll() {
+    return this.http.get('/api/model');
   }
-  
-  getAllById(id){
-    return this.http.get('/api/model/list/' + id)
+
+  getAllById(id) {
+    return this.http.get('/api/model/list/' + id);
+  }
+
+  remove(id) {
+    return this.http.delete('/api/model/' + id);
   }
 }

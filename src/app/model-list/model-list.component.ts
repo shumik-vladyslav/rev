@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material';
 import { DialogCreateModelComponent } from '../shared/components/dialog-create-model/dialog-create-model.component';
 import { ModelClass } from '../shared/model';
 import { UI } from 'formulize';
+import { ComponentService } from '../shared/component.service';
 
 @Component({
   selector: 'app-model-list',
@@ -21,31 +22,23 @@ export class ModelListComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     public dialog: MatDialog,
+    private componentService: ComponentService
   ) { }
 
   ngOnInit() {
     this.authService.me().subscribe(data => {
       this.user = data.user;
       console.log(data)
-      this.modelService.getAllById(this.user._id).subscribe((data: any) => {
-        console.log(data)
-        this.data = data;
-      });
+      this.getData()
     });
 
-    setTimeout(() => {
-      
-const target = document.getElementById('formulize');
-const formulize = new UI(target, {
-});
+  }
 
-const data = {
-  operator: '*',
-  operand1: { value: { type: 'unit', unit: 1 } },
-  operand2: { value: { type: 'unit', unit: 2 } }
-};
-formulize.setData(data);
-    }, 5000);
+  getData(){
+    this.modelService.getAllById(this.user._id).subscribe((data: any) => {
+      console.log(data)
+      this.data = data;
+    });
   }
 
   openDialog(): void {
@@ -60,10 +53,39 @@ formulize.setData(data);
         model.userId = this.user._id;
         this.modelService.create(model).subscribe((data: any) => {
           console.log(data)
-          this.router.navigate(["model/" + data._id])
+          this.router.navigate(["model/" + data._id]);
         })
       }
     });
   }
 
+  remove(item) {
+    this.modelService.remove(item._id).subscribe((data) => {
+      console.log(data);
+      this.getData();
+    });
+  }
+
+  edit(item) {
+    this.router.navigate(["model/" + item._id]);
+  }
+
+  imp(){
+    
+  }
+
+  export(item) {
+    this.componentService.getAllById(item._id).subscribe((data: any) => {
+      console.log(data);
+      this.download(JSON.stringify(data), 'json.upm', 'json');
+
+    });
+  }
+ download(content, fileName, contentType) {
+    var a = document.createElement("a");
+    var file = new Blob([content], {type: contentType});
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
+}
 }

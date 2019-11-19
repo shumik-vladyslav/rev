@@ -14,7 +14,8 @@ const Model = require('../models/model.model');
 module.exports = {
   insert,
   getAll,
-  getAllById
+  getAllById,
+  remove
 }
 
 async function insert(model) {
@@ -30,5 +31,8 @@ async function getAllById(params) {
   return await Model.find({userId: params.id})
 }
 
+async function remove(params) {
+  return await Model.remove({_id: params.id})
+}
 
 

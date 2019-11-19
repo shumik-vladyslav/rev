@@ -1238,7 +1238,7 @@ var CatchErrorInterceptor = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"wrap\">\r\n  <div class=\"head\">\r\n    <div class=\"df ai-c\">\r\n      <div class=\"title\">\r\n        Recently Active\r\n      </div>\r\n      <!-- <div class=\"subtitle\">\r\n        Diagrams last changed by you\r\n      </div> -->\r\n    </div>\r\n    <div>\r\n      <button\r\n        (click)=\"openDialog()\"\r\n        mat-raised-button\r\n        color=\"primary\"\r\n      >\r\n        New project\r\n      </button>\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"model-list\">\r\n    <div *ngFor=\"let item of data\" class=\"model-wrap\">\r\n      <div [routerLink]=\"['/model/'+item._id]\" class=\"model\">\r\n        <div class=\"img-wrap\">\r\n          <img src=\"http://www.ucodice.com/kinglinkr/front/img/circle.png\" alt=\"\" />\r\n        </div>\r\n        <div>\r\n          <div class=\"name\">\r\n            {{item.name}}\r\n          </div>\r\n          <div class=\"desc\">\r\n            {{item.description}}\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n"
+module.exports = "<div class=\"wrap\">\r\n  <div class=\"head\">\r\n    <div class=\"df ai-c\">\r\n      <div class=\"title\">\r\n        Recently Active\r\n      </div>\r\n      <!-- <div class=\"subtitle\">\r\n        Diagrams last changed by you\r\n      </div> -->\r\n    </div>\r\n    <div>\r\n      <button\r\n        (click)=\"openDialog()\"\r\n        mat-raised-button\r\n        color=\"primary\"\r\n      >\r\n        New project\r\n      </button>\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"model-list\">\r\n    <div *ngFor=\"let item of data\" class=\"model-wrap\">\r\n      <div [routerLink]=\"['/model/'+item._id]\" class=\"model\">\r\n        <div class=\"img-wrap\">\r\n          <img src=\"http://www.ucodice.com/kinglinkr/front/img/circle.png\" alt=\"\" />\r\n        </div>\r\n        <div>\r\n          <div class=\"name\">\r\n            {{item.name}}\r\n          </div>\r\n          <div class=\"desc\">\r\n            {{item.description}}\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div (click)=\"export(item)\">X</div>\r\n    </div>\r\n  </div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -1270,8 +1270,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
 /* harmony import */ var _shared_components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../shared/components/dialog-create-model/dialog-create-model.component */ "./src/app/shared/components/dialog-create-model/dialog-create-model.component.ts");
 /* harmony import */ var _shared_model__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../shared/model */ "./src/app/shared/model.ts");
-/* harmony import */ var formulize__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! formulize */ "./node_modules/formulize/dist/formulize.umd.js");
-/* harmony import */ var formulize__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(formulize__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _shared_component_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../shared/component.service */ "./src/app/shared/component.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1290,11 +1289,12 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 var ModelListComponent = /** @class */ (function () {
-    function ModelListComponent(modelService, authService, router, dialog) {
+    function ModelListComponent(modelService, authService, router, dialog, componentService) {
         this.modelService = modelService;
         this.authService = authService;
         this.router = router;
         this.dialog = dialog;
+        this.componentService = componentService;
         this.model = new _shared_model__WEBPACK_IMPORTED_MODULE_6__["ModelClass"]();
     }
     ModelListComponent.prototype.ngOnInit = function () {
@@ -1302,21 +1302,15 @@ var ModelListComponent = /** @class */ (function () {
         this.authService.me().subscribe(function (data) {
             _this.user = data.user;
             console.log(data);
-            _this.modelService.getAllById(_this.user._id).subscribe(function (data) {
-                console.log(data);
-                _this.data = data;
-            });
+            _this.getData();
         });
-        setTimeout(function () {
-            var target = document.getElementById('formulize');
-            var formulize = new formulize__WEBPACK_IMPORTED_MODULE_7__["UI"](target, {});
-            var data = {
-                operator: '*',
-                operand1: { value: { type: 'unit', unit: 1 } },
-                operand2: { value: { type: 'unit', unit: 2 } }
-            };
-            formulize.setData(data);
-        }, 5000);
+    };
+    ModelListComponent.prototype.getData = function () {
+        var _this = this;
+        this.modelService.getAllById(this.user._id).subscribe(function (data) {
+            console.log(data);
+            _this.data = data;
+        });
     };
     ModelListComponent.prototype.openDialog = function () {
         var _this = this;
@@ -1336,6 +1330,32 @@ var ModelListComponent = /** @class */ (function () {
             }
         });
     };
+    ModelListComponent.prototype.remove = function (item) {
+        var _this = this;
+        this.modelService.remove(item._id).subscribe(function (data) {
+            console.log(data);
+            _this.getData();
+        });
+    };
+    ModelListComponent.prototype.edit = function (item) {
+        this.router.navigate(["model/" + item._id]);
+    };
+    ModelListComponent.prototype.imp = function () {
+    };
+    ModelListComponent.prototype.export = function (item) {
+        var _this = this;
+        this.componentService.getAllById(item._id).subscribe(function (data) {
+            console.log(data);
+            _this.download(JSON.stringify(data), 'json.upm', 'json');
+        });
+    };
+    ModelListComponent.prototype.download = function (content, fileName, contentType) {
+        var a = document.createElement("a");
+        var file = new Blob([content], { type: contentType });
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+    };
     ModelListComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: 'app-model-list',
@@ -1345,7 +1365,8 @@ var ModelListComponent = /** @class */ (function () {
         __metadata("design:paramtypes", [_shared_model_service__WEBPACK_IMPORTED_MODULE_1__["ModelService"],
             _auth_auth_service__WEBPACK_IMPORTED_MODULE_2__["AuthService"],
             _angular_router__WEBPACK_IMPORTED_MODULE_3__["Router"],
-            _angular_material__WEBPACK_IMPORTED_MODULE_4__["MatDialog"]])
+            _angular_material__WEBPACK_IMPORTED_MODULE_4__["MatDialog"],
+            _shared_component_service__WEBPACK_IMPORTED_MODULE_7__["ComponentService"]])
     ], ModelListComponent);
     return ModelListComponent;
 }());
@@ -3103,6 +3124,9 @@ var ModelService = /** @class */ (function () {
     };
     ModelService.prototype.getAllById = function (id) {
         return this.http.get('/api/model/list/' + id);
+    };
+    ModelService.prototype.remove = function (id) {
+        return this.http.delete('/api/model/' + id);
     };
     ModelService = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])(),

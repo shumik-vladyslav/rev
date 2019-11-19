@@ -14,7 +14,8 @@ router.route('/')
   .get(asyncHandler(getAll));
 router.route('/list/:id')
 .get(asyncHandler(getAllById));
-  
+router.route('/:id')
+.delete(asyncHandler(remove));
 
 async function insert(req, res) {
   let model = await modelCtrl.insert(req.body);
@@ -31,3 +32,7 @@ async function getAllById(req, res) {
   res.json(model);
 }
 
+async function remove(req, res) {
+  let model = await modelCtrl.remove(req.params);
+  res.json(model);
+}
