@@ -1354,13 +1354,17 @@ var ModelListComponent = /** @class */ (function () {
     };
     ModelListComponent.prototype.edit = function (item) {
         var _this = this;
+        console.log(item);
+        var id = item._id;
+        var modelIdName = item.id;
         var dialogRef = this.dialog.open(_shared_components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_5__["DialogCreateModelComponent"], {
             width: '450px',
             data: {
                 id: item.id,
                 name: item.name,
                 description: item.description,
-                label: 'Edit Model'
+                label: 'Edit Model',
+                dataArr: this.data
             }
         });
         dialogRef.afterClosed().subscribe(function (model) {
@@ -1370,6 +1374,21 @@ var ModelListComponent = /** @class */ (function () {
                 item.description = model.description;
                 _this.modelService.updateById(item).subscribe(function (data) {
                     _this.getData();
+                    _this.componentService.getAllById(id).subscribe(function (arr) {
+                        console.log(arr);
+                        arr.forEach(function (element) {
+                            element.modelId = id;
+                            element.parameters.forEach(function (e) {
+                                var find = element.modelIdName;
+                                var re = new RegExp(find, 'g');
+                                e.value = e.value.replace(re, item.id);
+                            });
+                            element.modelIdName = item.id;
+                            _this.componentService.update(element).subscribe(function () {
+                                console.log(22);
+                            });
+                        });
+                    });
                 });
             }
         });
@@ -2643,7 +2662,7 @@ var ComponentService = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1 mat-dialog-title>{{label}}</h1>\r\n<div *ngIf=\"!deleteMode\" mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>ID</mat-label>\r\n    <input matInput (keydown)=\"onKeyDown($event)\" (ngModelChange)=\"validChange($event)\" [(ngModel)]=\"model.id\" />\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Name</mat-label>\r\n    <input matInput [(ngModel)]=\"model.name\" />\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Description</mat-label>\r\n    <input matInput [(ngModel)]=\"model.description\" />\r\n  </mat-form-field>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button\r\n    mat-button\r\n    [disabled]=\"!valid\"\r\n    [mat-dialog-close]=\"model\"\r\n    mat-raised-button\r\n    color=\"primary\"\r\n    cdkFocusInitial\r\n  >\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>\r\n"
+module.exports = "<h1 mat-dialog-title>{{label}}</h1>\r\n<div *ngIf=\"!deleteMode\" mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>ID</mat-label>\r\n    <input matInput (keydown)=\"onKeyDown($event)\" (ngModelChange)=\"validChange($event)\" [(ngModel)]=\"model.id\" />\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Name</mat-label>\r\n    <input matInput [(ngModel)]=\"model.name\" />\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Description</mat-label>\r\n    <input matInput [(ngModel)]=\"model.description\" />\r\n  </mat-form-field>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button\r\n    mat-button\r\n    [disabled]=\"!valid && !deleteMode\"\r\n    [mat-dialog-close]=\"model\"\r\n    mat-raised-button\r\n    color=\"primary\"\r\n    cdkFocusInitial\r\n  >\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -2695,6 +2714,7 @@ var DialogCreateModelComponent = /** @class */ (function () {
     }
     DialogCreateModelComponent.prototype.ngOnInit = function () {
         this.model.id = this.data.id;
+        this.saveId = this.data.id;
         this.model.name = this.data.name || "";
         this.model.description = this.data.description || "";
         this.label = this.data.label;
@@ -2716,6 +2736,9 @@ var DialogCreateModelComponent = /** @class */ (function () {
         }
         else {
             this.valid = false;
+        }
+        if (this.label === 'Edit Model' && this.saveId === e) {
+            this.valid = true;
         }
     };
     DialogCreateModelComponent.prototype.onNoClick = function () {

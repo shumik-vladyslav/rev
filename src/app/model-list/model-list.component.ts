@@ -85,13 +85,17 @@ export class ModelListComponent implements OnInit {
   }
 
   edit(item) {
+    console.log(item)
+    let id = item._id;
+    let modelIdName = item.id;
     const dialogRef = this.dialog.open(DialogCreateModelComponent, {
       width: '450px',
       data: {
         id: item.id,
         name: item.name,
         description: item.description,
-        label: 'Edit Model'
+        label: 'Edit Model',
+        dataArr: this.data
       }
     });
     dialogRef.afterClosed().subscribe(model => {
@@ -101,6 +105,23 @@ export class ModelListComponent implements OnInit {
         item.description = model.description;
         this.modelService.updateById(item).subscribe((data) => {
           this.getData();
+          this.componentService.getAllById(id).subscribe((arr: any) => {
+            console.log(arr)
+            arr.forEach((element) => {
+              element.modelId = id;
+              element.parameters.forEach(e => {
+                var find = element.modelIdName;
+                var re = new RegExp(find, 'g');
+                
+                e.value = e.value.replace(re, item.id);
+              });
+              element.modelIdName = item.id;
+
+              this.componentService.update(element).subscribe(() => {
+                console.log(22);
+              });
+            });
+          });
         });
       }
     });

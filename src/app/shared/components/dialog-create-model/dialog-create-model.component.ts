@@ -13,10 +13,12 @@ export class DialogCreateModelComponent implements OnInit {
   deleteMode;
   dataArr;
   valid;
+  saveId;
   constructor(public dialogRef: MatDialogRef<DialogCreateModelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
   ngOnInit(): void {
     this.model.id = this.data.id;
+    this.saveId = this.data.id;
     this.model.name = this.data.name || "";
     this.model.description = this.data.description || "";
     this.label = this.data.label;
@@ -35,10 +37,14 @@ export class DialogCreateModelComponent implements OnInit {
       return e === element.id;
     });
 
-    if(!res){
+    if (!res) {
       this.valid = true;
     } else {
       this.valid = false;
+    }
+
+    if (this.label === 'Edit Model' && this.saveId === e) {
+      this.valid = true;
     }
   }
 
