@@ -1238,7 +1238,7 @@ var CatchErrorInterceptor = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"wrap\">\r\n  <div class=\"head\">\r\n    <div class=\"df ai-c\">\r\n      <div class=\"title\">\r\n        Recently Active\r\n      </div>\r\n      <!-- <div class=\"subtitle\">\r\n        Diagrams last changed by you\r\n      </div> -->\r\n    </div>\r\n    <div>\r\n      <button\r\n        (click)=\"openDialog()\"\r\n        mat-raised-button\r\n        color=\"primary\"\r\n      >\r\n        New project\r\n      </button>\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"model-list\">\r\n    <div *ngFor=\"let item of data\" class=\"model-wrap\">\r\n      <div [routerLink]=\"['/model/'+item._id]\" class=\"model\">\r\n        <div style=\"padding-left: 10px;\">\r\n          {{item.name}}\r\n        </div>\r\n        <div class=\"img-wrap\">\r\n          <img src=\"http://www.ucodice.com/kinglinkr/front/img/circle.png\" alt=\"\" />\r\n        </div>\r\n        <div>\r\n          <!-- <div class=\"name\">\r\n            {{item.name}}\r\n          </div> -->\r\n          <div class=\"desc\">\r\n            {{item.description}}\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <button mat-icon-button [matMenuTriggerFor]=\"menu\" class=\"more-btn\">\r\n        <mat-icon>more_vert</mat-icon>\r\n      </button>\r\n      <mat-menu #menu=\"matMenu\">\r\n        <button (click)=\"edit(item)\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            edit\r\n          </i>\r\n          Edit\r\n        </button>\r\n        <button (click)=\"clone(item)\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            file_copy\r\n          </i>\r\n          Copy\r\n        </button>\r\n        <button (click)=\"remove(item)\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            delete_outline\r\n          </i>\r\n          Delete\r\n        </button>\r\n        <button (click)=\"export(item)\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            import_export\r\n          </i>\r\n          Export\r\n        </button>\r\n        <button (click)=\"file.click();selected = item;\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            import_export\r\n          </i>\r\n          Import\r\n        </button>\r\n      </mat-menu>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n<input #file type=\"file\" (change)=\"onChange($event)\" style=\"display: none;\"/>\r\n\r\n"
+module.exports = "<div class=\"wrap\">\r\n  <div class=\"head\">\r\n    <div class=\"df ai-c\">\r\n      <div class=\"title\">\r\n        Recently Active\r\n      </div>\r\n      <!-- <div class=\"subtitle\">\r\n        Diagrams last changed by you\r\n      </div> -->\r\n    </div>\r\n    <div>\r\n      <button\r\n        (click)=\"openDialog()\"\r\n        mat-raised-button\r\n        color=\"primary\"\r\n      >\r\n        New project\r\n      </button>\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"model-list\">\r\n    <div *ngFor=\"let item of data\" class=\"model-wrap\">\r\n      <div [routerLink]=\"['/model/'+item._id]\" class=\"model\">\r\n        <div style=\"padding-left: 10px;\">\r\n          {{item.name}}\r\n        </div>\r\n        <div class=\"img-wrap\">\r\n          <img src=\"http://www.ucodice.com/kinglinkr/front/img/circle.png\" alt=\"\" />\r\n        </div>\r\n        <div>\r\n          <!-- <div class=\"name\">\r\n            {{item.name}}\r\n          </div> -->\r\n          <div class=\"desc\">\r\n            {{item.description}}\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <button mat-icon-button [matMenuTriggerFor]=\"menu\" class=\"more-btn\">\r\n        <mat-icon>more_vert</mat-icon>\r\n      </button>\r\n      <mat-menu #menu=\"matMenu\">\r\n        <button (click)=\"edit(item)\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            edit\r\n          </i>\r\n          Edit\r\n        </button>\r\n        <button (click)=\"clone(item)\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            file_copy\r\n          </i>\r\n          Copy\r\n        </button>\r\n        <button (click)=\"remove(item)\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            delete_outline\r\n          </i>\r\n          Delete\r\n        </button>\r\n        <button (click)=\"export(item)\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            import_export\r\n          </i>\r\n          Export\r\n        </button>\r\n        <button (click)=\"file.click();selected = item;\" mat-menu-item class=\"menu-item\">\r\n          <i class=\"material-icons\">\r\n            import_export\r\n          </i>\r\n          Import\r\n        </button>\r\n      </mat-menu>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n<input #file type=\"file\" (change)=\"onChange($event)\" accept=\".upm\" style=\"display: none;\"/>\r\n\r\n"
 
 /***/ }),
 
@@ -1320,7 +1320,8 @@ var ModelListComponent = /** @class */ (function () {
             width: '450px',
             data: {
                 id: 'mod' + (this.data.length + 1),
-                label: 'Create Model'
+                label: 'Create Model',
+                dataArr: this.data
             }
         });
         dialogRef.afterClosed().subscribe(function (model) {
@@ -1378,10 +1379,11 @@ var ModelListComponent = /** @class */ (function () {
         var dialogRef = this.dialog.open(_shared_components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_5__["DialogCreateModelComponent"], {
             width: '450px',
             data: {
-                id: item.id + '_copy',
+                id: '',
                 name: item.name,
                 description: item.description,
-                label: 'Clone Model'
+                label: 'Clone Model',
+                dataArr: this.data
             }
         });
         dialogRef.afterClosed().subscribe(function (model) {
@@ -1412,9 +1414,18 @@ var ModelListComponent = /** @class */ (function () {
             reader.readAsText(file, "UTF-8");
             reader.onload = function (evt) {
                 console.log(JSON.parse(evt.target.result));
-                JSON.parse(evt.target.result).forEach(function (element) {
-                    // element.modelId = self.selected.modelId;
-                    self_1.componentService.update(element).subscribe(function () {
+                self_1.componentService.deleteAll(self_1.selected).subscribe(function (data) {
+                    JSON.parse(evt.target.result).forEach(function (element) {
+                        element.modelId = self_1.selected._id;
+                        element.parameters.forEach(function (e) {
+                            var find = element.modelIdName;
+                            var re = new RegExp(find, 'g');
+                            e.value = e.value.replace(re, self_1.selected.id);
+                        });
+                        element.modelIdName = self_1.selected.modelId;
+                        self_1.componentService.create(element).subscribe(function () {
+                            console.log(22);
+                        });
                     });
                 });
             };
@@ -1426,6 +1437,9 @@ var ModelListComponent = /** @class */ (function () {
     ModelListComponent.prototype.export = function (item) {
         var _this = this;
         this.componentService.getAllById(item._id).subscribe(function (data) {
+            data.forEach(function (element) {
+                delete element._id;
+            });
             console.log(data);
             _this.download(JSON.stringify(data), 'json.upm', 'json');
         });
@@ -1657,10 +1671,10 @@ var ModelMainComponent = /** @class */ (function () {
         }
         if ((event.keyCode === 46 || event.keyCode === 8) && (this.selectedLineId || this.selectedLineId === 0)) {
             this.selectedLineFrom.selected.forEach(function (id, index) {
-                if (id === _this.selectedLineTo._id) {
+                if (id === _this.selectedLineTo.id) {
                     _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
                     _this.data.forEach(function (element, i) {
-                        if (element._id === _this.selectedLineFrom._id) {
+                        if (element.id === _this.selectedLineFrom.id) {
                             _this.data[i].selected.splice(index, 1);
                             _this.txtQueryChanged.next({
                                 value: _this.selectedLine,
@@ -1925,6 +1939,7 @@ var ModelMainComponent = /** @class */ (function () {
             model.y = y;
             model.objectClass = _this.dragType;
             model.modelId = _this.modelId;
+            model.modelIdName = _this.modelsKeys[_this.modelId];
             model.userId = _this.user._id;
             model.id = _this.dragType + (_this.data.filter(function (value) { return value.objectClass === _this.dragType; }).length + 1);
             var p1 = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("Cost", "Cost", "0", 1);
@@ -2286,7 +2301,7 @@ var ModelMainComponent = /** @class */ (function () {
         var _this = this;
         this.data.forEach(function (value, index, arr) {
             value.selected.forEach(function (item) {
-                var to = _this.searchById(item, _this.data);
+                var to = _this.searchById(item, _this.data, 'id');
                 var from = _this.data[index];
                 if (to) {
                     var x = +from.x;
@@ -2396,12 +2411,12 @@ var ModelMainComponent = /** @class */ (function () {
         else {
             var count_2 = 0;
             this.data[id].selected.forEach(function (element, index) {
-                if (_this.data[_this.activeArrow]._id === element) {
+                if (_this.data[_this.activeArrow].id === element) {
                     count_2++;
                 }
             });
             this.data[this.activeArrow].selected.forEach(function (element, index) {
-                if (_this.data[id]._id === element) {
+                if (_this.data[id].id === element) {
                     count_2++;
                 }
             });
@@ -2414,7 +2429,7 @@ var ModelMainComponent = /** @class */ (function () {
                 return;
             }
             if (id !== this.activeArrow) {
-                this.data[this.activeArrow].selected.push(this.data[id]._id);
+                this.data[this.activeArrow].selected.push(this.data[id].id);
                 this.txtQueryChanged.next({
                     value: "query",
                     selected: this.activeArrow
@@ -2440,9 +2455,10 @@ var ModelMainComponent = /** @class */ (function () {
         //   d3.selectAll(type).remove();
         // });
     };
-    ModelMainComponent.prototype.searchById = function (id, arr) {
+    ModelMainComponent.prototype.searchById = function (id, arr, idField) {
         if (arr) {
-            var result = arr.find(function (element) { return element._id === id; });
+            var f_1 = idField || "_id";
+            var result = arr.find(function (element) { return element[f_1] === id; });
             return result;
         }
     };
@@ -2600,6 +2616,9 @@ var ComponentService = /** @class */ (function () {
     ComponentService.prototype.delete = function (component) {
         return this.http.delete('/api/component/' + component._id);
     };
+    ComponentService.prototype.deleteAll = function (component) {
+        return this.http.delete('/api/component/list/' + component._id);
+    };
     ComponentService.prototype.getAllById = function (id) {
         return this.http.get('/api/component/list/' + id);
     };
@@ -2624,7 +2643,7 @@ var ComponentService = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1 mat-dialog-title>{{label}}</h1>\r\n<div *ngIf=\"!deleteMode\" mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>ID</mat-label>\r\n    <input matInput (keydown)=\"onKeyDown($event)\" [(ngModel)]=\"model.id\" />\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Name</mat-label>\r\n    <input matInput [(ngModel)]=\"model.name\" />\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Description</mat-label>\r\n    <input matInput [(ngModel)]=\"model.description\" />\r\n  </mat-form-field>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button\r\n    mat-button\r\n    [mat-dialog-close]=\"model\"\r\n    mat-raised-button\r\n    color=\"primary\"\r\n    cdkFocusInitial\r\n  >\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>\r\n"
+module.exports = "<h1 mat-dialog-title>{{label}}</h1>\r\n<div *ngIf=\"!deleteMode\" mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>ID</mat-label>\r\n    <input matInput (keydown)=\"onKeyDown($event)\" (ngModelChange)=\"validChange($event)\" [(ngModel)]=\"model.id\" />\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Name</mat-label>\r\n    <input matInput [(ngModel)]=\"model.name\" />\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Description</mat-label>\r\n    <input matInput [(ngModel)]=\"model.description\" />\r\n  </mat-form-field>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button\r\n    mat-button\r\n    [disabled]=\"!valid\"\r\n    [mat-dialog-close]=\"model\"\r\n    mat-raised-button\r\n    color=\"primary\"\r\n    cdkFocusInitial\r\n  >\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -2680,6 +2699,24 @@ var DialogCreateModelComponent = /** @class */ (function () {
         this.model.description = this.data.description || "";
         this.label = this.data.label;
         this.deleteMode = this.data.deleteMode;
+        this.dataArr = this.data.dataArr;
+        console.log(this.dataArr);
+        this.validChange(this.model.id);
+    };
+    DialogCreateModelComponent.prototype.validChange = function (e) {
+        if (!e) {
+            this.valid = false;
+            return;
+        }
+        var res = this.dataArr.find(function (element) {
+            return e === element.id;
+        });
+        if (!res) {
+            this.valid = true;
+        }
+        else {
+            this.valid = false;
+        }
     };
     DialogCreateModelComponent.prototype.onNoClick = function () {
         this.dialogRef.close();
@@ -3261,6 +3298,7 @@ var ComponentClass = /** @class */ (function () {
         this.y = 0;
         this.selected = [];
         this.parameters = [];
+        this.modelIdName = "";
     }
     return ComponentClass;
 }());

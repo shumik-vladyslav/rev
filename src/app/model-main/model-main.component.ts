@@ -188,10 +188,10 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if ((event.keyCode === 46 || event.keyCode === 8) && (this.selectedLineId || this.selectedLineId === 0)) {
       this.selectedLineFrom.selected.forEach((id, index) => {
-        if (id === this.selectedLineTo._id) {
+        if (id === this.selectedLineTo.id) {
           this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
           this.data.forEach((element, i) => {
-            if (element._id === this.selectedLineFrom._id) {
+            if (element.id === this.selectedLineFrom.id) {
               this.data[i].selected.splice(index, 1);
 
               this.txtQueryChanged.next({
@@ -508,6 +508,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         model.y = y;
         model.objectClass = this.dragType;
         model.modelId = this.modelId;
+        model.modelIdName = this.modelsKeys[this.modelId];
+        
         model.userId = this.user._id;
         model.id = this.dragType + (this.data.filter(value => value.objectClass === this.dragType).length + 1);
         let p1 = new ParameterClass("Cost", "Cost", "0", 1);
@@ -954,7 +956,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   drowLines() {
     this.data.forEach((value, index, arr) => {
       value.selected.forEach(item => {
-        let to = this.searchById(item, this.data);
+        let to = this.searchById(item, this.data, 'id');
         let from = this.data[index];
         if (to) {
           let x = +from.x;
@@ -1080,12 +1082,12 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       let count = 0;
       this.data[id].selected.forEach((element, index) => {
-        if (this.data[this.activeArrow]._id === element) {
+        if (this.data[this.activeArrow].id === element) {
           count++;
         }
       });
       this.data[this.activeArrow].selected.forEach((element, index) => {
-        if (this.data[id]._id === element) {
+        if (this.data[id].id === element) {
           count++;
         }
       });
@@ -1099,7 +1101,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       if (id !== this.activeArrow) {
-        this.data[this.activeArrow].selected.push(this.data[id]._id);
+        this.data[this.activeArrow].selected.push(this.data[id].id);
         this.txtQueryChanged.next({
           value: "query",
           selected: this.activeArrow
@@ -1130,9 +1132,10 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     // });
 
   }
-  searchById(id, arr) {
+  searchById(id, arr, idField?) {
     if (arr) {
-      let result = arr.find(element => element._id === id);
+      let f = idField || "_id";
+      let result = arr.find(element => element[f] === id);
       return result;
     }
   }

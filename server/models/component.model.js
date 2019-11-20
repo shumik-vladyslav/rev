@@ -4,6 +4,9 @@ const ComponentSchema = new mongoose.Schema({
   modelId: {
     type: String,
   },
+  modelIdName: {
+    type: String,
+  },
   userId: {
     type: String,
   },

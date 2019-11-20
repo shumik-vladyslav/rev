@@ -2,7 +2,7 @@
 <div *ngIf="!deleteMode" mat-dialog-content>
   <mat-form-field>
     <mat-label>ID</mat-label>
-    <input matInput (keydown)="onKeyDown($event)" [(ngModel)]="model.id" />
+    <input matInput (keydown)="onKeyDown($event)" (ngModelChange)="validChange($event)" [(ngModel)]="model.id" />
   </mat-form-field>
   <mat-form-field>
     <mat-label>Name</mat-label>
@@ -16,6 +16,7 @@
 <div mat-dialog-actions class="jc-c df">
   <button
     mat-button
+    [disabled]="!valid"
     [mat-dialog-close]="model"
     mat-raised-button
     color="primary"

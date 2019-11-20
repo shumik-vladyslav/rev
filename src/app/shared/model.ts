@@ -21,6 +21,7 @@ export class ComponentClass{
     y = 0;
     selected = [];
     parameters: ParameterClass[] = [];
+    modelIdName = "";
 }
 
 export class ParameterClass{

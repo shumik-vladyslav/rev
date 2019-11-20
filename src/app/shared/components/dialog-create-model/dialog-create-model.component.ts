@@ -11,6 +11,8 @@ export class DialogCreateModelComponent implements OnInit {
   model = new ModelClass();
   label = ""
   deleteMode;
+  dataArr;
+  valid;
   constructor(public dialogRef: MatDialogRef<DialogCreateModelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
   ngOnInit(): void {
@@ -19,7 +21,27 @@ export class DialogCreateModelComponent implements OnInit {
     this.model.description = this.data.description || "";
     this.label = this.data.label;
     this.deleteMode = this.data.deleteMode;
+    this.dataArr = this.data.dataArr;
+    console.log(this.dataArr)
+    this.validChange(this.model.id);
   }
+
+  validChange(e) {
+    if (!e) {
+      this.valid = false;
+      return;
+    }
+    let res = this.dataArr.find(element => {
+      return e === element.id;
+    });
+
+    if(!res){
+      this.valid = true;
+    } else {
+      this.valid = false;
+    }
+  }
+
   onNoClick(): void {
     this.dialogRef.close();
   }

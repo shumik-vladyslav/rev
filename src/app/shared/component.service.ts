@@ -26,6 +26,10 @@ export class ComponentService {
     return this.http.delete('/api/component/' + component._id);
   }
 
+  deleteAll(component) {
+    return this.http.delete('/api/component/list/' + component._id);
+  }
+
   getAllById(id) {
     return this.http.get('/api/component/list/' + id);
   }

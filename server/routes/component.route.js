@@ -14,6 +14,8 @@ router.route('/')
   .get(asyncHandler(getAll));
 router.route('/list/:id')
   .get(asyncHandler(getAllById));
+router.route('/list/:id')
+  .delete(asyncHandler(removeAllByModelId));
 router.route('/list/user/:id')
   .get(asyncHandler(getAllByUserId));
 router.route('/')
@@ -46,6 +48,12 @@ async function removeById(req, res) {
   let model = await componentCtrl.removeById(req.params);
   res.json(model);
 }
+
+async function removeAllByModelId(req, res) {
+  let model = await componentCtrl.removeAllByModelId(req.params);
+  res.json(model);
+}
+
 
 async function getAllByUserId(req, res) {
   let model = await componentCtrl.getAllByUserId(req.params);

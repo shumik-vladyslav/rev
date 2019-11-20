@@ -49,7 +49,8 @@ export class ModelListComponent implements OnInit {
       width: '450px',
       data: {
         id: 'mod' + (this.data.length + 1),
-        label: 'Create Model'
+        label: 'Create Model',
+        dataArr: this.data
       }
     });
     dialogRef.afterClosed().subscribe(model => {
@@ -110,10 +111,11 @@ export class ModelListComponent implements OnInit {
       const dialogRef = this.dialog.open(DialogCreateModelComponent, {
         width: '450px',
         data: {
-          id: item.id + '_copy',
+          id: '',
           name: item.name,
           description: item.description,
-          label: 'Clone Model'
+          label: 'Clone Model',
+          dataArr: this.data
         }
       });
       dialogRef.afterClosed().subscribe(model => {
@@ -148,14 +150,23 @@ export class ModelListComponent implements OnInit {
         reader.readAsText(file, "UTF-8");
         reader.onload = function (evt: any) {
             console.log(JSON.parse(evt.target.result));
-            JSON.parse(evt.target.result).forEach((element) => {
-              // element.modelId = self.selected.modelId;
-              
-              self.componentService.update(element).subscribe(() => {
+            self.componentService.deleteAll(self.selected).subscribe((data) => {
+              JSON.parse(evt.target.result).forEach((element) => {
+                element.modelId = self.selected._id;
+                element.parameters.forEach(e => {
+                  var find = element.modelIdName;
+                  var re = new RegExp(find, 'g');
+                  
+                  e.value = e.value.replace(re, self.selected.id);
+                });
+                element.modelIdName = self.selected.modelId;
 
+                self.componentService.create(element).subscribe(() => {
+                  console.log(22);
+                });
               });
             });
-        }
+        };
         reader.onerror = function (evt) {
             console.log('error reading file');
         }
@@ -164,6 +175,9 @@ export class ModelListComponent implements OnInit {
 
   export(item) {
     this.componentService.getAllById(item._id).subscribe((data: any) => {
+      data.forEach(element => {
+        delete element._id;
+      });
       console.log(data);
       this.download(JSON.stringify(data), 'json.upm', 'json');
 
