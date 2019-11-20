@@ -51,7 +51,8 @@ const config = {
 //newcogintechpassword123 
 //cd projects/bpm/
 // http://cogintech.ru/
-
+// killall node
+// node server &
 
 // NODE_ENV=development
 // SERVER_PORT=4040
