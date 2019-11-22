@@ -16,6 +16,10 @@ const ModelSchema = new mongoose.Schema({
   description: {
     type: String
   },
+  ver: {
+    type: String
+  },
+  
 });
 
 module.exports = mongoose.model('Model', ModelSchema);

@@ -56,8 +56,9 @@ export class ModelListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(model => {
       if (model) {
         model.userId = this.user._id;
+        model.ver = "1.0";
+        
         this.modelService.create(model).subscribe((data: any) => {
-          console.log(data)
           this.router.navigate(['model/' + data._id]);
         });
       }
@@ -65,7 +66,6 @@ export class ModelListComponent implements OnInit {
   }
 
   remove(item) {
-    
     const dialogRef = this.dialog.open(DialogCreateModelComponent, {
       width: '450px',
       data: {
@@ -76,7 +76,6 @@ export class ModelListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(model => {
       if (model) {
         this.modelService.remove(item._id).subscribe((data) => {
-          console.log(data);
           this.getData();
         });
       }
@@ -85,9 +84,7 @@ export class ModelListComponent implements OnInit {
   }
 
   edit(item) {
-    console.log(item)
     let id = item._id;
-    let modelIdName = item.id;
     const dialogRef = this.dialog.open(DialogCreateModelComponent, {
       width: '450px',
       data: {
@@ -106,20 +103,8 @@ export class ModelListComponent implements OnInit {
         this.modelService.updateById(item).subscribe((data) => {
           this.getData();
           this.componentService.getAllById(id).subscribe((arr: any) => {
-            console.log(arr)
-            arr.forEach((element) => {
-              element.modelId = id;
-              element.parameters.forEach(e => {
-                var find = element.modelIdName;
-                var re = new RegExp(find, 'g');
-                
-                e.value = e.value.replace(re, item.id);
-              });
-              element.modelIdName = item.id;
-
-              this.componentService.update(element).subscribe(() => {
-                console.log(22);
-              });
+            this.componentService.deleteAll(item).subscribe((data) => {
+              this.createNewComponents(arr, item);
             });
           });
         });
@@ -128,7 +113,6 @@ export class ModelListComponent implements OnInit {
   }
 
   clone(item) {
-
       const dialogRef = this.dialog.open(DialogCreateModelComponent, {
         width: '450px',
         data: {
@@ -144,20 +128,8 @@ export class ModelListComponent implements OnInit {
           model.userId = this.user._id;
           this.modelService.create(model).subscribe((newModel: ModelClass) => {
             this.componentService.getAllById(item._id).subscribe((arr: ComponentClass[]) => {
-              let observableList = [];
-
-              arr.forEach((m: ComponentClass) => {
-                m.modelId = newModel._id;
-                delete m._id;
-                observableList.push(this.componentService.create(m));
-              });
-
-              let obs = forkJoin(observableList);
-              obs.subscribe(t => {
-                this.router.navigate(["model/" + newModel._id]);
-              });
+              this.createNewComponents(arr, newModel);
             });
-     
           })
         }
       });
@@ -170,22 +142,9 @@ export class ModelListComponent implements OnInit {
         let self = this;
         reader.readAsText(file, "UTF-8");
         reader.onload = function (evt: any) {
-            console.log(JSON.parse(evt.target.result));
+            let arr = JSON.parse(evt.target.result).data;
             self.componentService.deleteAll(self.selected).subscribe((data) => {
-              JSON.parse(evt.target.result).forEach((element) => {
-                element.modelId = self.selected._id;
-                element.parameters.forEach(e => {
-                  var find = element.modelIdName;
-                  var re = new RegExp(find, 'g');
-                  
-                  e.value = e.value.replace(re, self.selected.id);
-                });
-                element.modelIdName = self.selected.modelId;
-
-                self.componentService.create(element).subscribe(() => {
-                  console.log(22);
-                });
-              });
+              self.createNewComponents(arr, self.selected, true);
             });
         };
         reader.onerror = function (evt) {
@@ -194,13 +153,54 @@ export class ModelListComponent implements OnInit {
     }
   }
 
+  createNewComponents(arr, newModel, mask?) {
+    let observableList = [];
+
+    arr.forEach((m: ComponentClass) => {
+      m.modelId = newModel._id;
+      m.parameters.forEach(p => {
+        if (mask) {
+          var re = new RegExp(`#${m.modelIdName}#`, 'g');
+          p.value = p.value.replace(re, newModel.id);
+        } else {
+          var re = new RegExp(m.modelIdName, 'g');
+          p.value = p.value.replace(re, newModel.id);
+        }
+      });
+      m.modelIdName = newModel.id;
+      delete m._id;
+      observableList.push(this.componentService.create(m));
+    });
+
+    let obs = forkJoin(observableList);
+    obs.subscribe(t => {
+      this.router.navigate(["model/" + newModel._id]);
+    });
+  }
+
   export(item) {
     this.componentService.getAllById(item._id).subscribe((data: any) => {
       data.forEach(element => {
         delete element._id;
+        element.parameters.forEach(p => {
+          var re = new RegExp(` ${element.modelIdName}.`, 'g');
+          p.value = p.value.replace(re, ` #${element.modelIdName}#.`);
+        });
       });
-      console.log(data);
-      this.download(JSON.stringify(data), 'json.upm', 'json');
+      let verSplit = (item.ver || "1.0").split(".");
+      let ver = +verSplit[0] + 1 + ".0";
+      let obj = {
+        "modelName ": item.name,
+        "modelDescription ": item.description,
+        "date": new Date(),
+        "data": data,
+        "ver": ver
+      };
+      item.ver = ver;
+      this.modelService.updateById(item).subscribe(() => {
+
+      })
+      this.download(JSON.stringify(obj), 'json.upm', 'json');
 
     });
   }
@@ -210,5 +210,5 @@ export class ModelListComponent implements OnInit {
     a.href = URL.createObjectURL(file);
     a.download = fileName;
     a.click();
-}
+  }
 }

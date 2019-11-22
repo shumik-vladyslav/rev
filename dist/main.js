@@ -1327,8 +1327,8 @@ var ModelListComponent = /** @class */ (function () {
         dialogRef.afterClosed().subscribe(function (model) {
             if (model) {
                 model.userId = _this.user._id;
+                model.ver = "1.0";
                 _this.modelService.create(model).subscribe(function (data) {
-                    console.log(data);
                     _this.router.navigate(['model/' + data._id]);
                 });
             }
@@ -1346,7 +1346,6 @@ var ModelListComponent = /** @class */ (function () {
         dialogRef.afterClosed().subscribe(function (model) {
             if (model) {
                 _this.modelService.remove(item._id).subscribe(function (data) {
-                    console.log(data);
                     _this.getData();
                 });
             }
@@ -1354,9 +1353,7 @@ var ModelListComponent = /** @class */ (function () {
     };
     ModelListComponent.prototype.edit = function (item) {
         var _this = this;
-        console.log(item);
         var id = item._id;
-        var modelIdName = item.id;
         var dialogRef = this.dialog.open(_shared_components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_5__["DialogCreateModelComponent"], {
             width: '450px',
             data: {
@@ -1375,18 +1372,8 @@ var ModelListComponent = /** @class */ (function () {
                 _this.modelService.updateById(item).subscribe(function (data) {
                     _this.getData();
                     _this.componentService.getAllById(id).subscribe(function (arr) {
-                        console.log(arr);
-                        arr.forEach(function (element) {
-                            element.modelId = id;
-                            element.parameters.forEach(function (e) {
-                                var find = element.modelIdName;
-                                var re = new RegExp(find, 'g');
-                                e.value = e.value.replace(re, item.id);
-                            });
-                            element.modelIdName = item.id;
-                            _this.componentService.update(element).subscribe(function () {
-                                console.log(22);
-                            });
+                        _this.componentService.deleteAll(item).subscribe(function (data) {
+                            _this.createNewComponents(arr, item);
                         });
                     });
                 });
@@ -1410,16 +1397,7 @@ var ModelListComponent = /** @class */ (function () {
                 model.userId = _this.user._id;
                 _this.modelService.create(model).subscribe(function (newModel) {
                     _this.componentService.getAllById(item._id).subscribe(function (arr) {
-                        var observableList = [];
-                        arr.forEach(function (m) {
-                            m.modelId = newModel._id;
-                            delete m._id;
-                            observableList.push(_this.componentService.create(m));
-                        });
-                        var obs = Object(rxjs__WEBPACK_IMPORTED_MODULE_8__["forkJoin"])(observableList);
-                        obs.subscribe(function (t) {
-                            _this.router.navigate(["model/" + newModel._id]);
-                        });
+                        _this.createNewComponents(arr, newModel);
                     });
                 });
             }
@@ -1432,20 +1410,9 @@ var ModelListComponent = /** @class */ (function () {
             var self_1 = this;
             reader.readAsText(file, "UTF-8");
             reader.onload = function (evt) {
-                console.log(JSON.parse(evt.target.result));
+                var arr = JSON.parse(evt.target.result).data;
                 self_1.componentService.deleteAll(self_1.selected).subscribe(function (data) {
-                    JSON.parse(evt.target.result).forEach(function (element) {
-                        element.modelId = self_1.selected._id;
-                        element.parameters.forEach(function (e) {
-                            var find = element.modelIdName;
-                            var re = new RegExp(find, 'g');
-                            e.value = e.value.replace(re, self_1.selected.id);
-                        });
-                        element.modelIdName = self_1.selected.modelId;
-                        self_1.componentService.create(element).subscribe(function () {
-                            console.log(22);
-                        });
-                    });
+                    self_1.createNewComponents(arr, self_1.selected, true);
                 });
             };
             reader.onerror = function (evt) {
@@ -1453,14 +1420,53 @@ var ModelListComponent = /** @class */ (function () {
             };
         }
     };
+    ModelListComponent.prototype.createNewComponents = function (arr, newModel, mask) {
+        var _this = this;
+        var observableList = [];
+        arr.forEach(function (m) {
+            m.modelId = newModel._id;
+            m.parameters.forEach(function (p) {
+                if (mask) {
+                    var re = new RegExp("#" + m.modelIdName + "#", 'g');
+                    p.value = p.value.replace(re, newModel.id);
+                }
+                else {
+                    var re = new RegExp(m.modelIdName, 'g');
+                    p.value = p.value.replace(re, newModel.id);
+                }
+            });
+            m.modelIdName = newModel.id;
+            delete m._id;
+            observableList.push(_this.componentService.create(m));
+        });
+        var obs = Object(rxjs__WEBPACK_IMPORTED_MODULE_8__["forkJoin"])(observableList);
+        obs.subscribe(function (t) {
+            _this.router.navigate(["model/" + newModel._id]);
+        });
+    };
     ModelListComponent.prototype.export = function (item) {
         var _this = this;
         this.componentService.getAllById(item._id).subscribe(function (data) {
             data.forEach(function (element) {
                 delete element._id;
+                element.parameters.forEach(function (p) {
+                    var re = new RegExp(" " + element.modelIdName + ".", 'g');
+                    p.value = p.value.replace(re, " #" + element.modelIdName + "#.");
+                });
             });
-            console.log(data);
-            _this.download(JSON.stringify(data), 'json.upm', 'json');
+            var verSplit = (item.ver || "1.0").split(".");
+            var ver = +verSplit[0] + 1 + ".0";
+            var obj = {
+                "modelName ": item.name,
+                "modelDescription ": item.description,
+                "date": new Date(),
+                "data": data,
+                "ver": ver
+            };
+            item.ver = ver;
+            _this.modelService.updateById(item).subscribe(function () {
+            });
+            _this.download(JSON.stringify(obj), 'json.upm', 'json');
         });
     };
     ModelListComponent.prototype.download = function (content, fileName, contentType) {
@@ -2108,10 +2114,12 @@ var ModelMainComponent = /** @class */ (function () {
                                         catch (_a) {
                                             _this.calc();
                                         }
+                                        var res = _this.formulaSaver[_this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] || 0;
                                         g_1.append("text")
                                             .attr("x", element.x + 20)
                                             .attr("y", py)
-                                            .text((param.name || param.id) + " - " + (parseFloat(_this.formulaSaver[_this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] || "").toFixed(1)));
+                                            .text((param.name || param.id) + " - " +
+                                            ((parseFloat(res).toFixed(1))));
                                     }
                                     else {
                                         g_1.append("text")

@@ -679,11 +679,13 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     } catch {
                       this.calc();
                     }
-
+                    let res = this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] || 0;
                     g.append("text")
                       .attr("x", element.x + 20)
                       .attr("y", py)
-                      .text((param.name || param.id) + " - " + (parseFloat(this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] || "").toFixed(1)));
+                      .text((param.name || param.id) + " - " + 
+                      ((parseFloat(res).toFixed(1)))
+                      );
 
                   } else {
                     g.append("text")

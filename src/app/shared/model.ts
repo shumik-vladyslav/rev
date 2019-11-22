@@ -4,6 +4,7 @@ export class ModelClass{
     userId: "";
     name: "";
     description: "";
+    ver: "";
 }
 
 export class ComponentClass{
