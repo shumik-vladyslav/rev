@@ -1303,7 +1303,7 @@ var ModelListComponent = /** @class */ (function () {
         var _this = this;
         this.authService.me().subscribe(function (data) {
             _this.user = data.user;
-            console.log(data);
+            console.log(data, _this.user._id, 11);
             _this.getData();
         });
     };
@@ -1425,6 +1425,7 @@ var ModelListComponent = /** @class */ (function () {
         var observableList = [];
         arr.forEach(function (m) {
             m.modelId = newModel._id;
+            m.userId = _this.user._id;
             m.parameters.forEach(function (p) {
                 if (mask) {
                     var re = new RegExp("#" + m.modelIdName + "#", 'g');
@@ -1449,6 +1450,7 @@ var ModelListComponent = /** @class */ (function () {
         this.componentService.getAllById(item._id).subscribe(function (data) {
             data.forEach(function (element) {
                 delete element._id;
+                element.userId = "#" + element.userId + "#";
                 element.parameters.forEach(function (p) {
                     var re = new RegExp(" " + element.modelIdName + ".", 'g');
                     p.value = p.value.replace(re, " #" + element.modelIdName + "#.");
@@ -1464,8 +1466,8 @@ var ModelListComponent = /** @class */ (function () {
                 "ver": ver
             };
             item.ver = ver;
-            _this.modelService.updateById(item).subscribe(function () {
-            });
+            _this.modelService.updateById(item).subscribe(function () { });
+            console.log(obj);
             _this.download(JSON.stringify(obj), 'json.upm', 'json');
         });
     };
@@ -1502,7 +1504,7 @@ var ModelListComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"bpm-wrap\">\r\n  <div class=\"palette-entries\">\r\n    <div *ngFor=\"let item of types\" class=\"bpm-item\">\r\n      <div [id]=\"item\" [draggable]=\"true\" [ngStyle]=\"{'background': colors[item]}\"\r\n       class=\"square\" [title]=\"item\" tooltipPosition=\"top\">\r\n      {{item}}\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class=\"coco-bpm-graph\" id=\"graph\" style=\"height: calc(100vh - 60px);\"></div>\r\n  <!-- <div class=\"clickShield\" *ngIf=\"showSide\" (click)=\"showSide = false\"></div> -->\r\n  <div (click)=\"showSide = !showSide\" class=\"toggle-sidebar-btn\" [ngClass]=\"{ 'active': showSide }\">\r\n    <a mat-raised-button>\r\n      <i class=\"material-icons\">\r\n        menu_open\r\n      </i>\r\n    </a>\r\n  </div>\r\n  <div [ngClass]=\"{ show: showSide }\" *ngIf=\"selectedModal\" class=\"sidebar show\">\r\n    <mat-form-field class=\"example-full-width\">\r\n      <mat-label>Id (latin simbols and digits)</mat-label>\r\n      <input matInput [(ngModel)]=\"data[selectedModal].id\" (keydown)=\"onKeyDown($event)\"\r\n      (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\"/>\r\n    </mat-form-field>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <mat-label>Name</mat-label>\r\n      <input matInput [(ngModel)]=\"data[selectedModal].name\" \r\n      (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\" />\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <mat-label>ObjectClass</mat-label>\r\n      <mat-select [(ngModel)]=\"data[selectedModal].objectClass\" \r\n      (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\">\r\n        <mat-option value=\"Board\">\r\n          Board\r\n        </mat-option>\r\n        <mat-option value=\"Input\">\r\n          Input\r\n        </mat-option>\r\n        <mat-option value=\"Output\">\r\n          Output\r\n        </mat-option>\r\n        <mat-option value=\"InputOutput\">\r\n          InputOutput\r\n        </mat-option>\r\n        <mat-option value=\"Process\">\r\n          Process\r\n        </mat-option>\r\n      </mat-select>\r\n    </mat-form-field>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <input matInput placeholder=\"ObjectType\" [(ngModel)]=\"data[selectedModal].objectType\"\r\n      (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\" />\r\n    </mat-form-field>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <textarea matInput placeholder=\"Description\" [(ngModel)]=\"data[selectedModal].description\"\r\n      (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\"></textarea>\r\n    </mat-form-field>\r\n    <!-- <div class=\"input-btn-wrap\">\r\n      <mat-form-field class=\"example-full-width\">\r\n        <input readonly [(ngModel)]=\"picture\" matInput placeholder=\"Picture\" />\r\n      </mat-form-field>\r\n      <input #file [(ngModel)]=\"picture\" hidden type=\"file\" />\r\n      <button (click)=\"file.click()\" mat-raised-button color=\"primary\" class=\"btn\">\r\n        <i class=\"material-icons\">\r\n          forward\r\n        </i>\r\n      </button>\r\n    </div> -->\r\n    <table class=\"table\">\r\n      <tr>\r\n        <th style=\"text-align: left;\">Parameters</th>\r\n        <th></th>\r\n        <th>M</th>\r\n        <th>C</th>\r\n        <th>S</th>\r\n        <th></th>\r\n      </tr>\r\n\r\n      <tbody *ngFor=\"let item of data[selectedModal].parameters.slice().reverse(); let i = index\">\r\n        <tr>\r\n          <td>\r\n            {{item.name}}\r\n          </td>\r\n          <td>\r\n            <mat-form-field *ngIf=\"(item.value && item.value.charAt(0) !== '=') || !item.value\" class=\"example-full-width table-input\">\r\n              <input matInput [(ngModel)]=\"item.value\" \r\n              (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event);validValue(item,index)\" />\r\n            </mat-form-field>\r\n            <span *ngIf=\"item.value && item.value.charAt(0) === '=' \">\r\n              f (x)\r\n            </span>\r\n          </td>\r\n          <td>\r\n            <div class=\"df jc-c\">\r\n              <mat-checkbox [(ngModel)]=\"item.measurable\" \r\n              (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\"></mat-checkbox>\r\n            </div>\r\n          </td>\r\n          <td>\r\n            <div class=\"df jc-c\">\r\n              <mat-checkbox [(ngModel)]=\"item.changeable\" \r\n              (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\"></mat-checkbox>\r\n            </div>\r\n          </td>\r\n          <td>\r\n            <div class=\"df jc-c\">\r\n              <mat-checkbox [(ngModel)]=\"item.showOnDiagram\" \r\n              (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\"></mat-checkbox>\r\n            </div>\r\n          </td>\r\n          <td>\r\n            <div class=\"df jc-c ai-c\">\r\n              <button class=\"table-more-btn\" mat-icon-button\r\n                (click)=\"optionsModal[item._id + index] = !optionsModal[item._id + index]\">\r\n                <i class=\"material-icons-outlined\">\r\n                  arrow_drop_down_circle\r\n                </i>\r\n              </button>\r\n            </div>\r\n          </td>\r\n        </tr>\r\n        <tr *ngIf=\"optionsModal[item._id + index]\">\r\n          <td colspan=\"6\">\r\n            <mat-accordion>\r\n              <mat-expansion-panel [expanded]=\"true\">\r\n                <mat-expansion-panel-header>\r\n                  <mat-panel-title>\r\n                    Personal data\r\n                  </mat-panel-title>\r\n                </mat-expansion-panel-header>\r\n\r\n                <div class=\"loop-item desc\">\r\n                  <mat-form-field class=\"example-full-width\">\r\n                    <input matInput placeholder=\"Id (latin simbols and digits)\" (keydown)=\"onKeyDown($event)\" [(ngModel)]=\"item.id\"\r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\" />\r\n                  </mat-form-field>\r\n                  <mat-form-field class=\"example-full-width\">\r\n                    <input matInput placeholder=\"Name\" [(ngModel)]=\"item.name\"\r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\" />\r\n                  </mat-form-field>\r\n                  <mat-form-field class=\"example-full-width\">\r\n                    <textarea matInput placeholder=\"Description\" [(ngModel)]=\"item.description\"\r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\"></textarea>\r\n                  </mat-form-field>\r\n                  <div class=\"input-btn-wrap\">\r\n                    <mat-form-field *ngIf=\"item.value && item.value.charAt(0) !== '=' \" class=\"example-full-width\">\r\n                      <input matInput placeholder=\"Value\" [(ngModel)]=\"item.value\"\r\n                      (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event);validValue(item,index)\"/>\r\n                    </mat-form-field>\r\n                    <span *ngIf=\"item.value && item.value.charAt(0) === '=' \" class=\"example-full-width\">Value = f (x)</span>\r\n\r\n                    <button (click)=\"openDialog(item)\" mat-raised-button color=\"primary\" class=\"btn\">\r\n                      <i>\r\n                        f(x)\r\n                      </i>\r\n                    </button>\r\n                  </div>\r\n                  <mat-form-field>\r\n                    <mat-label>Feature label</mat-label>\r\n                    <mat-select>\r\n                      <mat-option value=\"1\">\r\n                        1\r\n                      </mat-option>\r\n                      <mat-option value=\"2\">\r\n                        2\r\n                      </mat-option>\r\n                      <mat-option value=\"3\">\r\n                        3\r\n                      </mat-option>\r\n                    </mat-select>\r\n                  </mat-form-field>\r\n                  <div class=\"chekboxs-list\">\r\n                    <mat-checkbox [(ngModel)]=\"item.measurable\" \r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\">Measurable\r\n                    </mat-checkbox>\r\n                    <mat-checkbox [(ngModel)]=\"item.changeable\" \r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\">Changeable\r\n                    </mat-checkbox>\r\n                    <mat-checkbox [(ngModel)]=\"item.showOnDiagram\" \r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\">Show on\r\n                      diagram</mat-checkbox>\r\n                    <mat-checkbox [(ngModel)]=\"item.showName\" \r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\">Show name\r\n                    </mat-checkbox>\r\n                  </div>\r\n                  <mat-form-field *ngIf=\"item.showOnDiagram\">\r\n                    <mat-label>Control type</mat-label>\r\n                    <mat-select [(ngModel)]=\"item.controlType\" \r\n                    (keyup.enter)=\"onFieldChange($event);\" (blur)=\"onFieldChange($event);sliderChange($event, item, index)\">\r\n                      <mat-option value=\"Value\">\r\n                        Value\r\n                      </mat-option>\r\n                      <mat-option value=\"Input\">\r\n                        Input\r\n                      </mat-option>\r\n                      <mat-option value=\"Slider\">\r\n                        Slider\r\n                      </mat-option>\r\n                    </mat-select>\r\n                  </mat-form-field>\r\n                  <mat-form-field *ngIf=\"item.controlType === 'Slider'\">\r\n                    <input matInput placeholder=\"Slider Step\" [(ngModel)]=\"item.sliderStep\" \r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\" />\r\n                  </mat-form-field>\r\n                  <mat-form-field *ngIf=\"item.controlType === 'Slider'\">\r\n                    <input matInput placeholder=\"Slider Max\" [(ngModel)]=\"item.sliderMax\" \r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\" />\r\n                  </mat-form-field>\r\n                  <mat-form-field *ngIf=\"item.controlType === 'Slider'\">\r\n                    <input matInput placeholder=\"Slider Min\" [(ngModel)]=\"item.sliderMin\" \r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\" />\r\n                  </mat-form-field>\r\n                </div>\r\n              </mat-expansion-panel>\r\n            </mat-accordion>\r\n          </td>\r\n        </tr>\r\n      </tbody>\r\n\r\n    </table>\r\n\r\n    <div class=\"m-t-10 m-b-10\">\r\n      <button mat-raised-button color=\"accent\" (click)=\"addParametr()\">+ Add parameter</button>\r\n    </div>\r\n\r\n    <div class=\"loop-item\">\r\n      <mat-form-field class=\"example-full-width\">\r\n        <input matInput placeholder=\"Id (latin simbols and digits)\" (keydown)=\"onKeyDown($event)\" [(ngModel)]=\"newParametr.id\" />\r\n      </mat-form-field>\r\n      <mat-form-field class=\"example-full-width\">\r\n        <input matInput placeholder=\"Name\" [(ngModel)]=\"newParametr.name\" />\r\n      </mat-form-field>\r\n      <mat-form-field class=\"example-full-width\">\r\n        <textarea matInput placeholder=\"Description\" [(ngModel)]=\"newParametr.description\"></textarea>\r\n      </mat-form-field>\r\n      <div class=\"input-btn-wrap\">\r\n        <mat-form-field class=\"example-full-width\">\r\n          <input matInput placeholder=\"Value\" [(ngModel)]=\"newParametr.value\" />\r\n        </mat-form-field>\r\n        <button (click)=\"openDialog(newParametr)\" mat-raised-button color=\"primary\" class=\"btn\">\r\n          <i>\r\n            f(x)\r\n          </i>\r\n        </button>\r\n      </div>\r\n      <mat-form-field>\r\n        <mat-label>Feature label</mat-label>\r\n        <mat-select [(ngModel)]=\"newParametr.featureLabelNone\">\r\n          <mat-option value=\"1\">\r\n            1\r\n          </mat-option>\r\n          <mat-option value=\"2\">\r\n            2\r\n          </mat-option>\r\n          <mat-option value=\"3\">\r\n            3\r\n          </mat-option>\r\n        </mat-select>\r\n      </mat-form-field>\r\n      <div class=\"chekboxs-list\">\r\n        <mat-checkbox [(ngModel)]=\"newParametr.measurable\">Measurable</mat-checkbox>\r\n        <mat-checkbox [(ngModel)]=\"newParametr.changeable\">Changeable</mat-checkbox>\r\n        <mat-checkbox [(ngModel)]=\"newParametr.showOnDiagram\">Show on diagram</mat-checkbox>\r\n        <mat-checkbox [(ngModel)]=\"newParametr.showName\">Show name</mat-checkbox>\r\n      </div>\r\n      <mat-form-field *ngIf=\"newParametr.showOnDiagram\">\r\n        <mat-label>Control type</mat-label>\r\n        <mat-select [(ngModel)]=\"newParametr.controlType\">\r\n          <mat-option value=\"Value\">\r\n            Value\r\n          </mat-option>\r\n          <mat-option value=\"Input\">\r\n            Input\r\n          </mat-option>\r\n          <mat-option value=\"Slider\">\r\n            Slider\r\n          </mat-option>\r\n        </mat-select>\r\n      </mat-form-field>\r\n      <mat-form-field *ngIf=\"newParametr.controlType === 'Slider'\">\r\n        <input matInput placeholder=\"Slider Step\" [(ngModel)]=\"newParametr.sliderStep\" />\r\n      </mat-form-field>\r\n      <mat-form-field *ngIf=\"newParametr.controlType === 'Slider'\">\r\n        <input matInput placeholder=\"Slider Max\" [(ngModel)]=\"newParametr.sliderMax\" />\r\n      </mat-form-field>\r\n      <mat-form-field *ngIf=\"newParametr.controlType === 'Slider'\">\r\n        <input matInput placeholder=\"Slider Min\" [(ngModel)]=\"newParametr.sliderMin\" />\r\n      </mat-form-field>\r\n    </div>\r\n  </div>\r\n</div>"
+module.exports = "<div class=\"bpm-wrap\">\r\n  <div class=\"palette-entries\">\r\n    <div *ngFor=\"let item of types\" class=\"bpm-item\">\r\n      <div [id]=\"item\" [draggable]=\"true\" [ngStyle]=\"{'background': colors[item]}\"\r\n       class=\"square\" [title]=\"item\" tooltipPosition=\"top\">\r\n      {{item}}\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class=\"coco-bpm-graph\" id=\"graph\" style=\"height: calc(100vh - 60px);\"></div>\r\n  <!-- <div class=\"clickShield\" *ngIf=\"showSide\" (click)=\"showSide = false\"></div> -->\r\n  <div (click)=\"showSide = !showSide\" class=\"toggle-sidebar-btn\" [ngClass]=\"{ 'active': showSide }\">\r\n    <a mat-raised-button>\r\n      <i class=\"material-icons\">\r\n        menu_open\r\n      </i>\r\n    </a>\r\n  </div>\r\n  <div [ngClass]=\"{ show: showSide }\" *ngIf=\"selectedModal\" class=\"sidebar show\">\r\n    <mat-form-field class=\"example-full-width\">\r\n      <mat-label>Id (latin simbols and digits)</mat-label>\r\n      <input matInput [(ngModel)]=\"data[selectedModal].id\" (keydown)=\"onKeyDown($event)\"\r\n      (ngModelChange)=\"idModelChange($event)\"\r\n      (keyup.enter)=\"onFieldChangeId($event)\" (blur)=\"onFieldChangeId($event)\"/>\r\n    </mat-form-field>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <mat-label>Name</mat-label>\r\n      <input matInput [(ngModel)]=\"data[selectedModal].name\" \r\n      (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\" />\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <mat-label>ObjectClass</mat-label>\r\n      <mat-select [(ngModel)]=\"data[selectedModal].objectClass\" \r\n      (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\">\r\n        <mat-option value=\"Board\">\r\n          Board\r\n        </mat-option>\r\n        <mat-option value=\"Input\">\r\n          Input\r\n        </mat-option>\r\n        <mat-option value=\"Output\">\r\n          Output\r\n        </mat-option>\r\n        <mat-option value=\"InputOutput\">\r\n          InputOutput\r\n        </mat-option>\r\n        <mat-option value=\"Process\">\r\n          Process\r\n        </mat-option>\r\n      </mat-select>\r\n    </mat-form-field>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <input matInput placeholder=\"ObjectType\" [(ngModel)]=\"data[selectedModal].objectType\"\r\n      (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\" />\r\n    </mat-form-field>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <textarea matInput placeholder=\"Description\" [(ngModel)]=\"data[selectedModal].description\"\r\n      (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\"></textarea>\r\n    </mat-form-field>\r\n    <!-- <div class=\"input-btn-wrap\">\r\n      <mat-form-field class=\"example-full-width\">\r\n        <input readonly [(ngModel)]=\"picture\" matInput placeholder=\"Picture\" />\r\n      </mat-form-field>\r\n      <input #file [(ngModel)]=\"picture\" hidden type=\"file\" />\r\n      <button (click)=\"file.click()\" mat-raised-button color=\"primary\" class=\"btn\">\r\n        <i class=\"material-icons\">\r\n          forward\r\n        </i>\r\n      </button>\r\n    </div> -->\r\n    <table class=\"table\">\r\n      <tr>\r\n        <th style=\"text-align: left;\">Parameters</th>\r\n        <th></th>\r\n        <th>M</th>\r\n        <th>C</th>\r\n        <th>S</th>\r\n        <th></th>\r\n      </tr>\r\n\r\n      <tbody *ngFor=\"let item of data[selectedModal].parameters.slice().reverse(); let i = index\">\r\n        <tr>\r\n          <td>\r\n            {{item.name}}\r\n          </td>\r\n          <td>\r\n            <mat-form-field *ngIf=\"(item.value && item.value.charAt(0) !== '=') || !item.value\" class=\"example-full-width table-input\">\r\n              <input matInput [(ngModel)]=\"item.value\" \r\n              (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event);validValue(item,index)\" />\r\n            </mat-form-field>\r\n            <span *ngIf=\"item.value && item.value.charAt(0) === '=' \">\r\n              f (x)\r\n            </span>\r\n          </td>\r\n          <td>\r\n            <div class=\"df jc-c\">\r\n              <mat-checkbox [(ngModel)]=\"item.measurable\" \r\n              (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\"></mat-checkbox>\r\n            </div>\r\n          </td>\r\n          <td>\r\n            <div class=\"df jc-c\">\r\n              <mat-checkbox [(ngModel)]=\"item.changeable\" \r\n              (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\"></mat-checkbox>\r\n            </div>\r\n          </td>\r\n          <td>\r\n            <div class=\"df jc-c\">\r\n              <mat-checkbox [(ngModel)]=\"item.showOnDiagram\" \r\n              (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\"></mat-checkbox>\r\n            </div>\r\n          </td>\r\n          <td>\r\n            <div class=\"df jc-c ai-c\">\r\n              <button class=\"table-more-btn\" mat-icon-button\r\n                (click)=\"optionsModal[item._id + index] = !optionsModal[item._id + index]\">\r\n                <i class=\"material-icons-outlined\">\r\n                  arrow_drop_down_circle\r\n                </i>\r\n              </button>\r\n            </div>\r\n          </td>\r\n        </tr>\r\n        <tr *ngIf=\"optionsModal[item._id + index]\">\r\n          <td colspan=\"6\">\r\n            <mat-accordion>\r\n              <mat-expansion-panel [expanded]=\"true\">\r\n                <mat-expansion-panel-header>\r\n                  <mat-panel-title>\r\n                    Personal data\r\n                  </mat-panel-title>\r\n                </mat-expansion-panel-header>\r\n\r\n                <div class=\"loop-item desc\">\r\n                  <mat-form-field class=\"example-full-width\">\r\n                    <input matInput placeholder=\"Id (latin simbols and digits)\" (keydown)=\"onKeyDown($event)\" [(ngModel)]=\"item.id\"\r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\" />\r\n                  </mat-form-field>\r\n                  <mat-form-field class=\"example-full-width\">\r\n                    <input matInput placeholder=\"Name\" [(ngModel)]=\"item.name\"\r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\" />\r\n                  </mat-form-field>\r\n                  <mat-form-field class=\"example-full-width\">\r\n                    <textarea matInput placeholder=\"Description\" [(ngModel)]=\"item.description\"\r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\"></textarea>\r\n                  </mat-form-field>\r\n                  <div class=\"input-btn-wrap\">\r\n                    <mat-form-field *ngIf=\"item.value && item.value.charAt(0) !== '=' \" class=\"example-full-width\">\r\n                      <input matInput placeholder=\"Value\" [(ngModel)]=\"item.value\"\r\n                      (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event);validValue(item,index)\"/>\r\n                    </mat-form-field>\r\n                    <span *ngIf=\"item.value && item.value.charAt(0) === '=' \" class=\"example-full-width\">Value = f (x)</span>\r\n\r\n                    <button (click)=\"openDialog(item)\" mat-raised-button color=\"primary\" class=\"btn\">\r\n                      <i>\r\n                        f(x)\r\n                      </i>\r\n                    </button>\r\n                  </div>\r\n                  <mat-form-field>\r\n                    <mat-label>Feature label</mat-label>\r\n                    <mat-select>\r\n                      <mat-option value=\"1\">\r\n                        1\r\n                      </mat-option>\r\n                      <mat-option value=\"2\">\r\n                        2\r\n                      </mat-option>\r\n                      <mat-option value=\"3\">\r\n                        3\r\n                      </mat-option>\r\n                    </mat-select>\r\n                  </mat-form-field>\r\n                  <div class=\"chekboxs-list\">\r\n                    <mat-checkbox [(ngModel)]=\"item.measurable\" \r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\">Measurable\r\n                    </mat-checkbox>\r\n                    <mat-checkbox [(ngModel)]=\"item.changeable\" \r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\">Changeable\r\n                    </mat-checkbox>\r\n                    <mat-checkbox [(ngModel)]=\"item.showOnDiagram\" \r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\">Show on\r\n                      diagram</mat-checkbox>\r\n                    <mat-checkbox [(ngModel)]=\"item.showName\" \r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\">Show name\r\n                    </mat-checkbox>\r\n                  </div>\r\n                  <mat-form-field *ngIf=\"item.showOnDiagram\">\r\n                    <mat-label>Control type</mat-label>\r\n                    <mat-select [(ngModel)]=\"item.controlType\" \r\n                    (keyup.enter)=\"onFieldChange($event);\" (blur)=\"onFieldChange($event);sliderChange($event, item, index)\">\r\n                      <mat-option value=\"Value\">\r\n                        Value\r\n                      </mat-option>\r\n                      <mat-option value=\"Input\">\r\n                        Input\r\n                      </mat-option>\r\n                      <mat-option value=\"Slider\">\r\n                        Slider\r\n                      </mat-option>\r\n                    </mat-select>\r\n                  </mat-form-field>\r\n                  <mat-form-field *ngIf=\"item.controlType === 'Slider'\">\r\n                    <input matInput placeholder=\"Slider Step\" [(ngModel)]=\"item.sliderStep\" \r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\" />\r\n                  </mat-form-field>\r\n                  <mat-form-field *ngIf=\"item.controlType === 'Slider'\">\r\n                    <input matInput placeholder=\"Slider Max\" [(ngModel)]=\"item.sliderMax\" \r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\" />\r\n                  </mat-form-field>\r\n                  <mat-form-field *ngIf=\"item.controlType === 'Slider'\">\r\n                    <input matInput placeholder=\"Slider Min\" [(ngModel)]=\"item.sliderMin\" \r\n                    (keyup.enter)=\"onFieldChange($event)\" (blur)=\"onFieldChange($event)\" />\r\n                  </mat-form-field>\r\n                </div>\r\n              </mat-expansion-panel>\r\n            </mat-accordion>\r\n          </td>\r\n        </tr>\r\n      </tbody>\r\n\r\n    </table>\r\n\r\n    <div class=\"m-t-10 m-b-10\">\r\n      <button mat-raised-button color=\"accent\" (click)=\"addParametr()\">+ Add parameter</button>\r\n    </div>\r\n\r\n    <div class=\"loop-item\">\r\n      <mat-form-field class=\"example-full-width\">\r\n        <input matInput placeholder=\"Id (latin simbols and digits)\" (keydown)=\"onKeyDown($event)\" [(ngModel)]=\"newParametr.id\" />\r\n      </mat-form-field>\r\n      <mat-form-field class=\"example-full-width\">\r\n        <input matInput placeholder=\"Name\" [(ngModel)]=\"newParametr.name\" />\r\n      </mat-form-field>\r\n      <mat-form-field class=\"example-full-width\">\r\n        <textarea matInput placeholder=\"Description\" [(ngModel)]=\"newParametr.description\"></textarea>\r\n      </mat-form-field>\r\n      <div class=\"input-btn-wrap\">\r\n        <mat-form-field class=\"example-full-width\">\r\n          <input matInput placeholder=\"Value\" [(ngModel)]=\"newParametr.value\" />\r\n        </mat-form-field>\r\n        <button (click)=\"openDialog(newParametr)\" mat-raised-button color=\"primary\" class=\"btn\">\r\n          <i>\r\n            f(x)\r\n          </i>\r\n        </button>\r\n      </div>\r\n      <mat-form-field>\r\n        <mat-label>Feature label</mat-label>\r\n        <mat-select [(ngModel)]=\"newParametr.featureLabelNone\">\r\n          <mat-option value=\"1\">\r\n            1\r\n          </mat-option>\r\n          <mat-option value=\"2\">\r\n            2\r\n          </mat-option>\r\n          <mat-option value=\"3\">\r\n            3\r\n          </mat-option>\r\n        </mat-select>\r\n      </mat-form-field>\r\n      <div class=\"chekboxs-list\">\r\n        <mat-checkbox [(ngModel)]=\"newParametr.measurable\">Measurable</mat-checkbox>\r\n        <mat-checkbox [(ngModel)]=\"newParametr.changeable\">Changeable</mat-checkbox>\r\n        <mat-checkbox [(ngModel)]=\"newParametr.showOnDiagram\">Show on diagram</mat-checkbox>\r\n        <mat-checkbox [(ngModel)]=\"newParametr.showName\">Show name</mat-checkbox>\r\n      </div>\r\n      <mat-form-field *ngIf=\"newParametr.showOnDiagram\">\r\n        <mat-label>Control type</mat-label>\r\n        <mat-select [(ngModel)]=\"newParametr.controlType\">\r\n          <mat-option value=\"Value\">\r\n            Value\r\n          </mat-option>\r\n          <mat-option value=\"Input\">\r\n            Input\r\n          </mat-option>\r\n          <mat-option value=\"Slider\">\r\n            Slider\r\n          </mat-option>\r\n        </mat-select>\r\n      </mat-form-field>\r\n      <mat-form-field *ngIf=\"newParametr.controlType === 'Slider'\">\r\n        <input matInput placeholder=\"Slider Step\" [(ngModel)]=\"newParametr.sliderStep\" />\r\n      </mat-form-field>\r\n      <mat-form-field *ngIf=\"newParametr.controlType === 'Slider'\">\r\n        <input matInput placeholder=\"Slider Max\" [(ngModel)]=\"newParametr.sliderMax\" />\r\n      </mat-form-field>\r\n      <mat-form-field *ngIf=\"newParametr.controlType === 'Slider'\">\r\n        <input matInput placeholder=\"Slider Min\" [(ngModel)]=\"newParametr.sliderMin\" />\r\n      </mat-form-field>\r\n    </div>\r\n  </div>\r\n</div>"
 
 /***/ }),
 
@@ -1535,7 +1537,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shared_model__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../shared/model */ "./src/app/shared/model.ts");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm5/index.js");
-/* harmony import */ var _auth_auth_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../auth/auth.service */ "./src/app/auth/auth.service.ts");
+/* harmony import */ var rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! rxjs/internal/operators */ "./node_modules/rxjs/internal/operators/index.js");
+/* harmony import */ var rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _auth_auth_service__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../auth/auth.service */ "./src/app/auth/auth.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1545,6 +1549,7 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 var __metadata = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 
 
 
@@ -1583,6 +1588,7 @@ var ModelMainComponent = /** @class */ (function () {
         this.modelsKeys = {};
         this.formulaSaver = {};
         this.txtQueryChanged = new rxjs__WEBPACK_IMPORTED_MODULE_7__["Subject"]();
+        this.txtQueryChangedDebounce = new rxjs__WEBPACK_IMPORTED_MODULE_7__["Subject"]();
         this.newParametr = new _shared_model__WEBPACK_IMPORTED_MODULE_5__["ParameterClass"]("", "", "0", "");
         this.modelId = this.activatedRoute.snapshot.paramMap.get('id');
         this.authService.me().subscribe(function (data) {
@@ -1598,6 +1604,7 @@ var ModelMainComponent = /** @class */ (function () {
                 });
                 _this.componentService.getAllById(_this.modelId).subscribe(function (data) {
                     _this.data = data;
+                    _this.dataCopy = JSON.parse(JSON.stringify(data));
                     _this.saverComponent = [JSON.parse(JSON.stringify(_this.data))];
                     new Promise(function (resolve, reject) { _this.calc(resolve, reject); }).then(function () {
                         _this.removeAll();
@@ -1614,26 +1621,73 @@ var ModelMainComponent = /** @class */ (function () {
         //   this.txtQueryChanged.next(this.uuidv4());
         // }, 5000);
         this.txtQueryChanged
-            // .pipe(debounceTime(800), distinctUntilChanged())
             .subscribe(function (model) {
-            _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
-            var id = _this.data[model.selected];
-            if (id) {
-                _this.componentService.update(id).subscribe(function (data) {
-                });
-                if (!model.drag) {
-                    _this.componentService.getAllByUserId(_this.user._id).subscribe(function (data) {
-                        _this.formulaData = data;
-                        _this.formulaSaver = {};
-                        new Promise(function (resolve, reject) { _this.calc(resolve, reject); }).then(function () {
-                            _this.removeAll();
-                            _this.drow();
-                        });
-                    });
-                }
-            }
+            _this.updateQuery(model);
+        });
+        this.txtQueryChangedDebounce
+            .pipe(Object(rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8__["debounceTime"])(1000), Object(rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8__["distinctUntilChanged"])())
+            .subscribe(function (model) {
+            _this.updateQuery(model);
         });
     }
+    ModelMainComponent.prototype.updateQuery = function (model) {
+        var _this = this;
+        this.saverComponent.push(JSON.parse(JSON.stringify(this.data)));
+        var id = this.data[model.selected];
+        if (id) {
+            this.componentService.update(id).subscribe(function (data) {
+            });
+            if (!model.drag) {
+                this.componentService.getAllByUserId(this.user._id).subscribe(function (data) {
+                    _this.formulaData = data;
+                    _this.formulaSaver = {};
+                    new Promise(function (resolve, reject) { _this.calc(resolve, reject); }).then(function () {
+                        _this.removeAll();
+                        _this.drow();
+                    });
+                });
+            }
+        }
+    };
+    ModelMainComponent.prototype.onKeyPress = function ($event) {
+        var _this = this;
+        if (($event.ctrlKey || $event.metaKey) && $event.keyCode == 67) {
+            console.log('CTRL + C', this.selected);
+            this.selectedCopyIndex = this.selected;
+        }
+        if (($event.ctrlKey || $event.metaKey) && $event.keyCode == 86) {
+            console.log('CTRL +  V', this.data[this.selectedCopyIndex]);
+            if ((this.selectedCopyIndex || this.selectedCopyIndex === 0) && this.data[this.selectedCopyIndex]) {
+                var obj_1 = Object.assign({}, this.data[this.selectedCopyIndex]);
+                delete obj_1._id;
+                var id_1 = obj_1.id;
+                obj_1.id = obj_1.id + "1";
+                obj_1.x = obj_1.x + 50;
+                obj_1.y = obj_1.y + 150;
+                obj_1.selected = [];
+                obj_1.parameters.forEach(function (p) {
+                    var re = new RegExp(id_1, 'g');
+                    p.value = p.value.replace(re, obj_1.id);
+                });
+                var res = void 0;
+                do {
+                    res = this.data.find(function (el) {
+                        return el.id === obj_1.id;
+                    });
+                    if (res) {
+                        obj_1.id += "1";
+                    }
+                } while (res);
+                this.componentService.create(obj_1).subscribe(function (data) {
+                    _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
+                    _this.data.push(data);
+                    _this.removeAll();
+                    _this.drow();
+                    _this.dragType = null;
+                });
+            }
+        }
+    };
     ModelMainComponent.prototype.calc = function (resolve, reject) {
         var _this = this;
         this.data.forEach(function (comp) {
@@ -2185,7 +2239,7 @@ var ModelMainComponent = /** @class */ (function () {
                                         if (value >= param.sliderMin) {
                                             self_1.dragSelected = index;
                                             self_1.data[index].parameters[paramIndex].value = value.toString();
-                                            self_1.txtQueryChanged.next({
+                                            self_1.txtQueryChangedDebounce.next({
                                                 value: value,
                                                 selected: self_1.dragSelected
                                             });
@@ -2198,7 +2252,7 @@ var ModelMainComponent = /** @class */ (function () {
                                         if (value <= (param.sliderMax + 1)) {
                                             self_1.dragSelected = index;
                                             self_1.data[index].parameters[paramIndex].value = value.toString();
-                                            self_1.txtQueryChanged.next({
+                                            self_1.txtQueryChangedDebounce.next({
                                                 value: value,
                                                 selected: self_1.dragSelected
                                             });
@@ -2212,7 +2266,7 @@ var ModelMainComponent = /** @class */ (function () {
                                         if (value <= (param.sliderMax + 1)) {
                                             self_1.dragSelected = index;
                                             self_1.data[index].parameters[paramIndex].value = value.toString();
-                                            self_1.txtQueryChanged.next({
+                                            self_1.txtQueryChangedDebounce.next({
                                                 value: value,
                                                 selected: self_1.dragSelected
                                             });
@@ -2561,6 +2615,54 @@ var ModelMainComponent = /** @class */ (function () {
             }
         }
     };
+    ModelMainComponent.prototype.idModelChange = function (e) {
+        var _this = this;
+        var data = this.returnCopyData();
+        var res = data.find(function (el) {
+            return el.id === _this.data[_this.selectedModal].id;
+        });
+        if (!res) {
+            this.canChangeId = true;
+        }
+        console.log(data, this.data[this.selectedModal].id, this.canChangeId, res);
+    };
+    ModelMainComponent.prototype.returnCopyData = function () {
+        var data;
+        if (this.saverComponent) {
+            var arr = this.saverComponent[this.saverComponent.length - 2];
+            if (arr && this.saverComponent.length > 1) {
+                data = JSON.parse(JSON.stringify(arr));
+            }
+            else {
+                data = this.dataCopy;
+            }
+        }
+        else {
+            data = this.dataCopy;
+        }
+        return data;
+    };
+    ModelMainComponent.prototype.onFieldChangeId = function (query) {
+        var _this = this;
+        var data = this.returnCopyData();
+        if (this.canChangeId) {
+            this.data.forEach(function (d) {
+                d.parameters.forEach(function (p) {
+                    var re = new RegExp(data[_this.selectedModal].id, 'g');
+                    p.value = p.value.replace(re, _this.data[_this.selectedModal].id);
+                });
+                _this.componentService.update(d).subscribe(function (r) {
+                });
+            });
+        }
+        else {
+            this.data[this.selectedModal].id = data[this.selectedModal].id;
+        }
+        this.txtQueryChanged.next({
+            value: query,
+            selected: this.selectedModal
+        });
+    };
     ModelMainComponent.prototype.validValue = function (item, i) {
         if (item.controlType === "Slider") {
             if (+item.value < item.sliderMin) {
@@ -2580,6 +2682,12 @@ var ModelMainComponent = /** @class */ (function () {
         }
     };
     __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["HostListener"])('window:keydown', ['$event']),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [KeyboardEvent]),
+        __metadata("design:returntype", void 0)
+    ], ModelMainComponent.prototype, "onKeyPress", null);
+    __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["HostListener"])("document:keyup", ["$event"]),
         __metadata("design:type", Function),
         __metadata("design:paramtypes", [KeyboardEvent]),
@@ -2594,7 +2702,7 @@ var ModelMainComponent = /** @class */ (function () {
         __metadata("design:paramtypes", [_shared_model_service__WEBPACK_IMPORTED_MODULE_1__["ModelService"],
             _shared_component_service__WEBPACK_IMPORTED_MODULE_2__["ComponentService"],
             _angular_material_dialog__WEBPACK_IMPORTED_MODULE_3__["MatDialog"],
-            _auth_auth_service__WEBPACK_IMPORTED_MODULE_8__["AuthService"],
+            _auth_auth_service__WEBPACK_IMPORTED_MODULE_9__["AuthService"],
             _angular_router__WEBPACK_IMPORTED_MODULE_6__["ActivatedRoute"]])
     ], ModelMainComponent);
     return ModelMainComponent;

@@ -31,13 +31,13 @@ export class ModelListComponent implements OnInit {
   ngOnInit() {
     this.authService.me().subscribe(data => {
       this.user = data.user;
-      console.log(data)
-      this.getData()
+      console.log(data, this.user._id, 11);
+      this.getData();
     });
 
   }
 
-  getData(){
+  getData() {
     this.modelService.getAllById(this.user._id).subscribe((data: any) => {
       console.log(data)
       this.data = data;
@@ -158,6 +158,7 @@ export class ModelListComponent implements OnInit {
 
     arr.forEach((m: ComponentClass) => {
       m.modelId = newModel._id;
+      m.userId = this.user._id;
       m.parameters.forEach(p => {
         if (mask) {
           var re = new RegExp(`#${m.modelIdName}#`, 'g');
@@ -182,6 +183,7 @@ export class ModelListComponent implements OnInit {
     this.componentService.getAllById(item._id).subscribe((data: any) => {
       data.forEach(element => {
         delete element._id;
+        element.userId = `#${element.userId}#`;
         element.parameters.forEach(p => {
           var re = new RegExp(` ${element.modelIdName}.`, 'g');
           p.value = p.value.replace(re, ` #${element.modelIdName}#.`);
@@ -197,9 +199,8 @@ export class ModelListComponent implements OnInit {
         "ver": ver
       };
       item.ver = ver;
-      this.modelService.updateById(item).subscribe(() => {
-
-      })
+      this.modelService.updateById(item).subscribe(() => {});
+      console.log(obj)
       this.download(JSON.stringify(obj), 'json.upm', 'json');
 
     });

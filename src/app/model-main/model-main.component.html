@@ -20,7 +20,8 @@
     <mat-form-field class="example-full-width">
       <mat-label>Id (latin simbols and digits)</mat-label>
       <input matInput [(ngModel)]="data[selectedModal].id" (keydown)="onKeyDown($event)"
-      (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event)"/>
+      (ngModelChange)="idModelChange($event)"
+      (keyup.enter)="onFieldChangeId($event)" (blur)="onFieldChangeId($event)"/>
     </mat-form-field>
     <mat-form-field class="example-full-width">
       <mat-label>Name</mat-label>

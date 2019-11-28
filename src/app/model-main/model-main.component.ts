@@ -56,6 +56,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   formulaSaverOld = {};
   saverComponent = [];
   modelsKeys = {};
+  dataCopy;
 
   constructor(
     private modelService: ModelService,
@@ -78,6 +79,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         })
         this.componentService.getAllById(this.modelId).subscribe((data: any) => {
           this.data = data;
+          this.dataCopy = JSON.parse(JSON.stringify( data ));
           this.saverComponent = [JSON.parse(JSON.stringify( this.data ))];
           new Promise((resolve, reject) => {this.calc(resolve, reject)}).then(() => {
             this.removeAll();
@@ -94,29 +96,80 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
     //   this.drow();
     //   this.txtQueryChanged.next(this.uuidv4());
     // }, 5000);
-
-    this.txtQueryChanged
-      // .pipe(debounceTime(800), distinctUntilChanged())
+     this.txtQueryChanged
       .subscribe(model => {
-        this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
-
-        let id = this.data[model.selected];
-        if (id) {
-          this.componentService.update(id).subscribe((data) => {
-          });
-
-          if (!model.drag) {
-            this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
-              this.formulaData = data;
-              this.formulaSaver = {};
-              new Promise((resolve, reject) => {this.calc(resolve, reject)}).then(() => {
-                this.removeAll();
-                this.drow();
-              });
-            });
-          }
-        }
+        this.updateQuery(model);
       });
+
+      this.txtQueryChangedDebounce
+      .pipe(debounceTime(1000), distinctUntilChanged())
+      .subscribe(model => {
+        this.updateQuery(model);
+      });
+  }
+
+  updateQuery(model) {
+    this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
+
+    let id = this.data[model.selected];
+    if (id) {
+      this.componentService.update(id).subscribe((data) => {
+      });
+
+      if (!model.drag) {
+        this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
+          this.formulaData = data;
+          this.formulaSaver = {};
+          new Promise((resolve, reject) => {this.calc(resolve, reject)}).then(() => {
+            this.removeAll();
+            this.drow();
+          });
+        });
+      }
+    }
+  }
+
+  selectedCopyIndex;
+  @HostListener('window:keydown',['$event'])
+  onKeyPress($event: KeyboardEvent) {
+      if(($event.ctrlKey || $event.metaKey) && $event.keyCode == 67) {
+        console.log('CTRL + C', this.selected);
+        this.selectedCopyIndex = this.selected;
+      }
+
+      if(($event.ctrlKey || $event.metaKey) && $event.keyCode == 86) {
+        console.log('CTRL +  V', this.data[this.selectedCopyIndex]);
+        if((this.selectedCopyIndex || this.selectedCopyIndex === 0)  && this.data[this.selectedCopyIndex]){
+          let obj = Object.assign({}, this.data[this.selectedCopyIndex]);
+          delete obj._id;
+          let id = obj.id;
+          obj.id = obj.id + "1";
+          obj.x = obj.x + 50;
+          obj.y = obj.y + 150;
+          obj.selected = [];
+          obj.parameters.forEach(p => {
+              var re = new RegExp(id, 'g');
+              p.value = p.value.replace(re, obj.id);
+          });
+          let res;
+           do {
+             res = this.data.find((el) => {
+              return el.id === obj.id;
+            });
+            if(res) {
+              obj.id += "1";
+            }
+          } while(res);
+        
+          this.componentService.create(obj).subscribe(data => {
+            this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
+            this.data.push(data);
+            this.removeAll();
+            this.drow();
+            this.dragType = null;
+          });
+        }
+      }
   }
 
   calc(resolve?, reject?) {
@@ -731,7 +784,6 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                   //   .attr("y", py)
                   //   .text((param.name || param.id) + " - ");
                    l = (param.name || param.id).length;
-                
                   gR.append("foreignObject")
                     .attr("x", element.x + ((param.name || param.id).length) + 5)
                     .attr("y", py - 5)
@@ -785,7 +837,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                       if (value >= param.sliderMin) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
-                        self.txtQueryChanged.next({
+
+                        self.txtQueryChangedDebounce.next({
                           value: value,
                           selected: self.dragSelected
                         });
@@ -801,7 +854,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                       if (value <= (param.sliderMax + 1)) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
-                        self.txtQueryChanged.next({
+
+                        self.txtQueryChangedDebounce.next({
                           value: value,
                           selected: self.dragSelected
                         });
@@ -816,7 +870,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                       if (value <= (param.sliderMax + 1)) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
-                        self.txtQueryChanged.next({
+                        self.txtQueryChangedDebounce.next({
                           value: value,
                           selected: self.dragSelected
                         });
@@ -1151,6 +1205,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
   txtQuery: string; // bind this to input with ngModel
   txtQueryChanged: Subject<any> = new Subject<any>();
+  txtQueryChangedDebounce: Subject<any> = new Subject<any>();
+  
   onFieldChange(query: string) {
     this.txtQueryChanged.next({
       value: query,
@@ -1228,6 +1284,60 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       }
     }
+  }
+  canChangeId;
+  idModelChange(e) {
+    let data = this.returnCopyData();
+
+    const res = data.find((el) => {
+      return el.id === this.data[this.selectedModal].id;
+    });
+
+    if(!res) {
+      this.canChangeId = true;
+    }
+    console.log(data, this.data[this.selectedModal].id,this.canChangeId, res)
+  }
+
+  returnCopyData() {
+    let data;
+    if (this.saverComponent) {
+      let arr = this.saverComponent[this.saverComponent.length - 2];
+      if (arr && this.saverComponent.length > 1) {
+        data = JSON.parse(JSON.stringify( arr ));
+      } else {
+        data = this.dataCopy;
+      }
+    } else {
+      data = this.dataCopy;
+    }
+    return data;
+  }
+
+  onFieldChangeId(query: string) {
+    let data = this.returnCopyData();
+
+    if (this.canChangeId) {
+      this.data.forEach(d => {
+        d.parameters.forEach(p => {
+          var re = new RegExp(data[this.selectedModal].id, 'g');
+          p.value = p.value.replace(re, this.data[this.selectedModal].id);
+        });
+
+        this.componentService.update(d).subscribe((r) => {
+        });
+      });
+
+    } else {
+      this.data[this.selectedModal].id = data[this.selectedModal].id;
+    }
+
+    this.txtQueryChanged.next({
+      value: query,
+      selected: this.selectedModal
+    });
+
+
   }
 
   validValue(item, i) {

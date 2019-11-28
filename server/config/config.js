@@ -59,8 +59,8 @@ const config = {
 // JWT_SECRET=0a6b944d-d2fb-46fc-a85e-0295c986cd9f
 // MONGO_HOST=mongodb://morovar:aywcz1q8@ds031948.mlab.com:31948/heroku_37kv0jj3
 // MEAN_FRONTEND=angular
-env: envVars.NODE_ENV,
-// port: envVars.SERVER_PORT,
+  env: envVars.NODE_ENV,
+  // port: envVars.SERVER_PORT,
   port: 8080,
   mongooseDebug: envVars.MONGOOSE_DEBUG,
   jwtSecret: envVars.JWT_SECRET,
