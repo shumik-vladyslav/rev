@@ -1586,6 +1586,7 @@ var ModelMainComponent = /** @class */ (function () {
         this.formulaSaverOld = {};
         this.saverComponent = [];
         this.modelsKeys = {};
+        this.copyIndexCounter = {};
         this.formulaSaver = {};
         this.txtQueryChanged = new rxjs__WEBPACK_IMPORTED_MODULE_7__["Subject"]();
         this.txtQueryChangedDebounce = new rxjs__WEBPACK_IMPORTED_MODULE_7__["Subject"]();
@@ -1658,12 +1659,15 @@ var ModelMainComponent = /** @class */ (function () {
         if (($event.ctrlKey || $event.metaKey) && $event.keyCode == 86) {
             console.log('CTRL +  V', this.data[this.selectedCopyIndex]);
             if ((this.selectedCopyIndex || this.selectedCopyIndex === 0) && this.data[this.selectedCopyIndex]) {
+                if (!this.copyIndexCounter[this.selectedCopyIndex]) {
+                    this.copyIndexCounter[this.selectedCopyIndex] = 0;
+                }
                 var obj_1 = Object.assign({}, this.data[this.selectedCopyIndex]);
                 delete obj_1._id;
                 var id_1 = obj_1.id;
                 obj_1.id = obj_1.id + "1";
                 obj_1.x = obj_1.x + 50;
-                obj_1.y = obj_1.y + 150;
+                obj_1.y = obj_1.y + 150 + (this.copyIndexCounter[this.selectedCopyIndex] * 80);
                 obj_1.selected = [];
                 obj_1.parameters.forEach(function (p) {
                     var re = new RegExp(id_1, 'g');
@@ -1679,6 +1683,7 @@ var ModelMainComponent = /** @class */ (function () {
                     }
                 } while (res);
                 this.componentService.create(obj_1).subscribe(function (data) {
+                    _this.copyIndexCounter[_this.selectedCopyIndex] += 1;
                     _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
                     _this.data.push(data);
                     _this.removeAll();
@@ -2088,6 +2093,10 @@ var ModelMainComponent = /** @class */ (function () {
                     })
                         .on("click", function (d, i, s) {
                         d3.event.stopPropagation();
+                        _this.selectedModal = s[0].id;
+                        _this.selected = s[0].id;
+                        _this.removeAll();
+                        _this.drow();
                         if (_this.activeArrow)
                             _this.shepClick(s[0].id);
                     })
@@ -2172,14 +2181,14 @@ var ModelMainComponent = /** @class */ (function () {
                                         g_1.append("text")
                                             .attr("x", element.x + 20)
                                             .attr("y", py)
-                                            .text((param.name || param.id) + " - " +
+                                            .text((param.name || param.id) + ": " +
                                             ((parseFloat(res).toFixed(1))));
                                     }
                                     else {
                                         g_1.append("text")
                                             .attr("x", element.x + 20)
                                             .attr("y", py)
-                                            .text((param.name || param.id) + " - " + parseFloat(v || "").toFixed(1));
+                                            .text((param.name || param.id) + ": " + parseFloat(v || "").toFixed(1));
                                     }
                                     break;
                                 case "Input":
@@ -2225,7 +2234,7 @@ var ModelMainComponent = /** @class */ (function () {
                                         .attr("height", 30)
                                         .attr("class", "foreignObject-input-bmp")
                                         .html(function (d) {
-                                        return "\n                      <div id=\"" + index + "-" + paramIndex + "-slider\" class=\"cust-slider\">\n                      <div class=\"slider-value\">\n                      " + (param.name || param.id) + " - " + parseFloat(param.value || "").toFixed(1) + "\n                      </div>\n                      <div class=\"slider-wrap-outer\">\n                        <button id=\"" + index + "-" + paramIndex + "-left\" class=\"left\">\n                          <i class=\"material-icons\">\n                            keyboard_arrow_left\n                          </i>\n                        </button>\n                        <div id=\"" + index + "-" + paramIndex + "-slider-wrap\" class=\"slider-wrap\">\n                          <div id=\"" + index + "-" + paramIndex + "-sliderFillBg\" class=\"fill-bg\"></div>\n                          <div id=\"" + index + "-" + paramIndex + "-sliderIndecator\" class=\"indecator\" draggable=\"true\">\n                            <div class=\"bg-inside\"></div>\n                          </div>\n                        </div>\n                        <button id=\"" + index + "-" + paramIndex + "-right\" class=\"right\">\n                          <i class=\"material-icons\">\n                            keyboard_arrow_right\n                          </i>\n                        </button>\n                      </div>\n                    </div>\n                      ";
+                                        return "\n                      <div id=\"" + index + "-" + paramIndex + "-slider\" class=\"cust-slider\">\n                      <div id=\"" + index + "-" + paramIndex + "-slider-value\" class=\"slider-value\">\n                      " + (param.name || param.id) + ": " + parseFloat(param.value || "").toFixed(1) + "\n                      </div>\n                      <div class=\"slider-wrap-outer\">\n                        <button id=\"" + index + "-" + paramIndex + "-left\" class=\"left\">\n                          <i class=\"material-icons\">\n                            keyboard_arrow_left\n                          </i>\n                        </button>\n                        <div id=\"" + index + "-" + paramIndex + "-slider-wrap\" class=\"slider-wrap\">\n                          <div id=\"" + index + "-" + paramIndex + "-sliderFillBg\" class=\"fill-bg\"></div>\n                          <div id=\"" + index + "-" + paramIndex + "-sliderIndecator\" class=\"indecator\" draggable=\"true\">\n                            <div class=\"bg-inside\"></div>\n                          </div>\n                        </div>\n                        <button id=\"" + index + "-" + paramIndex + "-right\" class=\"right\">\n                          <i class=\"material-icons\">\n                            keyboard_arrow_right\n                          </i>\n                        </button>\n                      </div>\n                    </div>\n                      ";
                                     });
                                     document.getElementById(index + "-" + paramIndex + "-sliderIndecator").addEventListener("dragstart", function (ev) {
                                         console.log("sliderIndecator");
@@ -2239,6 +2248,8 @@ var ModelMainComponent = /** @class */ (function () {
                                         if (value >= param.sliderMin) {
                                             self_1.dragSelected = index;
                                             self_1.data[index].parameters[paramIndex].value = value.toString();
+                                            document.getElementById(index + "-" + paramIndex + "-slider-value").textContent
+                                                = (param.name || param.id) + ": " + parseFloat(value.toString() || "").toFixed(1);
                                             self_1.txtQueryChangedDebounce.next({
                                                 value: value,
                                                 selected: self_1.dragSelected
@@ -2252,6 +2263,8 @@ var ModelMainComponent = /** @class */ (function () {
                                         if (value <= (param.sliderMax + 1)) {
                                             self_1.dragSelected = index;
                                             self_1.data[index].parameters[paramIndex].value = value.toString();
+                                            document.getElementById(index + "-" + paramIndex + "-slider-value").textContent
+                                                = (param.name || param.id) + ": " + parseFloat(value.toString() || "").toFixed(1);
                                             self_1.txtQueryChangedDebounce.next({
                                                 value: value,
                                                 selected: self_1.dragSelected
@@ -2266,6 +2279,8 @@ var ModelMainComponent = /** @class */ (function () {
                                         if (value <= (param.sliderMax + 1)) {
                                             self_1.dragSelected = index;
                                             self_1.data[index].parameters[paramIndex].value = value.toString();
+                                            document.getElementById(index + "-" + paramIndex + "-slider-value").textContent
+                                                = (param.name || param.id) + ": " + parseFloat(value.toString() || "").toFixed(1);
                                             self_1.txtQueryChangedDebounce.next({
                                                 value: value,
                                                 selected: self_1.dragSelected

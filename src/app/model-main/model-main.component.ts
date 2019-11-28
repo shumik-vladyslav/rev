@@ -128,7 +128,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
-
+  copyIndexCounter = {};
   selectedCopyIndex;
   @HostListener('window:keydown',['$event'])
   onKeyPress($event: KeyboardEvent) {
@@ -140,12 +140,15 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
       if(($event.ctrlKey || $event.metaKey) && $event.keyCode == 86) {
         console.log('CTRL +  V', this.data[this.selectedCopyIndex]);
         if((this.selectedCopyIndex || this.selectedCopyIndex === 0)  && this.data[this.selectedCopyIndex]){
+          if(!this.copyIndexCounter[this.selectedCopyIndex]) {
+            this.copyIndexCounter[this.selectedCopyIndex] = 0;
+          }
           let obj = Object.assign({}, this.data[this.selectedCopyIndex]);
           delete obj._id;
           let id = obj.id;
           obj.id = obj.id + "1";
           obj.x = obj.x + 50;
-          obj.y = obj.y + 150;
+          obj.y = obj.y + 150 + (this.copyIndexCounter[this.selectedCopyIndex] * 80);
           obj.selected = [];
           obj.parameters.forEach(p => {
               var re = new RegExp(id, 'g');
@@ -162,6 +165,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
           } while(res);
         
           this.componentService.create(obj).subscribe(data => {
+            this.copyIndexCounter[this.selectedCopyIndex] += 1;
             this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
             this.data.push(data);
             this.removeAll();
@@ -642,6 +646,10 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
             })
             .on("click", (d, i, s) => {
               d3.event.stopPropagation();
+              this.selectedModal = s[0].id;
+              this.selected = s[0].id;
+              this.removeAll();
+              this.drow();
               if (this.activeArrow)
                 this.shepClick(s[0].id);
             })
@@ -736,7 +744,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     g.append("text")
                       .attr("x", element.x + 20)
                       .attr("y", py)
-                      .text((param.name || param.id) + " - " + 
+                      .text((param.name || param.id) + ": " + 
                       ((parseFloat(res).toFixed(1)))
                       );
 
@@ -744,7 +752,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     g.append("text")
                       .attr("x", element.x + 20)
                       .attr("y", py)
-                      .text((param.name || param.id) + " - " + parseFloat(v || "").toFixed(1));
+                      .text((param.name || param.id) + ": " + parseFloat(v || "").toFixed(1));
                   }
 
                   break;
@@ -793,8 +801,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                     .html((d) => {
                       return `
                       <div id="${index}-${paramIndex}-slider" class="cust-slider">
-                      <div class="slider-value">
-                      ${(param.name || param.id)} - ${parseFloat(param.value || "").toFixed(1)}
+                      <div id="${index}-${paramIndex}-slider-value" class="slider-value">
+                      ${(param.name || param.id)}: ${parseFloat(param.value || "").toFixed(1)}
                       </div>
                       <div class="slider-wrap-outer">
                         <button id="${index}-${paramIndex}-left" class="left">
@@ -837,7 +845,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                       if (value >= param.sliderMin) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
-
+                        document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
+                        = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
                         self.txtQueryChangedDebounce.next({
                           value: value,
                           selected: self.dragSelected
@@ -854,7 +863,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                       if (value <= (param.sliderMax + 1)) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
-
+                        document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
+                        = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
                         self.txtQueryChangedDebounce.next({
                           value: value,
                           selected: self.dragSelected
@@ -870,6 +880,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                       if (value <= (param.sliderMax + 1)) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
+                        document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
+                        = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
                         self.txtQueryChangedDebounce.next({
                           value: value,
                           selected: self.dragSelected
