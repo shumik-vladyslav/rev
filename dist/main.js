@@ -1615,18 +1615,19 @@ var ModelMainComponent = /** @class */ (function () {
                 });
             });
         });
-        // this.setInterval = setInterval(() => {
-        //   this.removeAll()
-        //   this.drowLines()
-        //   this.drow();
-        //   this.txtQueryChanged.next(this.uuidv4());
-        // }, 5000);
+        this.setInterval = setInterval(function () {
+            _this.removeAll();
+            _this.drowLines();
+            _this.drow();
+            _this.txtQueryChanged.next(_this.uuidv4());
+            console.log(23);
+        }, 5000);
         this.txtQueryChanged
             .subscribe(function (model) {
             _this.updateQuery(model);
         });
         this.txtQueryChangedDebounce
-            .pipe(Object(rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8__["debounceTime"])(1000), Object(rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8__["distinctUntilChanged"])())
+            .pipe(Object(rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8__["debounceTime"])(500), Object(rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8__["distinctUntilChanged"])())
             .subscribe(function (model) {
             _this.updateQuery(model);
         });
@@ -1636,18 +1637,18 @@ var ModelMainComponent = /** @class */ (function () {
         this.saverComponent.push(JSON.parse(JSON.stringify(this.data)));
         var id = this.data[model.selected];
         if (id) {
-            this.componentService.update(id).subscribe(function (data) {
-            });
-            if (!model.drag) {
-                this.componentService.getAllByUserId(this.user._id).subscribe(function (data) {
-                    _this.formulaData = data;
-                    _this.formulaSaver = {};
-                    new Promise(function (resolve, reject) { _this.calc(resolve, reject); }).then(function () {
-                        _this.removeAll();
-                        _this.drow();
+            this.componentService.update(id).subscribe(function (r) {
+                if (!model.drag) {
+                    _this.componentService.getAllByUserId(_this.user._id).subscribe(function (data) {
+                        _this.formulaData = data;
+                        _this.formulaSaver = {};
+                        new Promise(function (resolve, reject) { _this.calc(resolve, reject); }).then(function () {
+                            _this.removeAll();
+                            _this.drow();
+                        });
                     });
-                });
-            }
+                }
+            });
         }
     };
     ModelMainComponent.prototype.onKeyPress = function ($event) {
@@ -2248,8 +2249,8 @@ var ModelMainComponent = /** @class */ (function () {
                                         if (value >= param.sliderMin) {
                                             self_1.dragSelected = index;
                                             self_1.data[index].parameters[paramIndex].value = value.toString();
-                                            document.getElementById(index + "-" + paramIndex + "-slider-value").textContent
-                                                = (param.name || param.id) + ": " + parseFloat(value.toString() || "").toFixed(1);
+                                            // document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
+                                            // = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
                                             self_1.txtQueryChangedDebounce.next({
                                                 value: value,
                                                 selected: self_1.dragSelected
@@ -2263,8 +2264,8 @@ var ModelMainComponent = /** @class */ (function () {
                                         if (value <= (param.sliderMax + 1)) {
                                             self_1.dragSelected = index;
                                             self_1.data[index].parameters[paramIndex].value = value.toString();
-                                            document.getElementById(index + "-" + paramIndex + "-slider-value").textContent
-                                                = (param.name || param.id) + ": " + parseFloat(value.toString() || "").toFixed(1);
+                                            // document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
+                                            // = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
                                             self_1.txtQueryChangedDebounce.next({
                                                 value: value,
                                                 selected: self_1.dragSelected
@@ -2279,8 +2280,8 @@ var ModelMainComponent = /** @class */ (function () {
                                         if (value <= (param.sliderMax + 1)) {
                                             self_1.dragSelected = index;
                                             self_1.data[index].parameters[paramIndex].value = value.toString();
-                                            document.getElementById(index + "-" + paramIndex + "-slider-value").textContent
-                                                = (param.name || param.id) + ": " + parseFloat(value.toString() || "").toFixed(1);
+                                            // document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
+                                            // = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
                                             self_1.txtQueryChangedDebounce.next({
                                                 value: value,
                                                 selected: self_1.dragSelected
@@ -2904,7 +2905,7 @@ var DialogCreateModelComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\r\n<div id=\"wrap-dialog-scroll\" mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>Model</mat-label>\r\n    <mat-select [(ngModel)]=\"sleectedModel\" (ngModelChange)=\"modelChange($event)\">\r\n      <mat-option *ngFor=\"let item of listModel\" [value]=\"item._id\">\r\n        {{item.name}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Class</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedClass\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listClass\" [value]=\"item\">\r\n        {{item}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Object</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedObject\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listObjects | filtrListParam: selectedClass\" [value]=\"item.id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Parameter</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedParam\" (ngModelChange)=\"paramsChange($event)\">\r\n      <mat-option *ngFor=\"let item of listParams | filtrListParam: selectedClass: selectedObject\" [value]=\"item._id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <div style=\"width: 40%; padding: 20px 0 0 20px;\">\r\n    <div class=\"full-width\">\r\n      <!-- [disabled]=\"!boolLastOperator\" -->\r\n      <!-- [matTooltip]=\"!boolLastOperator ? 'Before add math operator: +, -, *, /' : null\"? -->\r\n      <button\r\n       (click)=\"add()\" class=\"full-width\" mat-raised-button color=\"primary\" mat-button>\r\n        <= ADD</button> </div>\r\n          <!-- <button (click)=\"test()\" class=\"func\" mat-raised-button color=\"primary\" mat-button>\r\n            <i>\r\n              f(x)\r\n            </i>\r\n          </button> -->\r\n  </div>\r\n  <div class=\"textarea-wrap\">\r\n    <div class=\"formula-wrap-outer\">\r\n      <div (click)=\"formulaWrapClick();textArea.focus()\" class=\"formula-wrap\">\r\n        <div class=\"formula-item-wrap\" *ngFor=\"let item of formulaArr;let i = index\">\r\n            <div *ngIf=\"(item !== '|') && (i === 0 || (formulaArr[i - 1] && formulaArr[i - 1] !== '|'))\" \r\n            (click)=\"formulaItemClick(item, i)\" class=\"formula-item-space\"\r\n             ></div>\r\n            <div (click)=\"formulaItemClick(item, i + 1)\" class=\"formula-item\" [ngClass]=\"{'blink blink-item': item === '|'}\">\r\n              {{item}}\r\n            </div>\r\n            <div *ngIf=\"(i === (formulaArr.length - 1)) && item !== '|'\" (click)=\"formulaItemClick(item, i+1)\" class=\"formula-item-space\"></div>\r\n        </div>\r\n      </div>\r\n      <!-- formula-text -->\r\n      <mat-form-field style=\"width: 100%;position: absolute;top: 0; z-index: -1;\" class=\" example-full-width\">\r\n        <!-- (ngModelChange)=\"change($event)\" -->\r\n        <!-- [(ngModel)]=\"formula\" (ngModelChange)=\"change($event)\" (keydown)=\"checkPattern($event)\" -->\r\n        <textarea #textArea matInput [(ngModel)]=\"formulaData\" \r\n        (ngModelChange)=\"changeForumula($event)\" (keydown)=\"keyFormula($event)\"></textarea>\r\n          \r\n      </mat-form-field>\r\n      <!-- <div (click)=\"textArea.focus()\" class=\"text-area-shield\"></div> -->\r\n    </div>\r\n\r\n  </div>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button mat-button (click)=\"ok()\" mat-raised-button color=\"primary\" cdkFocusInitial>\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>"
+module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\r\n<div id=\"wrap-dialog-scroll\" mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>Model</mat-label>\r\n    <mat-select [(ngModel)]=\"sleectedModel\" (ngModelChange)=\"modelChange($event)\">\r\n      <mat-option *ngFor=\"let item of listModel\" [value]=\"item._id\">\r\n        {{item.name}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Class</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedClass\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listClass\" [value]=\"item\">\r\n        {{item}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Object</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedObject\" (ngModelChange)=\"selectedObjectChange($event)\">\r\n      <mat-option *ngFor=\"let item of listObjects | filtrListParam: selectedClass\" [value]=\"item.id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Parameter</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedParam\" (ngModelChange)=\"paramsChange($event)\">\r\n      <mat-option *ngFor=\"let item of listParams | filtrListParam: selectedClass: selectedObject\" [value]=\"item._id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <div style=\"width: 40%; padding: 20px 0 0 20px;\">\r\n    <div class=\"full-width\">\r\n      <!-- [disabled]=\"!boolLastOperator\" -->\r\n      <!-- [matTooltip]=\"!boolLastOperator ? 'Before add math operator: +, -, *, /' : null\"? -->\r\n      <button\r\n       (click)=\"add()\" class=\"full-width\" mat-raised-button color=\"primary\" mat-button>\r\n        <= ADD</button> </div>\r\n          <!-- <button (click)=\"test()\" class=\"func\" mat-raised-button color=\"primary\" mat-button>\r\n            <i>\r\n              f(x)\r\n            </i>\r\n          </button> -->\r\n  </div>\r\n  <div class=\"textarea-wrap\">\r\n    <div class=\"formula-wrap-outer\">\r\n      <div (click)=\"formulaWrapClick();textArea.focus()\" class=\"formula-wrap\">\r\n        <div class=\"formula-item-wrap\" *ngFor=\"let item of formulaArr;let i = index\">\r\n            <div *ngIf=\"(item !== '|') && (i === 0 || (formulaArr[i - 1] && formulaArr[i - 1] !== '|'))\" \r\n            (click)=\"formulaItemClick(item, i)\" class=\"formula-item-space\"\r\n             ></div>\r\n            <div (click)=\"formulaItemClick(item, i + 1)\" class=\"formula-item\" [ngClass]=\"{'blink blink-item': item === '|'}\">\r\n              {{item}}\r\n            </div>\r\n            <div *ngIf=\"(i === (formulaArr.length - 1)) && item !== '|'\" (click)=\"formulaItemClick(item, i+1)\" class=\"formula-item-space\"></div>\r\n        </div>\r\n      </div>\r\n      <!-- formula-text -->\r\n      <mat-form-field style=\"width: 100%;position: absolute;top: 0; z-index: -1;\" class=\" example-full-width\">\r\n        <!-- (ngModelChange)=\"change($event)\" -->\r\n        <!-- [(ngModel)]=\"formula\" (ngModelChange)=\"change($event)\" (keydown)=\"checkPattern($event)\" -->\r\n        <textarea #textArea matInput [(ngModel)]=\"formulaData\" \r\n        (ngModelChange)=\"changeForumula($event)\" (keydown)=\"keyFormula($event)\"></textarea>\r\n          \r\n      </mat-form-field>\r\n      <!-- <div (click)=\"textArea.focus()\" class=\"text-area-shield\"></div> -->\r\n    </div>\r\n\r\n  </div>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button mat-button (click)=\"ok()\" mat-raised-button color=\"primary\" cdkFocusInitial>\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>"
 
 /***/ }),
 
@@ -3046,6 +3047,9 @@ var DialogParametersComponent = /** @class */ (function () {
     };
     DialogParametersComponent.prototype.modelChange = function (id) {
         var _this = this;
+        this.selectedClass = null;
+        this.selectedObject = null;
+        this.selectedParam = null;
         this.componentService.getAllById(id).subscribe(function (data) {
             _this.listComponents = data;
             _this.listClass = [];
@@ -3070,6 +3074,11 @@ var DialogParametersComponent = /** @class */ (function () {
         return self.indexOf(value) === index;
     };
     DialogParametersComponent.prototype.paramsFilter = function (e) {
+        this.selectedObject = null;
+        this.selectedParam = null;
+    };
+    DialogParametersComponent.prototype.selectedObjectChange = function () {
+        this.selectedParam = null;
     };
     DialogParametersComponent.prototype.ok = function () {
         this.removeSpace();

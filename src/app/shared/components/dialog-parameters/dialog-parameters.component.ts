@@ -107,6 +107,9 @@ export class DialogParametersComponent implements OnInit, AfterViewInit {
   }
 
   modelChange(id) {
+    this.selectedClass = null;
+    this.selectedObject = null;
+    this.selectedParam = null;
     this.componentService.getAllById(id).subscribe((data: any) => {
       this.listComponents = data;
       this.listClass = [];
@@ -134,7 +137,12 @@ export class DialogParametersComponent implements OnInit, AfterViewInit {
   }
 
   paramsFilter(e) {
+    this.selectedObject = null;
+    this.selectedParam = null;
+  }
 
+  selectedObjectChange(){
+    this.selectedParam = null;
   }
 
   ok() {

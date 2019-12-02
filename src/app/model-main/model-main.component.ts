@@ -90,19 +90,20 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     });
 
-    // this.setInterval = setInterval(() => {
-    //   this.removeAll()
-    //   this.drowLines()
-    //   this.drow();
-    //   this.txtQueryChanged.next(this.uuidv4());
-    // }, 5000);
+    this.setInterval = setInterval(() => {
+      this.removeAll()
+      this.drowLines()
+      this.drow();
+      this.txtQueryChanged.next(this.uuidv4());
+      console.log(23)
+    }, 5000);
      this.txtQueryChanged
       .subscribe(model => {
         this.updateQuery(model);
       });
 
       this.txtQueryChangedDebounce
-      .pipe(debounceTime(1000), distinctUntilChanged())
+      .pipe(debounceTime(500), distinctUntilChanged())
       .subscribe(model => {
         this.updateQuery(model);
       });
@@ -113,19 +114,18 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let id = this.data[model.selected];
     if (id) {
-      this.componentService.update(id).subscribe((data) => {
-      });
-
-      if (!model.drag) {
-        this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
-          this.formulaData = data;
-          this.formulaSaver = {};
-          new Promise((resolve, reject) => {this.calc(resolve, reject)}).then(() => {
-            this.removeAll();
-            this.drow();
+      this.componentService.update(id).subscribe((r) => {
+        if (!model.drag) {
+          this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
+            this.formulaData = data;
+            this.formulaSaver = {};
+            new Promise((resolve, reject) => {this.calc(resolve, reject)}).then(() => {
+              this.removeAll();
+              this.drow();
+            });
           });
-        });
-      }
+        }
+      });
     }
   }
   copyIndexCounter = {};
@@ -845,8 +845,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                       if (value >= param.sliderMin) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
-                        document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
-                        = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
+                        // document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
+                        // = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
                         self.txtQueryChangedDebounce.next({
                           value: value,
                           selected: self.dragSelected
@@ -863,8 +863,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                       if (value <= (param.sliderMax + 1)) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
-                        document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
-                        = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
+                        // document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
+                        // = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
                         self.txtQueryChangedDebounce.next({
                           value: value,
                           selected: self.dragSelected
@@ -880,8 +880,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
                       if (value <= (param.sliderMax + 1)) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
-                        document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
-                        = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
+                        // document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
+                        // = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
                         self.txtQueryChangedDebounce.next({
                           value: value,
                           selected: self.dragSelected
@@ -1003,7 +1003,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.modelsKeys[comp.modelId] === arr[0] && comp.id === arr[1] && param.id === arr[2]) {
           this.formulaSaver[element] = +param.value;
         }
-        if((comp.parameters.length -1)  === i){
+        if((comp.parameters.length -1)  === i) {
           resolve();
         }
 
