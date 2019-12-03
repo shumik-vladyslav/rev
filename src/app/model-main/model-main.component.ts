@@ -14,7 +14,7 @@ declare var d3;
   templateUrl: './model-main.component.html',
   styleUrls: ['./model-main.component.scss']
 })
-export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnDestroy {
   types = [
     "Input",
     "Output",
@@ -76,6 +76,13 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         this.modelList = data;
         this.modelList.forEach((model) => {
           this.modelsKeys[model._id] = model.id;
+        })
+        this.modelService.getAll().subscribe((data: any) => {
+          data.forEach(element => {
+            if (element._id === this.modelId) {
+              this.modelService.selectedModelEvent.emit(element);
+            }
+          });
         })
         this.componentService.getAllById(this.modelId).subscribe((data: any) => {
           this.data = data;
@@ -175,6 +182,8 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
   }
+
+  
 
   calc(resolve?, reject?) {
     this.data.forEach((comp) => {
@@ -290,6 +299,7 @@ export class ModelMainComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.modelService.selectedModelEvent.emit(null);
     clearInterval(this.setInterval);
   }
 

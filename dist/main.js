@@ -1027,7 +1027,7 @@ var TokenStorage = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<header>\r\n  <mat-toolbar color=\"primary\">\r\n    <div [ngClass]=\"{'container': router.url.slice(1, 5) === 'auth'}\" class=\"df full-width\">\r\n      <a [routerLink]=\"['/']\" class=\"logo\"></a>\r\n      <span class=\"example-spacer\"></span>\r\n      <button   *ngIf=\"!user\" [routerLink]=\"['/auth/register']\" mat-raised-button color=\"primary\" class=\"m-r-10\">\r\n        Sign up free\r\n      </button>\r\n      <button\r\n        mat-button\r\n        color=\"primary\"\r\n        [routerLink]=\"['/auth/login']\"\r\n        *ngIf=\"!user\"\r\n      >\r\n        Login\r\n      </button>\r\n      <div>\r\n        <a class=\"links side\" *ngIf=\"user\" [matMenuTriggerFor]=\"menu\">\r\n          <mat-icon>account_circle</mat-icon>{{ user.fullname }}\r\n        </a>\r\n        <mat-menu #menu=\"matMenu\">\r\n          <button\r\n            mat-menu-item\r\n            *ngIf=\"user && user.isAdmin\"\r\n            [routerLink]=\"['/admin']\"\r\n          >\r\n            admin\r\n          </button>\r\n          <button mat-menu-item (click)=\"logout()\">logout</button>\r\n        </mat-menu>\r\n      </div>\r\n    </div>\r\n  </mat-toolbar>\r\n</header>\r\n"
+module.exports = "<header>\r\n  <mat-toolbar color=\"primary\">\r\n    <div [ngClass]=\"{'container': router.url.slice(1, 5) === 'auth'}\" class=\"df full-width\">\r\n      <a [routerLink]=\"['/']\" class=\"logo\"></a>\r\n      <div *ngIf=\"selectedModel\" style=\"    color: #463e3e;\">Model: {{selectedModel.name}}</div>\r\n      <span class=\"example-spacer\"></span>\r\n      <button   *ngIf=\"!user\" [routerLink]=\"['/auth/register']\" mat-raised-button color=\"primary\" class=\"m-r-10\">\r\n        Sign up free\r\n      </button>\r\n      <button\r\n        mat-button\r\n        color=\"primary\"\r\n        [routerLink]=\"['/auth/login']\"\r\n        *ngIf=\"!user\"\r\n      >\r\n        Login\r\n      </button>\r\n      <div>\r\n        <a class=\"links side\" *ngIf=\"user\" [matMenuTriggerFor]=\"menu\">\r\n          <mat-icon>account_circle</mat-icon>{{ user.fullname }}\r\n        </a>\r\n        <mat-menu #menu=\"matMenu\">\r\n          <button\r\n            mat-menu-item\r\n            *ngIf=\"user && user.isAdmin\"\r\n            [routerLink]=\"['/admin']\"\r\n          >\r\n            admin\r\n          </button>\r\n          <button mat-menu-item (click)=\"logout()\">logout</button>\r\n        </mat-menu>\r\n      </div>\r\n    </div>\r\n  </mat-toolbar>\r\n</header>\r\n"
 
 /***/ }),
 
@@ -1055,6 +1055,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
 /* harmony import */ var _auth_auth_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../auth/auth.service */ "./src/app/auth/auth.service.ts");
+/* harmony import */ var _shared_model_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../shared/model.service */ "./src/app/shared/model.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1067,10 +1068,18 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
+
 var HeaderComponent = /** @class */ (function () {
-    function HeaderComponent(authService, router) {
+    function HeaderComponent(authService, router, modelService) {
+        var _this = this;
         this.authService = authService;
         this.router = router;
+        this.modelService = modelService;
+        console.log(2);
+        this.modelService.selectedModelEvent.subscribe(function (data) {
+            console.log(2);
+            _this.selectedModel = data;
+        });
     }
     HeaderComponent.prototype.ngOnInit = function () {
     };
@@ -1091,7 +1100,7 @@ var HeaderComponent = /** @class */ (function () {
             template: __webpack_require__(/*! ./header.component.html */ "./src/app/header/header.component.html"),
             styles: [__webpack_require__(/*! ./header.component.scss */ "./src/app/header/header.component.scss")]
         }),
-        __metadata("design:paramtypes", [_auth_auth_service__WEBPACK_IMPORTED_MODULE_2__["AuthService"], _angular_router__WEBPACK_IMPORTED_MODULE_1__["Router"]])
+        __metadata("design:paramtypes", [_auth_auth_service__WEBPACK_IMPORTED_MODULE_2__["AuthService"], _angular_router__WEBPACK_IMPORTED_MODULE_1__["Router"], _shared_model_service__WEBPACK_IMPORTED_MODULE_3__["ModelService"]])
     ], HeaderComponent);
     return HeaderComponent;
 }());
@@ -1603,6 +1612,13 @@ var ModelMainComponent = /** @class */ (function () {
                 _this.modelList.forEach(function (model) {
                     _this.modelsKeys[model._id] = model.id;
                 });
+                _this.modelService.getAll().subscribe(function (data) {
+                    data.forEach(function (element) {
+                        if (element._id === _this.modelId) {
+                            _this.modelService.selectedModelEvent.emit(element);
+                        }
+                    });
+                });
                 _this.componentService.getAllById(_this.modelId).subscribe(function (data) {
                     _this.data = data;
                     _this.dataCopy = JSON.parse(JSON.stringify(data));
@@ -1794,6 +1810,7 @@ var ModelMainComponent = /** @class */ (function () {
     ModelMainComponent.prototype.ngOnInit = function () {
     };
     ModelMainComponent.prototype.ngOnDestroy = function () {
+        this.modelService.selectedModelEvent.emit(null);
         clearInterval(this.setInterval);
     };
     ModelMainComponent.prototype.ngAfterViewInit = function () {
@@ -3401,6 +3418,7 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 var ModelService = /** @class */ (function () {
     function ModelService(http) {
         this.http = http;
+        this.selectedModelEvent = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
     }
     ModelService.prototype.create = function (model) {
         return this.http.post('/api/model', model);

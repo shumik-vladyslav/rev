@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from "@angular/core";
 import { Router } from "@angular/router";
 
 import { AuthService } from "../auth/auth.service";
+import { ModelService } from "../shared/model.service";
 
 @Component({
   selector: "app-header",
@@ -10,10 +11,17 @@ import { AuthService } from "../auth/auth.service";
 })
 export class HeaderComponent implements OnInit {
   @Input() user;
-
-  constructor(private authService: AuthService, public router: Router) {}
+  selectedModel;
+  constructor(private authService: AuthService, public router: Router, private modelService: ModelService) {
+   console.log(2)
+    this.modelService.selectedModelEvent.subscribe((data) => {
+      console.log(2)
+      this.selectedModel = data;
+    });
+  }
 
   ngOnInit() {
+
   }
 
   logout(): void {
