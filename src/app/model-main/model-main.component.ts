@@ -95,7 +95,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
       this.removeAll()
       this.drowLines()
       this.drow();
-      this.txtQueryChanged.next(this.uuidv4());
+      // this.txtQueryChanged.next(this.uuidv4());
       console.log(23)
     }, 5000);
      this.txtQueryChanged
@@ -132,9 +132,9 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
 
   getData() {
     this.componentService.getAllById(this.modelId).subscribe((data: any) => {
-      this.data = data;
+      this.data = JSON.parse(JSON.stringify( data ));
       this.dataCopy = JSON.parse(JSON.stringify( data ));
-      this.saverComponent = [JSON.parse(JSON.stringify( this.data ))];
+      this.saverComponent = [...this.saverComponent, JSON.parse(JSON.stringify( this.data ))];
       new Promise((resolve, reject) => {this.calc(resolve, reject)}).then(() => {
         this.removeAll();
         this.drowLines();
@@ -312,21 +312,35 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
     if (this.saverComponent) {
       let arr = this.saverComponent[this.saverComponent.length - 2];
       if (arr && this.saverComponent.length > 1) {
+        let oldData = JSON.parse(JSON.stringify( this.data ));
         this.data = JSON.parse(JSON.stringify( arr ));
         this.saverComponent.pop();
-
+        let observableList = [];
         this.data.forEach(element => {
-          this.componentService.update(element).subscribe((data) => {
+          const res = JSON.parse(JSON.stringify( oldData )).find((el) => {
+            return el.id === element.id;
           });
+      
+          if(!res) {
+            delete element._id;
+            observableList.push(this.componentService.create(element));
+          } else {
+            observableList.push(this.componentService.update(element));
+          }
+     
         });
+        let obs = forkJoin(observableList);
+        obs.subscribe(t => {
         this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
-          this.formulaData = data;
-          this.formulaSaver = {};
-          this.calc();
-          // this.removeAll();
-          // this.drowLines();
-          // this.clear();
-          // this.drow();
+            this.formulaData = data;
+            this.formulaSaver = {};
+            this.calc();
+            this.clear();
+            // this.removeAll();
+            // this.drowLines();
+            // this.clear();
+            // this.drow();
+          });
         });
       }
     }
@@ -699,37 +713,41 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
               const dialogRef = this.dialog.open(DialogCreateModelComponent, {
                 width: '450px',
                 data: {
-                  label: 'You delete the component! Are you shure?',
+                  label: 'You delete the object! Are you sure?',
                   deleteMode: true
                 }
               });
               dialogRef.afterClosed().subscribe(model => {
                 if (model) {
-                  let observableList = [];
-                  this.formulaData.forEach(comp => {
-                    comp.parameters.forEach(param => {
-                      if (param.value && param.value.charAt(0) === "=") {
-                        this.data[id].parameters.forEach(p => {
-                          let element = this.data[id].modelIdName + "." +
-                          this.data[id].id + "." + p.id;
-                          var re = new RegExp(element, 'g');
-                          param.value = param.value.replace(re, "0");
-                        });
-                      }
-                    });
-                    observableList.push(this.componentService.update(comp));
-                  });
-                  let obs = forkJoin(observableList);
-                  obs.subscribe(t => {
+                 console.log(this.saverComponent)
                   this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
-                  this.componentService.delete(this.data[id]).subscribe((data) => {
-                    this.data.splice(id, 1);
-                    this.selectedModal = null;
-                    this.selected = null;
-                    this.getData();
+                  console.log(this.saverComponent)
+                  let observableList = [];
+                  this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
+                    this.formulaData = data;
+                    this.formulaData.forEach(comp => {
+                      comp.parameters.forEach(param => {
+                        if (param.value && param.value.charAt(0) === "=") {
+                          this.data[id].parameters.forEach(p => {
+                            let element = this.data[id].modelIdName + "." +
+                            this.data[id].id + "." + p.id;
+                            var re = new RegExp(element, 'g');
+                            param.value = param.value.replace(re, "0");
+                          });
+                        }
+                      });
+                      observableList.push(this.componentService.update(comp));
+                    });
+  
+                    let obs = forkJoin(observableList);
+                    obs.subscribe(t => {
+                      this.componentService.delete(this.data[id]).subscribe((data) => {
+                        this.selectedModal = null;
+                        this.selected = null;
+                        this.getData();
+                      });
+                    });
                   });
-                  });
-        
                 }
               });
             });
@@ -892,8 +910,8 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
                       if (value >= param.sliderMin) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
-                        // document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
-                        // = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
+                        document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
+                        = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
                         self.txtQueryChangedDebounce.next({
                           value: value,
                           selected: self.dragSelected
@@ -910,8 +928,8 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
                       if (value <= (param.sliderMax + 1)) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
-                        // document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
-                        // = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
+                        document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
+                        = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
                         self.txtQueryChangedDebounce.next({
                           value: value,
                           selected: self.dragSelected
@@ -927,8 +945,8 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
                       if (value <= (param.sliderMax + 1)) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
-                        // document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
-                        // = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
+                        document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
+                        = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
                         self.txtQueryChangedDebounce.next({
                           value: value,
                           selected: self.dragSelected

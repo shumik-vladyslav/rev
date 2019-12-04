@@ -1348,7 +1348,7 @@ var ModelListComponent = /** @class */ (function () {
         var dialogRef = this.dialog.open(_shared_components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_5__["DialogCreateModelComponent"], {
             width: '450px',
             data: {
-                label: 'You delete the model! Are you shure?',
+                label: 'You delete the model! Are you sure?',
                 deleteMode: true
             }
         });
@@ -1629,7 +1629,7 @@ var ModelMainComponent = /** @class */ (function () {
             _this.removeAll();
             _this.drowLines();
             _this.drow();
-            _this.txtQueryChanged.next(_this.uuidv4());
+            // this.txtQueryChanged.next(this.uuidv4());
             console.log(23);
         }, 5000);
         this.txtQueryChanged
@@ -1664,9 +1664,9 @@ var ModelMainComponent = /** @class */ (function () {
     ModelMainComponent.prototype.getData = function () {
         var _this = this;
         this.componentService.getAllById(this.modelId).subscribe(function (data) {
-            _this.data = data;
+            _this.data = JSON.parse(JSON.stringify(data));
             _this.dataCopy = JSON.parse(JSON.stringify(data));
-            _this.saverComponent = [JSON.parse(JSON.stringify(_this.data))];
+            _this.saverComponent = _this.saverComponent.concat([JSON.parse(JSON.stringify(_this.data))]);
             new Promise(function (resolve, reject) { _this.calc(resolve, reject); }).then(function () {
                 _this.removeAll();
                 _this.drowLines();
@@ -1823,20 +1823,34 @@ var ModelMainComponent = /** @class */ (function () {
         if (this.saverComponent) {
             var arr = this.saverComponent[this.saverComponent.length - 2];
             if (arr && this.saverComponent.length > 1) {
+                var oldData_1 = JSON.parse(JSON.stringify(this.data));
                 this.data = JSON.parse(JSON.stringify(arr));
                 this.saverComponent.pop();
+                var observableList_1 = [];
                 this.data.forEach(function (element) {
-                    _this.componentService.update(element).subscribe(function (data) {
+                    var res = JSON.parse(JSON.stringify(oldData_1)).find(function (el) {
+                        return el.id === element.id;
                     });
+                    if (!res) {
+                        delete element._id;
+                        observableList_1.push(_this.componentService.create(element));
+                    }
+                    else {
+                        observableList_1.push(_this.componentService.update(element));
+                    }
                 });
-                this.componentService.getAllByUserId(this.user._id).subscribe(function (data) {
-                    _this.formulaData = data;
-                    _this.formulaSaver = {};
-                    _this.calc();
-                    // this.removeAll();
-                    // this.drowLines();
-                    // this.clear();
-                    // this.drow();
+                var obs = Object(rxjs__WEBPACK_IMPORTED_MODULE_7__["forkJoin"])(observableList_1);
+                obs.subscribe(function (t) {
+                    _this.componentService.getAllByUserId(_this.user._id).subscribe(function (data) {
+                        _this.formulaData = data;
+                        _this.formulaSaver = {};
+                        _this.calc();
+                        _this.clear();
+                        // this.removeAll();
+                        // this.drowLines();
+                        // this.clear();
+                        // this.drow();
+                    });
                 });
             }
         }
@@ -2151,34 +2165,38 @@ var ModelMainComponent = /** @class */ (function () {
                         var dialogRef = _this.dialog.open(_shared_components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_10__["DialogCreateModelComponent"], {
                             width: '450px',
                             data: {
-                                label: 'You delete the component! Are you shure?',
+                                label: 'You delete the object! Are you sure?',
                                 deleteMode: true
                             }
                         });
                         dialogRef.afterClosed().subscribe(function (model) {
                             if (model) {
-                                var observableList_1 = [];
-                                _this.formulaData.forEach(function (comp) {
-                                    comp.parameters.forEach(function (param) {
-                                        if (param.value && param.value.charAt(0) === "=") {
-                                            _this.data[id].parameters.forEach(function (p) {
-                                                var element = _this.data[id].modelIdName + "." +
-                                                    _this.data[id].id + "." + p.id;
-                                                var re = new RegExp(element, 'g');
-                                                param.value = param.value.replace(re, "0");
-                                            });
-                                        }
+                                console.log(_this.saverComponent);
+                                _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
+                                console.log(_this.saverComponent);
+                                var observableList_2 = [];
+                                _this.componentService.getAllByUserId(_this.user._id).subscribe(function (data) {
+                                    _this.formulaData = data;
+                                    _this.formulaData.forEach(function (comp) {
+                                        comp.parameters.forEach(function (param) {
+                                            if (param.value && param.value.charAt(0) === "=") {
+                                                _this.data[id].parameters.forEach(function (p) {
+                                                    var element = _this.data[id].modelIdName + "." +
+                                                        _this.data[id].id + "." + p.id;
+                                                    var re = new RegExp(element, 'g');
+                                                    param.value = param.value.replace(re, "0");
+                                                });
+                                            }
+                                        });
+                                        observableList_2.push(_this.componentService.update(comp));
                                     });
-                                    observableList_1.push(_this.componentService.update(comp));
-                                });
-                                var obs = Object(rxjs__WEBPACK_IMPORTED_MODULE_7__["forkJoin"])(observableList_1);
-                                obs.subscribe(function (t) {
-                                    _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
-                                    _this.componentService.delete(_this.data[id]).subscribe(function (data) {
-                                        _this.data.splice(id, 1);
-                                        _this.selectedModal = null;
-                                        _this.selected = null;
-                                        _this.getData();
+                                    var obs = Object(rxjs__WEBPACK_IMPORTED_MODULE_7__["forkJoin"])(observableList_2);
+                                    obs.subscribe(function (t) {
+                                        _this.componentService.delete(_this.data[id]).subscribe(function (data) {
+                                            _this.selectedModal = null;
+                                            _this.selected = null;
+                                            _this.getData();
+                                        });
                                     });
                                 });
                             }
@@ -2303,8 +2321,8 @@ var ModelMainComponent = /** @class */ (function () {
                                         if (value >= param.sliderMin) {
                                             self_1.dragSelected = index;
                                             self_1.data[index].parameters[paramIndex].value = value.toString();
-                                            // document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
-                                            // = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
+                                            document.getElementById(index + "-" + paramIndex + "-slider-value").textContent
+                                                = (param.name || param.id) + ": " + parseFloat(value.toString() || "").toFixed(1);
                                             self_1.txtQueryChangedDebounce.next({
                                                 value: value,
                                                 selected: self_1.dragSelected
@@ -2318,8 +2336,8 @@ var ModelMainComponent = /** @class */ (function () {
                                         if (value <= (param.sliderMax + 1)) {
                                             self_1.dragSelected = index;
                                             self_1.data[index].parameters[paramIndex].value = value.toString();
-                                            // document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
-                                            // = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
+                                            document.getElementById(index + "-" + paramIndex + "-slider-value").textContent
+                                                = (param.name || param.id) + ": " + parseFloat(value.toString() || "").toFixed(1);
                                             self_1.txtQueryChangedDebounce.next({
                                                 value: value,
                                                 selected: self_1.dragSelected
@@ -2334,8 +2352,8 @@ var ModelMainComponent = /** @class */ (function () {
                                         if (value <= (param.sliderMax + 1)) {
                                             self_1.dragSelected = index;
                                             self_1.data[index].parameters[paramIndex].value = value.toString();
-                                            // document.getElementById(`${index}-${paramIndex}-slider-value`).textContent 
-                                            // = `${(param.name || param.id)}: ${parseFloat(value.toString() || "").toFixed(1)}`
+                                            document.getElementById(index + "-" + paramIndex + "-slider-value").textContent
+                                                = (param.name || param.id) + ": " + parseFloat(value.toString() || "").toFixed(1);
                                             self_1.txtQueryChangedDebounce.next({
                                                 value: value,
                                                 selected: self_1.dragSelected

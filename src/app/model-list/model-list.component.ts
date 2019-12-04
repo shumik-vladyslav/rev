@@ -69,7 +69,7 @@ export class ModelListComponent implements OnInit {
     const dialogRef = this.dialog.open(DialogCreateModelComponent, {
       width: '450px',
       data: {
-        label: 'You delete the model! Are you shure?',
+        label: 'You delete the model! Are you sure?',
         deleteMode: true
       }
     });
