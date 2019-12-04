@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { DialogCreateModelComponent } from '../shared/components/dialog-create-model/dialog-create-model.component';
 import { ModelClass, ComponentClass } from '../shared/model';
-import { UI } from 'formulize';
 import { ComponentService } from '../shared/component.service';
 import { element } from '@angular/core/src/render3/instructions';
 import { forkJoin } from 'rxjs';
@@ -14,6 +13,7 @@ import { forkJoin } from 'rxjs';
   selector: 'app-model-list',
   templateUrl: './model-list.component.html',
   styleUrls: ['./model-list.component.scss']
+  
 })
 export class ModelListComponent implements OnInit {
   user;

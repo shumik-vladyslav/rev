@@ -86,7 +86,7 @@
           <td>
             <mat-form-field *ngIf="(item.value && item.value.charAt(0) !== '=') || !item.value" class="example-full-width table-input">
               <input matInput [(ngModel)]="item.value" 
-              (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event);validValue(item,index)" />
+              (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event);validValue(item, index)" />
             </mat-form-field>
             <span *ngIf="item.value && item.value.charAt(0) === '=' ">
               f (x)

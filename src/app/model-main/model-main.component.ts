@@ -5,9 +5,10 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { DialogParametersComponent } from '../shared/components/dialog-parameters/dialog-parameters.component';
 import { ComponentClass, ParameterClass } from '../shared/model';
 import { ActivatedRoute } from '@angular/router';
-import { Subject } from "rxjs";
+import { Subject, forkJoin } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/internal/operators";
 import { AuthService } from '../auth/auth.service';
+import { DialogCreateModelComponent } from '../shared/components/dialog-create-model/dialog-create-model.component';
 declare var d3;
 @Component({
   selector: 'app-model-main',
@@ -57,6 +58,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
   saverComponent = [];
   modelsKeys = {};
   dataCopy;
+  selectedModalObj;
 
   constructor(
     private modelService: ModelService,
@@ -81,19 +83,11 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
           data.forEach(element => {
             if (element._id === this.modelId) {
               this.modelService.selectedModelEvent.emit(element);
+              this.selectedModalObj = element;
             }
           });
         })
-        this.componentService.getAllById(this.modelId).subscribe((data: any) => {
-          this.data = data;
-          this.dataCopy = JSON.parse(JSON.stringify( data ));
-          this.saverComponent = [JSON.parse(JSON.stringify( this.data ))];
-          new Promise((resolve, reject) => {this.calc(resolve, reject)}).then(() => {
-            this.removeAll();
-            this.drowLines();
-            this.drow();
-          });
-        });
+       this.getData();
       });
     });
 
@@ -134,6 +128,19 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
         }
       });
     }
+  }
+
+  getData() {
+    this.componentService.getAllById(this.modelId).subscribe((data: any) => {
+      this.data = data;
+      this.dataCopy = JSON.parse(JSON.stringify( data ));
+      this.saverComponent = [JSON.parse(JSON.stringify( this.data ))];
+      new Promise((resolve, reject) => {this.calc(resolve, reject)}).then(() => {
+        this.removeAll();
+        this.drowLines();
+        this.drow();
+      });
+    });
   }
   copyIndexCounter = {};
   selectedCopyIndex;
@@ -228,12 +235,6 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
     // if (
     //   (event.keyCode === 46 || event.keyCode === 8) && this.selected
     // ) {
-    //   this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
-    //   this.componentService.delete(this.data[this.selected]).subscribe((data) => {
-    //     this.data.splice(this.selected, 1);
-
-    //     this.clear();
-    //   });
     // }
 
     if (event.keyCode === 90 && (event.ctrlKey || event.metaKey)) {
@@ -690,10 +691,46 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
               d3.event.stopPropagation();
               let id = s[0].id.split("-")[0];
 
-              this.componentService.delete(this.data[id]).subscribe((data) => {
-                this.data.splice(id, 1);
+              // this.componentService.delete(this.data[id]).subscribe((data) => {
+              //   this.data.splice(id, 1);
 
-                this.clear();
+              //   this.clear();
+              // });
+              const dialogRef = this.dialog.open(DialogCreateModelComponent, {
+                width: '450px',
+                data: {
+                  label: 'You delete the component! Are you shure?',
+                  deleteMode: true
+                }
+              });
+              dialogRef.afterClosed().subscribe(model => {
+                if (model) {
+                  let observableList = [];
+                  this.formulaData.forEach(comp => {
+                    comp.parameters.forEach(param => {
+                      if (param.value && param.value.charAt(0) === "=") {
+                        this.data[id].parameters.forEach(p => {
+                          let element = this.data[id].modelIdName + "." +
+                          this.data[id].id + "." + p.id;
+                          var re = new RegExp(element, 'g');
+                          param.value = param.value.replace(re, "0");
+                        });
+                      }
+                    });
+                    observableList.push(this.componentService.update(comp));
+                  });
+                  let obs = forkJoin(observableList);
+                  obs.subscribe(t => {
+                  this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
+                  this.componentService.delete(this.data[id]).subscribe((data) => {
+                    this.data.splice(id, 1);
+                    this.selectedModal = null;
+                    this.selected = null;
+                    this.getData();
+                  });
+                  });
+        
+                }
               });
             });
 
