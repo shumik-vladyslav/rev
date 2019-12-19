@@ -1686,16 +1686,18 @@ var ModelMainComponent = /** @class */ (function () {
                 if (!this.copyIndexCounter[this.selectedCopyIndex]) {
                     this.copyIndexCounter[this.selectedCopyIndex] = 0;
                 }
-                var obj_1 = Object.assign({}, this.data[this.selectedCopyIndex]);
+                var obj_1 = JSON.parse(JSON.stringify(this.data[this.selectedCopyIndex]));
                 delete obj_1._id;
-                var id_1 = obj_1.id;
+                var id_1 = obj_1.id.slice();
                 obj_1.id = obj_1.id + "1";
                 obj_1.x = obj_1.x + 50;
                 obj_1.y = obj_1.y + 150 + (this.copyIndexCounter[this.selectedCopyIndex] * 80);
                 obj_1.selected = [];
                 obj_1.parameters.forEach(function (p) {
-                    var re = new RegExp(id_1, 'g');
-                    p.value = p.value.replace(re, obj_1.id);
+                    if (p.value && p.value.charAt(0) === "=") {
+                        var re = new RegExp(id_1, 'g');
+                        p.value = p.value.replace(re, obj_1.id).slice();
+                    }
                 });
                 var res = void 0;
                 do {
@@ -1707,12 +1709,14 @@ var ModelMainComponent = /** @class */ (function () {
                     }
                 } while (res);
                 this.componentService.create(obj_1).subscribe(function (data) {
-                    _this.copyIndexCounter[_this.selectedCopyIndex] += 1;
-                    _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
-                    _this.data.push(data);
-                    _this.removeAll();
-                    _this.drow();
-                    _this.dragType = null;
+                    _this.componentService.getAllByUserId(_this.user._id).subscribe(function (comp) {
+                        _this.formulaData = comp;
+                        _this.copyIndexCounter[_this.selectedCopyIndex] += 1;
+                        _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
+                        _this.data.push(JSON.parse(JSON.stringify(data)));
+                        _this.clear();
+                        _this.dragType = null;
+                    });
                 });
             }
         }

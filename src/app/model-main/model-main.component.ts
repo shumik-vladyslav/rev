@@ -157,17 +157,19 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
           if(!this.copyIndexCounter[this.selectedCopyIndex]) {
             this.copyIndexCounter[this.selectedCopyIndex] = 0;
           }
-          let obj = Object.assign({}, this.data[this.selectedCopyIndex]);
+          let obj = JSON.parse(JSON.stringify(this.data[this.selectedCopyIndex]));
           delete obj._id;
-          let id = obj.id;
+          let id = obj.id.slice();
           obj.id = obj.id + "1";
           obj.x = obj.x + 50;
           obj.y = obj.y + 150 + (this.copyIndexCounter[this.selectedCopyIndex] * 80);
           obj.selected = [];
           obj.parameters.forEach(p => {
+            if (p.value && p.value.charAt(0) === "=") {
               var re = new RegExp(id, 'g');
-              p.value = p.value.replace(re, obj.id);
-          });
+              p.value = p.value.replace(re, obj.id).slice();
+            }
+            });
           let res;
            do {
              res = this.data.find((el) => {
@@ -177,14 +179,16 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
               obj.id += "1";
             }
           } while(res);
-        
           this.componentService.create(obj).subscribe(data => {
-            this.copyIndexCounter[this.selectedCopyIndex] += 1;
-            this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
-            this.data.push(data);
-            this.removeAll();
-            this.drow();
-            this.dragType = null;
+            this.componentService.getAllByUserId(this.user._id).subscribe((comp: any) => {
+              this.formulaData = comp;
+              this.copyIndexCounter[this.selectedCopyIndex] += 1;
+              this.saverComponent.push(JSON.parse(JSON.stringify(this.data)));
+              this.data.push(JSON.parse(JSON.stringify(data)));
+              this.clear();
+              this.dragType = null;
+            });
+
           });
         }
       }
