@@ -9,6 +9,8 @@ header {
   }
   .example-spacer {
     flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
   }
   .links {
     color: white;
@@ -24,11 +26,12 @@ header {
     }
   }
   .mat-toolbar {
-    background: rgb(255, 255, 255);
-    height: 58px;
+    background: white;
+    height: unset;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.11);
     z-index: 10;
     position: relative;
+    min-height: 64px;
   }
   .mat-icon {
     vertical-align: middle;
