@@ -1027,7 +1027,7 @@ var TokenStorage = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<header>\r\n  <mat-toolbar color=\"primary\">\r\n    <div [ngClass]=\"{'container': router.url.slice(1, 5) === 'auth'}\" class=\"df full-width ai-e\">\r\n      <a [routerLink]=\"['/']\" class=\"logo\"></a>\r\n      <div *ngIf=\"selectedModel\" style=\"padding-bottom: 5px; color: #463e3e;\">Model: {{selectedModel.name}}</div>\r\n      <span class=\"example-spacer\">\r\n        <app-player></app-player>\r\n      </span>\r\n      <button *ngIf=\"!user\" style=\"margin-bottom: 5px;\" [routerLink]=\"['/auth/register']\" mat-raised-button\r\n        color=\"primary\" class=\"m-r-10\">\r\n        Sign up free\r\n      </button>\r\n      <button style=\"margin-bottom: 5px;\" mat-button color=\"primary\" [routerLink]=\"['/auth/login']\" *ngIf=\"!user\">\r\n        Login\r\n      </button>\r\n      <div style=\"margin-bottom: 5px;\">\r\n        <a class=\"links side\" *ngIf=\"user\" [matMenuTriggerFor]=\"menu\">\r\n          <mat-icon>account_circle</mat-icon>{{ user.fullname }}\r\n        </a>\r\n        <mat-menu #menu=\"matMenu\">\r\n          <button mat-menu-item *ngIf=\"user && user.isAdmin\" [routerLink]=\"['/admin']\">\r\n            admin\r\n          </button>\r\n          <button mat-menu-item (click)=\"logout()\">logout</button>\r\n        </mat-menu>\r\n      </div>\r\n    </div>\r\n  </mat-toolbar>\r\n</header>"
+module.exports = "<header>\r\n  <mat-toolbar color=\"primary\">\r\n    <div [ngClass]=\"{'container': router.url.slice(1, 5) === 'auth'}\" class=\"df full-width ai-e\">\r\n      <a [routerLink]=\"['/']\" class=\"logo\"></a>\r\n      <div *ngIf=\"selectedModel\" style=\"padding-bottom: 5px; color: #463e3e;\">Model: {{selectedModel.name}}</div>\r\n      <!-- <span class=\"example-spacer\">\r\n        <app-player></app-player>\r\n      </span> -->\r\n      <button *ngIf=\"!user\" style=\"margin-bottom: 5px;\" [routerLink]=\"['/auth/register']\" mat-raised-button\r\n        color=\"primary\" class=\"m-r-10\">\r\n        Sign up free\r\n      </button>\r\n      <button style=\"margin-bottom: 5px;\" mat-button color=\"primary\" [routerLink]=\"['/auth/login']\" *ngIf=\"!user\">\r\n        Login\r\n      </button>\r\n      <div style=\"margin-bottom: 5px;\">\r\n        <a class=\"links side\" *ngIf=\"user\" [matMenuTriggerFor]=\"menu\">\r\n          <mat-icon>account_circle</mat-icon>{{ user.fullname }}\r\n        </a>\r\n        <mat-menu #menu=\"matMenu\">\r\n          <button mat-menu-item *ngIf=\"user && user.isAdmin\" [routerLink]=\"['/admin']\">\r\n            admin\r\n          </button>\r\n          <button mat-menu-item (click)=\"logout()\">logout</button>\r\n        </mat-menu>\r\n      </div>\r\n    </div>\r\n  </mat-toolbar>\r\n</header>"
 
 /***/ }),
 
@@ -2467,7 +2467,7 @@ var ModelMainComponent = /** @class */ (function () {
                 });
             });
         }).then(function () {
-            // this.clear();
+            _this.clear();
         });
     };
     ModelMainComponent.prototype.drowLines = function () {

@@ -1081,7 +1081,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
       });
     });
     }).then(() => {
-      // this.clear();
+      this.clear();
     });
   }
 
