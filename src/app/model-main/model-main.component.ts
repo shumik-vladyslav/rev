@@ -1035,6 +1035,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
         });
       }
     });
+    
   }
 
   formulaSaver = {};
@@ -1062,6 +1063,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
         this.formulaDataSearch(data, arr, element);
       });
     } else if (this.formulaData) {
+
       this.formulaDataSearch(this.formulaData, arr, element);
     }
   }
@@ -1079,7 +1081,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
       });
     });
     }).then(() => {
-      this.clear();
+      // this.clear();
     });
   }
 
@@ -1396,28 +1398,30 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
   }
 
   onFieldChangeId(query: string) {
-    let data = this.returnCopyData();
-
-    if (this.canChangeId) {
-      this.data.forEach(d => {
-        d.parameters.forEach(p => {
-          var re = new RegExp(data[this.selectedModal].id, 'g');
-          p.value = p.value.replace(re, this.data[this.selectedModal].id);
+      let data = this.returnCopyData();
+      let id = (document.getElementById("dataId") as any).value;  
+      if (this.canChangeId) {
+        this.data.forEach(d => {
+          d.parameters.forEach(p => {
+            console.log(p.value, data[this.selectedModal].id, id)
+            var re = new RegExp(data[this.selectedModal].id, 'g');
+            p.value = p.value.replace(re, id);
+            console.log(p.value, data[this.selectedModal].id, id)
+          });
+          console.log(d)
+  
+          this.componentService.update(d).subscribe((r) => {
+          });
         });
-
-        this.componentService.update(d).subscribe((r) => {
-        });
+        this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
+  
+      } else {
+        this.data[this.selectedModal].id = data[this.selectedModal].id;
+      }
+      this.txtQueryChanged.next({
+        value: id,
+        selected: this.selectedModal
       });
-
-    } else {
-      this.data[this.selectedModal].id = data[this.selectedModal].id;
-    }
-
-    this.txtQueryChanged.next({
-      value: query,
-      selected: this.selectedModal
-    });
-
 
   }
 

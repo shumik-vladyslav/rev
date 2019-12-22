@@ -19,7 +19,7 @@
   <div [ngClass]="{ show: showSide }" *ngIf="selectedModal" class="sidebar show">
     <mat-form-field class="example-full-width">
       <mat-label>Id (latin simbols and digits)</mat-label>
-      <input matInput [(ngModel)]="data[selectedModal].id" (keydown)="onKeyDown($event)"
+      <input id="dataId" matInput [(ngModel)]="data[selectedModal].id" (keydown)="onKeyDown($event)"
       (ngModelChange)="idModelChange($event)"
       (keyup.enter)="onFieldChangeId($event)" (blur)="onFieldChangeId($event)"/>
     </mat-form-field>
