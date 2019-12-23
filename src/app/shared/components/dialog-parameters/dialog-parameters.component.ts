@@ -120,7 +120,6 @@ export class DialogParametersComponent implements OnInit, AfterViewInit {
         item.parameters.forEach(element => {
           element.objectClass = item.objectClass;
           element.objectType = item.id;
-          element.objectTypeId = item._id;
         });
         this.listParams = [...this.listParams, ...item.parameters];
       });
@@ -142,8 +141,7 @@ export class DialogParametersComponent implements OnInit, AfterViewInit {
     this.selectedParam = null;
   }
 
-  selectedObjectChange(e){
-    console.log(111,e)
+  selectedObjectChange(){
     this.selectedParam = null;
   }
 
@@ -189,26 +187,14 @@ export class DialogParametersComponent implements OnInit, AfterViewInit {
   formula = "= ";
 
   paramsChange(e) {
-
+    let item = this.searchById(e, this.listParams);
+    let model = this.searchById(this.sleectedModel, this.listModel);
+    let object = this.searchById(this.selectedObject, this.listObjects);
     // if(this.sleectedModel === model.id) {
     //   this.selectedFormulaVar = item.id;
     // } else {
-      
-      this.selectedFormulaVar = this.sleectedModel + "." + this.selectedObject + "." + e;
-      // this.selectedFormulaVar = model.id + "." + this.selectedObject + "." + item.id;
+      this.selectedFormulaVar = model.id + "." + this.selectedObject + "." + item.id;
     // }
-  }
-
-  getName(item) {
-    console.log(1)
-    let arr = item.split('.');
-    let model = this.searchById(arr[0], this.listModel);
-    let object = this.searchById(arr[1], this.listObjects);
-    let param = this.searchById(arr[2], this.listParams);
-    if(object && model && param && model.id && object.id && param.id)
-      return model.id + "." + object.id + "." + param.id; 
-    else 
-      return "";
   }
 
   add() {

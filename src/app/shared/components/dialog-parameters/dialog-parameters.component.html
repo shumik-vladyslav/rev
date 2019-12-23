@@ -18,8 +18,8 @@
   </mat-form-field>
   <mat-form-field>
     <mat-label>Object</mat-label>
-    <mat-select [(ngModel)]="selectedObject" (ngModelChange)="selectedObjectChange(listObjects)">
-      <mat-option *ngFor="let item of listObjects | filtrListParam: selectedClass" [value]="item._id">
+    <mat-select [(ngModel)]="selectedObject" (ngModelChange)="selectedObjectChange($event)">
+      <mat-option *ngFor="let item of listObjects | filtrListParam: selectedClass" [value]="item.id">
         {{item.name || item.id}}
       </mat-option>
     </mat-select>
@@ -53,13 +53,7 @@
             (click)="formulaItemClick(item, i)" class="formula-item-space"
              ></div>
             <div (click)="formulaItemClick(item, i + 1)" class="formula-item" [ngClass]="{'blink blink-item': item === '|'}">
-              <span *ngIf="item.split('.').length === 3">
-                <!-- {{item | filtrListParamGetName: item.split('.') : listModel: listObjects : listParams}} -->
-                {{getName(item)}}
-              </span>
-              <span *ngIf="item.split('.').length !== 3">
-                {{item}}
-              </span>
+              {{item}}
             </div>
             <div *ngIf="(i === (formulaArr.length - 1)) && item !== '|'" (click)="formulaItemClick(item, i+1)" class="formula-item-space"></div>
         </div>

@@ -181,11 +181,9 @@ export class ModelListComponent implements OnInit {
 
   export(item) {
     this.componentService.getAllById(item._id).subscribe((data: any) => {
-      this.listObjects = [...data, ...this.listObjects];
       data.forEach(element => {
         delete element._id;
         element.userId = `#${element.userId}#`;
-        this.listParams = [...element.parameters, ...this.listParams];
         element.parameters.forEach(p => {
           var re = new RegExp(` ${element.modelIdName}.`, 'g');
           p.value = p.value.replace(re, ` #${element.modelIdName}#.`);
@@ -213,28 +211,5 @@ export class ModelListComponent implements OnInit {
     a.href = URL.createObjectURL(file);
     a.download = fileName;
     a.click();
-  }
-  listObjects = [];
-  listParams = [];
-  getName(item) {
-    console.log(1)
-    let arr = item.split('.');
-    let model = this.searchById(arr[0], this.data);
-    let object = this.searchById(arr[1], this.listObjects);
-    let param = this.searchById(arr[2], this.listParams);
-    console.log(this.data, this.listObjects , this.listParams )
-    console.log(model, object , param )
-
-    if(object && model && param && model.id && object.id && param.id)
-      return model.id + "." + object.id + "." + param.id; 
-    else 
-      return "";
-  }
-  
-  searchById(id, arr) {
-    if (arr) {
-      let result = arr.find(element => element._id === id);
-      return result;
-    }
   }
 }
