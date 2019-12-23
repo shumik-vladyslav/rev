@@ -1307,6 +1307,8 @@ var ModelListComponent = /** @class */ (function () {
         this.dialog = dialog;
         this.componentService = componentService;
         this.model = new _shared_model__WEBPACK_IMPORTED_MODULE_6__["ModelClass"]();
+        this.listObjects = [];
+        this.listParams = [];
     }
     ModelListComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -1457,9 +1459,11 @@ var ModelListComponent = /** @class */ (function () {
     ModelListComponent.prototype.export = function (item) {
         var _this = this;
         this.componentService.getAllById(item._id).subscribe(function (data) {
+            _this.listObjects = data.concat(_this.listObjects);
             data.forEach(function (element) {
                 delete element._id;
                 element.userId = "#" + element.userId + "#";
+                _this.listParams = element.parameters.concat(_this.listParams);
                 element.parameters.forEach(function (p) {
                     var re = new RegExp(" " + element.modelIdName + ".", 'g');
                     p.value = p.value.replace(re, " #" + element.modelIdName + "#.");
@@ -1486,6 +1490,25 @@ var ModelListComponent = /** @class */ (function () {
         a.href = URL.createObjectURL(file);
         a.download = fileName;
         a.click();
+    };
+    ModelListComponent.prototype.getName = function (item) {
+        console.log(1);
+        var arr = item.split('.');
+        var model = this.searchById(arr[0], this.data);
+        var object = this.searchById(arr[1], this.listObjects);
+        var param = this.searchById(arr[2], this.listParams);
+        console.log(this.data, this.listObjects, this.listParams);
+        console.log(model, object, param);
+        if (object && model && param && model.id && object.id && param.id)
+            return model.id + "." + object.id + "." + param.id;
+        else
+            return "";
+    };
+    ModelListComponent.prototype.searchById = function (id, arr) {
+        if (arr) {
+            var result = arr.find(function (element) { return element._id === id; });
+            return result;
+        }
     };
     ModelListComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
@@ -1725,22 +1748,28 @@ var ModelMainComponent = /** @class */ (function () {
         var _this = this;
         this.data.forEach(function (comp) {
             comp.parameters.forEach(function (element, i) {
-                if (element.value) {
-                    var v = element.value;
-                    var spcaSpit_1 = v.split(" ");
-                    spcaSpit_1.forEach(function (element, index) {
-                        var earr = element.split(".");
-                        if (earr.length == 3) {
-                            if (!_this.formulaSaver[earr[2]] && !_this.formulaSaver[element]) {
-                                _this.formulaSearch(element);
-                            }
-                        }
-                        if (comp.parameters.length === (i + 1) && spcaSpit_1.length === (index + 1)) {
-                            if (resolve)
-                                resolve();
-                        }
-                    });
+                // console.log(element)
+                _this.formulaSaver[element._id] = element.value;
+                if (comp.parameters.length === (i + 1)) {
+                    if (resolve)
+                        resolve();
                 }
+                // if (element.value) {
+                //   let v = element.value;
+                //   let spcaSpit = v.split(" ");
+                //   spcaSpit.forEach((element, index) => {
+                //     let earr = element.split(".");
+                //     if (earr.length == 3) {
+                //       if (!this.formulaSaver[earr[2]] && !this.formulaSaver[element]) {
+                //         this.formulaSearch(element);
+                //       }
+                //     }
+                //     if(comp.parameters.length === (i+1) && spcaSpit.length === (index+1 )){
+                //       if(resolve)
+                //         resolve();
+                //     }
+                //   });
+                // }
             });
         });
     };
@@ -2240,21 +2269,23 @@ var ModelMainComponent = /** @class */ (function () {
                                 case "":
                                     var v = param.value;
                                     if (v && v.charAt(0) === "=") {
-                                        var spcaSpit_2 = v.split(" ");
-                                        spcaSpit_2.forEach(function (element, index) {
+                                        var spcaSpit_1 = v.split(" ");
+                                        spcaSpit_1.forEach(function (element, index) {
                                             var earr = element.split(".");
                                             if (earr.length == 3) {
-                                                spcaSpit_2[index] = _this.formulaSaver[element];
+                                                spcaSpit_1[index] = _this.formulaSaver[earr[2]];
                                             }
                                         });
-                                        spcaSpit_2.shift();
+                                        spcaSpit_1.shift();
                                         try {
-                                            _this.formulaSaver[_this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] = _this.notEval(spcaSpit_2.join(''));
+                                            // this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] = this.notEval(spcaSpit.join(''));
+                                            _this.formulaSaver[param.id] = _this.notEval(spcaSpit_1.join(''));
                                         }
                                         catch (_a) {
                                             _this.calc();
                                         }
-                                        var res = _this.formulaSaver[_this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] || 0;
+                                        // let res = this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] || 0;
+                                        var res = _this.formulaSaver[param.id] || 0;
                                         g_1.append("text")
                                             .attr("x", element.x + 20)
                                             .attr("y", py)
@@ -2986,7 +3017,7 @@ var DialogCreateModelComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\r\n<div id=\"wrap-dialog-scroll\" mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>Model</mat-label>\r\n    <mat-select [(ngModel)]=\"sleectedModel\" (ngModelChange)=\"modelChange($event)\">\r\n      <mat-option *ngFor=\"let item of listModel\" [value]=\"item._id\">\r\n        {{item.name}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Class</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedClass\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listClass\" [value]=\"item\">\r\n        {{item}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Object</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedObject\" (ngModelChange)=\"selectedObjectChange($event)\">\r\n      <mat-option *ngFor=\"let item of listObjects | filtrListParam: selectedClass\" [value]=\"item.id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Parameter</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedParam\" (ngModelChange)=\"paramsChange($event)\">\r\n      <mat-option *ngFor=\"let item of listParams | filtrListParam: selectedClass: selectedObject\" [value]=\"item._id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <div style=\"width: 40%; padding: 20px 0 0 20px;\">\r\n    <div class=\"full-width\">\r\n      <!-- [disabled]=\"!boolLastOperator\" -->\r\n      <!-- [matTooltip]=\"!boolLastOperator ? 'Before add math operator: +, -, *, /' : null\"? -->\r\n      <button\r\n       (click)=\"add()\" class=\"full-width\" mat-raised-button color=\"primary\" mat-button>\r\n        <= ADD</button> </div>\r\n          <!-- <button (click)=\"test()\" class=\"func\" mat-raised-button color=\"primary\" mat-button>\r\n            <i>\r\n              f(x)\r\n            </i>\r\n          </button> -->\r\n  </div>\r\n  <div class=\"textarea-wrap\">\r\n    <div class=\"formula-wrap-outer\">\r\n      <div (click)=\"formulaWrapClick();textArea.focus()\" class=\"formula-wrap\">\r\n        <div class=\"formula-item-wrap\" *ngFor=\"let item of formulaArr;let i = index\">\r\n            <div *ngIf=\"(item !== '|') && (i === 0 || (formulaArr[i - 1] && formulaArr[i - 1] !== '|'))\" \r\n            (click)=\"formulaItemClick(item, i)\" class=\"formula-item-space\"\r\n             ></div>\r\n            <div (click)=\"formulaItemClick(item, i + 1)\" class=\"formula-item\" [ngClass]=\"{'blink blink-item': item === '|'}\">\r\n              {{item}}\r\n            </div>\r\n            <div *ngIf=\"(i === (formulaArr.length - 1)) && item !== '|'\" (click)=\"formulaItemClick(item, i+1)\" class=\"formula-item-space\"></div>\r\n        </div>\r\n      </div>\r\n      <!-- formula-text -->\r\n      <mat-form-field style=\"width: 100%;position: absolute;top: 0; z-index: -1;\" class=\" example-full-width\">\r\n        <!-- (ngModelChange)=\"change($event)\" -->\r\n        <!-- [(ngModel)]=\"formula\" (ngModelChange)=\"change($event)\" (keydown)=\"checkPattern($event)\" -->\r\n        <textarea #textArea matInput [(ngModel)]=\"formulaData\" \r\n        (ngModelChange)=\"changeForumula($event)\" (keydown)=\"keyFormula($event)\"></textarea>\r\n          \r\n      </mat-form-field>\r\n      <!-- <div (click)=\"textArea.focus()\" class=\"text-area-shield\"></div> -->\r\n    </div>\r\n\r\n  </div>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button mat-button (click)=\"ok()\" mat-raised-button color=\"primary\" cdkFocusInitial>\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>"
+module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\r\n<div id=\"wrap-dialog-scroll\" mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>Model</mat-label>\r\n    <mat-select [(ngModel)]=\"sleectedModel\" (ngModelChange)=\"modelChange($event)\">\r\n      <mat-option *ngFor=\"let item of listModel\" [value]=\"item._id\">\r\n        {{item.name}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Class</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedClass\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listClass\" [value]=\"item\">\r\n        {{item}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Object</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedObject\" (ngModelChange)=\"selectedObjectChange(listObjects)\">\r\n      <mat-option *ngFor=\"let item of listObjects | filtrListParam: selectedClass\" [value]=\"item._id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Parameter</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedParam\" (ngModelChange)=\"paramsChange($event)\">\r\n      <mat-option *ngFor=\"let item of listParams | filtrListParam: selectedClass: selectedObject\" [value]=\"item._id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <div style=\"width: 40%; padding: 20px 0 0 20px;\">\r\n    <div class=\"full-width\">\r\n      <!-- [disabled]=\"!boolLastOperator\" -->\r\n      <!-- [matTooltip]=\"!boolLastOperator ? 'Before add math operator: +, -, *, /' : null\"? -->\r\n      <button\r\n       (click)=\"add()\" class=\"full-width\" mat-raised-button color=\"primary\" mat-button>\r\n        <= ADD</button> </div>\r\n          <!-- <button (click)=\"test()\" class=\"func\" mat-raised-button color=\"primary\" mat-button>\r\n            <i>\r\n              f(x)\r\n            </i>\r\n          </button> -->\r\n  </div>\r\n  <div class=\"textarea-wrap\">\r\n    <div class=\"formula-wrap-outer\">\r\n      <div (click)=\"formulaWrapClick();textArea.focus()\" class=\"formula-wrap\">\r\n        <div class=\"formula-item-wrap\" *ngFor=\"let item of formulaArr;let i = index\">\r\n            <div *ngIf=\"(item !== '|') && (i === 0 || (formulaArr[i - 1] && formulaArr[i - 1] !== '|'))\" \r\n            (click)=\"formulaItemClick(item, i)\" class=\"formula-item-space\"\r\n             ></div>\r\n            <div (click)=\"formulaItemClick(item, i + 1)\" class=\"formula-item\" [ngClass]=\"{'blink blink-item': item === '|'}\">\r\n              <span *ngIf=\"item.split('.').length === 3\">\r\n                <!-- {{item | filtrListParamGetName: item.split('.') : listModel: listObjects : listParams}} -->\r\n                {{getName(item)}}\r\n              </span>\r\n              <span *ngIf=\"item.split('.').length !== 3\">\r\n                {{item}}\r\n              </span>\r\n            </div>\r\n            <div *ngIf=\"(i === (formulaArr.length - 1)) && item !== '|'\" (click)=\"formulaItemClick(item, i+1)\" class=\"formula-item-space\"></div>\r\n        </div>\r\n      </div>\r\n      <!-- formula-text -->\r\n      <mat-form-field style=\"width: 100%;position: absolute;top: 0; z-index: -1;\" class=\" example-full-width\">\r\n        <!-- (ngModelChange)=\"change($event)\" -->\r\n        <!-- [(ngModel)]=\"formula\" (ngModelChange)=\"change($event)\" (keydown)=\"checkPattern($event)\" -->\r\n        <textarea #textArea matInput [(ngModel)]=\"formulaData\" \r\n        (ngModelChange)=\"changeForumula($event)\" (keydown)=\"keyFormula($event)\"></textarea>\r\n          \r\n      </mat-form-field>\r\n      <!-- <div (click)=\"textArea.focus()\" class=\"text-area-shield\"></div> -->\r\n    </div>\r\n\r\n  </div>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button mat-button (click)=\"ok()\" mat-raised-button color=\"primary\" cdkFocusInitial>\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>"
 
 /***/ }),
 
@@ -3141,6 +3172,7 @@ var DialogParametersComponent = /** @class */ (function () {
                 item.parameters.forEach(function (element) {
                     element.objectClass = item.objectClass;
                     element.objectType = item.id;
+                    element.objectTypeId = item._id;
                 });
                 _this.listParams = _this.listParams.concat(item.parameters);
             });
@@ -3158,7 +3190,8 @@ var DialogParametersComponent = /** @class */ (function () {
         this.selectedObject = null;
         this.selectedParam = null;
     };
-    DialogParametersComponent.prototype.selectedObjectChange = function () {
+    DialogParametersComponent.prototype.selectedObjectChange = function (e) {
+        console.log(111, e);
         this.selectedParam = null;
     };
     DialogParametersComponent.prototype.ok = function () {
@@ -3197,14 +3230,23 @@ var DialogParametersComponent = /** @class */ (function () {
         // }
     };
     DialogParametersComponent.prototype.paramsChange = function (e) {
-        var item = this.searchById(e, this.listParams);
-        var model = this.searchById(this.sleectedModel, this.listModel);
-        var object = this.searchById(this.selectedObject, this.listObjects);
         // if(this.sleectedModel === model.id) {
         //   this.selectedFormulaVar = item.id;
         // } else {
-        this.selectedFormulaVar = model.id + "." + this.selectedObject + "." + item.id;
+        this.selectedFormulaVar = this.sleectedModel + "." + this.selectedObject + "." + e;
+        // this.selectedFormulaVar = model.id + "." + this.selectedObject + "." + item.id;
         // }
+    };
+    DialogParametersComponent.prototype.getName = function (item) {
+        console.log(1);
+        var arr = item.split('.');
+        var model = this.searchById(arr[0], this.listModel);
+        var object = this.searchById(arr[1], this.listObjects);
+        var param = this.searchById(arr[2], this.listParams);
+        if (object && model && param && model.id && object.id && param.id)
+            return model.id + "." + object.id + "." + param.id;
+        else
+            return "";
     };
     DialogParametersComponent.prototype.add = function () {
         // if (this.reOperator.test(this.formula[this.formula.length - 1])) {
@@ -3638,6 +3680,56 @@ var ParameterClass = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./src/app/shared/pipes/filtr-list-param-get-name.pipe.ts":
+/*!****************************************************************!*\
+  !*** ./src/app/shared/pipes/filtr-list-param-get-name.pipe.ts ***!
+  \****************************************************************/
+/*! exports provided: FiltrListParamGetNamePipe */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FiltrListParamGetNamePipe", function() { return FiltrListParamGetNamePipe; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+var FiltrListParamGetNamePipe = /** @class */ (function () {
+    function FiltrListParamGetNamePipe() {
+    }
+    FiltrListParamGetNamePipe.prototype.transform = function (data, listModel, listObjects, listParams) {
+        console.log(999, data, listModel, listObjects, listParams);
+        var arr = data.split('.');
+        var model = this.searchById(arr[0], listModel);
+        var object = this.searchById(arr[1], listObjects);
+        var param = this.searchById(arr[2], listParams);
+        if (object && model && param && model.id && object.id && param.id)
+            return model.id + "." + object.id + "." + param.id;
+        else
+            return "";
+    };
+    FiltrListParamGetNamePipe.prototype.searchById = function (id, arr) {
+        if (arr) {
+            var result = arr.find(function (element) { return element._id === id; });
+            return result;
+        }
+    };
+    FiltrListParamGetNamePipe = __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Pipe"])({
+            name: 'filtrListParamGetName'
+        })
+    ], FiltrListParamGetNamePipe);
+    return FiltrListParamGetNamePipe;
+}());
+
+
+
+/***/ }),
+
 /***/ "./src/app/shared/pipes/filtr-list-param.pipe.ts":
 /*!*******************************************************!*\
   !*** ./src/app/shared/pipes/filtr-list-param.pipe.ts ***!
@@ -3662,7 +3754,7 @@ var FiltrListParamPipe = /** @class */ (function () {
     FiltrListParamPipe.prototype.transform = function (data, class_, object) {
         data = data.filter(function (item) {
             if (class_ && object) {
-                if (item.objectClass === class_ && item.objectType === object) {
+                if (item.objectClass === class_ && item.objectTypeId === object) {
                     return true;
                 }
             }
@@ -3670,12 +3762,11 @@ var FiltrListParamPipe = /** @class */ (function () {
                 if (class_ && item.objectClass === class_) {
                     return true;
                 }
-                if (object && item.objectType === object) {
+                if (object && item.objectTypeId === object) {
                     return true;
                 }
             }
         });
-        console.log(data);
         return data;
     };
     FiltrListParamPipe = __decorate([
@@ -3711,12 +3802,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pipes_filtr_list_param_pipe__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./pipes/filtr-list-param.pipe */ "./src/app/shared/pipes/filtr-list-param.pipe.ts");
 /* harmony import */ var _directives_click_outside_directive__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./directives/click-outside.directive */ "./src/app/shared/directives/click-outside.directive.ts");
 /* harmony import */ var _components_player_player_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/player/player.component */ "./src/app/shared/components/player/player.component.ts");
+/* harmony import */ var _pipes_filtr_list_param_get_name_pipe__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./pipes/filtr-list-param-get-name.pipe */ "./src/app/shared/pipes/filtr-list-param-get-name.pipe.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 
@@ -3784,7 +3877,8 @@ var SharedModule = /** @class */ (function () {
                 _components_player_player_component__WEBPACK_IMPORTED_MODULE_10__["PlayerComponent"]
             ],
             entryComponents: [_components_dialog_parameters_dialog_parameters_component__WEBPACK_IMPORTED_MODULE_6__["DialogParametersComponent"], _components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_7__["DialogCreateModelComponent"]],
-            declarations: [_components_dialog_parameters_dialog_parameters_component__WEBPACK_IMPORTED_MODULE_6__["DialogParametersComponent"], _components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_7__["DialogCreateModelComponent"], _pipes_filtr_list_param_pipe__WEBPACK_IMPORTED_MODULE_8__["FiltrListParamPipe"], _directives_click_outside_directive__WEBPACK_IMPORTED_MODULE_9__["ClickOutsideDirective"], _components_player_player_component__WEBPACK_IMPORTED_MODULE_10__["PlayerComponent"]],
+            declarations: [_components_dialog_parameters_dialog_parameters_component__WEBPACK_IMPORTED_MODULE_6__["DialogParametersComponent"], _components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_7__["DialogCreateModelComponent"], _pipes_filtr_list_param_pipe__WEBPACK_IMPORTED_MODULE_8__["FiltrListParamPipe"],
+                _pipes_filtr_list_param_get_name_pipe__WEBPACK_IMPORTED_MODULE_11__["FiltrListParamGetNamePipe"], _directives_click_outside_directive__WEBPACK_IMPORTED_MODULE_9__["ClickOutsideDirective"], _components_player_player_component__WEBPACK_IMPORTED_MODULE_10__["PlayerComponent"]],
         })
     ], SharedModule);
     return SharedModule;
