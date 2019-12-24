@@ -199,23 +199,29 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
   calc(resolve?, reject?) {
     this.data.forEach((comp) => {
       comp.parameters.forEach((element, i) => {
-        if (element.value) {
-          let v = element.value;
-          let spcaSpit = v.split(" ");
-          spcaSpit.forEach((element, index) => {
-            let earr = element.split(".");
-            if (earr.length == 3) {
-              if (!this.formulaSaver[earr[2]] && !this.formulaSaver[element]) {
-                this.formulaSearch(element);
-              }
-            }
-
-            if(comp.parameters.length === (i+1) && spcaSpit.length === (index+1 )){
-              if(resolve)
-                resolve();
-            }
-          });
+        // console.log(element)
+        this.formulaSaver[element._id] = element.value;
+        if(comp.parameters.length === (i+1)){
+          if(resolve)
+            resolve();
         }
+        // if (element.value) {
+        //   let v = element.value;
+        //   let spcaSpit = v.split(" ");
+        //   spcaSpit.forEach((element, index) => {
+        //     let earr = element.split(".");
+        //     if (earr.length == 3) {
+        //       if (!this.formulaSaver[earr[2]] && !this.formulaSaver[element]) {
+        //         this.formulaSearch(element);
+        //       }
+        //     }
+
+        //     if(comp.parameters.length === (i+1) && spcaSpit.length === (index+1 )){
+        //       if(resolve)
+        //         resolve();
+        //     }
+        //   });
+        // }
       });
     });
   }
@@ -796,20 +802,23 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
 
                   if (v && v.charAt(0) === "=") {
                     let spcaSpit = v.split(" ");
-
+                    
                     spcaSpit.forEach((element, index) => {
                       let earr = element.split(".");
+
                       if (earr.length == 3) {
-                          spcaSpit[index] = this.formulaSaver[element];
+                      spcaSpit[index] = this.formulaSaver[earr[2]];
                       }
                     });
                     spcaSpit.shift();
                     try {
-                      this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] = this.notEval(spcaSpit.join(''));
+                      // this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] = this.notEval(spcaSpit.join(''));
+                      this.formulaSaver[param.id] = this.notEval(spcaSpit.join(''));
                     } catch {
                       this.calc();
                     }
-                    let res = this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] || 0;
+                    // let res = this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] || 0;
+                    let res = this.formulaSaver[param.id] || 0;
                     g.append("text")
                       .attr("x", element.x + 20)
                       .attr("y", py)

@@ -29,6 +29,7 @@ import { DialogCreateModelComponent } from './components/dialog-create-model/dia
 import { FiltrListParamPipe } from './pipes/filtr-list-param.pipe';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
 import { PlayerComponent } from './components/player/player.component';
+import { FiltrListParamGetNamePipe } from './pipes/filtr-list-param-get-name.pipe';
 
 @NgModule({
   imports: [
@@ -82,6 +83,7 @@ import { PlayerComponent } from './components/player/player.component';
     PlayerComponent
   ],
   entryComponents: [DialogParametersComponent, DialogCreateModelComponent],
-  declarations: [DialogParametersComponent, DialogCreateModelComponent, FiltrListParamPipe, ClickOutsideDirective, PlayerComponent],
+  declarations: [DialogParametersComponent, DialogCreateModelComponent, FiltrListParamPipe, 
+    FiltrListParamGetNamePipe, ClickOutsideDirective, PlayerComponent],
 })
 export class SharedModule { }
