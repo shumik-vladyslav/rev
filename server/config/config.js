@@ -62,7 +62,7 @@ const config = {
   env: envVars.NODE_ENV,
   // port: envVars.SERVER_PORT,
   // port: 8080,
-  port: 80,
+  port: 3000,
   mongooseDebug: envVars.MONGOOSE_DEBUG,
   jwtSecret: envVars.JWT_SECRET,
   frontend: envVars.MEAN_FRONTEND || 'angular',
