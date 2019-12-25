@@ -199,8 +199,21 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
   calc(resolve?, reject?) {
     this.data.forEach((comp) => {
       comp.parameters.forEach((element, i) => {
-        // console.log(element)
-        this.formulaSaver[element._id] = element.value;
+        // if (element.value && element.value.charAt(0) === "="){
+        //   let spcaSpit = element.value.split(" ");
+        //   spcaSpit.forEach((element, index) => {
+        //     let earr = element.split(".");
+        //     if (earr.length == 3) {
+        //       if (!this.formulaSaver[earr[2]] && !this.formulaSaver[element]) {
+        //         this.formulaSearch(element);
+        //       }
+        //     }
+        //   });
+        if (element.value && element.value.charAt(0) === "="){
+          this.searchFormula(element.value, element._id);
+        } else {
+          this.formulaSaver[element._id] = element.value;
+        }
         if(comp.parameters.length === (i+1)){
           if(resolve)
             resolve();
@@ -224,6 +237,54 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
         // }
       });
     });
+  }
+
+  searchFormula(value, id){
+    let spcaSpit = value.split(" ");
+    spcaSpit.forEach((element, index) => {
+      let earr = element.split(".");
+      if (earr.length == 3) {
+        if (!this.formulaSaver[earr[2]]) {
+          this.data.forEach((comp) => {
+            comp.parameters.forEach((element, i) => {
+              if(element._id === earr[2]) {
+                this.formulaSaver[earr[2]] = element.value;
+              }
+            });
+          });
+        }
+      }
+    });
+    spcaSpit.shift();
+    try {
+      this.formulaSaver[id] = this.notEval(spcaSpit.join(''));
+    } catch {
+      // this.searchFormula(value, id)
+      this.reculc(value, id);
+      // this.formulaSaver[id] = 0;
+    }
+  }
+
+  reculc(v, id) {
+    for (const key in this.formulaSaver){
+      if (this.formulaSaver[key] && typeof  this.formulaSaver[key] === 'string' && this.formulaSaver[key].charAt(0) === "=") {
+        let spcaSpit = this.formulaSaver[key].split(" ");
+        
+        spcaSpit.forEach((element, index) => {
+          let earr = element.split(".");
+  
+          if (earr.length == 3) {
+            spcaSpit[index] = this.formulaSaver[earr[2]];
+          }
+        });
+        spcaSpit.shift();
+        try {
+          this.formulaSaver[key] = this.notEval(spcaSpit.join(''));
+        } catch {
+          // this.calc();
+        }
+      }
+    };
   }
 
   clear() {
@@ -729,9 +790,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
               });
               dialogRef.afterClosed().subscribe(model => {
                 if (model) {
-                 console.log(this.saverComponent)
                   this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
-                  console.log(this.saverComponent)
                   let observableList = [];
                   this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
                     this.formulaData = data;
@@ -807,18 +866,18 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
                       let earr = element.split(".");
 
                       if (earr.length == 3) {
-                      spcaSpit[index] = this.formulaSaver[earr[2]];
+                        spcaSpit[index] = this.formulaSaver[earr[2]];
                       }
                     });
                     spcaSpit.shift();
                     try {
                       // this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] = this.notEval(spcaSpit.join(''));
-                      this.formulaSaver[param.id] = this.notEval(spcaSpit.join(''));
+                      this.formulaSaver[param._id] = this.notEval(spcaSpit.join(''));
                     } catch {
                       this.calc();
                     }
                     // let res = this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] || 0;
-                    let res = this.formulaSaver[param.id] || 0;
+                    let res = this.formulaSaver[param._id] || 0;
                     g.append("text")
                       .attr("x", element.x + 20)
                       .attr("y", py)
@@ -1388,7 +1447,6 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
     if(!res) {
       this.canChangeId = true;
     }
-    console.log(data, this.data[this.selectedModal].id,this.canChangeId, res)
   }
 
   returnCopyData() {
@@ -1412,12 +1470,9 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
       if (this.canChangeId) {
         this.data.forEach(d => {
           d.parameters.forEach(p => {
-            console.log(p.value, data[this.selectedModal].id, id)
             var re = new RegExp(data[this.selectedModal].id, 'g');
             p.value = p.value.replace(re, id);
-            console.log(p.value, data[this.selectedModal].id, id)
           });
-          console.log(d)
   
           this.componentService.update(d).subscribe((r) => {
           });

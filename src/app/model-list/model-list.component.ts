@@ -41,6 +41,14 @@ export class ModelListComponent implements OnInit {
     this.modelService.getAllById(this.user._id).subscribe((data: any) => {
       console.log(data)
       this.data = data;
+      this.data.forEach((element) => {
+        this.componentService.getAllById(element._id).subscribe((obj: any) => {
+          this.listObjects = [...obj, ...this.listObjects];
+          obj.forEach(p => {
+            this.listParams = [...p.parameters, ...this.listParams];
+          });
+        });
+      })
     });
   }
 
@@ -160,36 +168,54 @@ export class ModelListComponent implements OnInit {
       m.modelId = newModel._id;
       m.userId = this.user._id;
       m.parameters.forEach(p => {
-        if (mask) {
-          var re = new RegExp(`#${m.modelIdName}#`, 'g');
-          p.value = p.value.replace(re, newModel.id);
-        } else {
-          var re = new RegExp(m.modelIdName, 'g');
-          p.value = p.value.replace(re, newModel.id);
+        if (p.value && p.value.charAt(0) === "="){
+          let spcaSpit = p.value.split(" ");
+          spcaSpit.forEach((element, index) => {
+            let earr = element.split(".");
+            if (earr.length == 3) {
+              if (mask) {
+                element = element.slice(1, element.length);
+                element = element.slice(0, element.length - 1);
+                console.log(this.getId(element),element)
+                var re = new RegExp(`${this.getId(element)}`, 'g');
+                p.value = p.value.replace(re, element);
+              } else {
+                var re = new RegExp(m.modelIdName, 'g');
+                p.value = p.value.replace(re, newModel.id);
+              }
+            }
+          });
         }
       });
       m.modelIdName = newModel.id;
       delete m._id;
+      console.log(m)
       observableList.push(this.componentService.create(m));
     });
 
-    let obs = forkJoin(observableList);
-    obs.subscribe(t => {
-      this.router.navigate(["model/" + newModel._id]);
-    });
+    // let obs = forkJoin(observableList);
+    // obs.subscribe(t => {
+    //   this.router.navigate(["model/" + newModel._id]);
+    // });
   }
 
   export(item) {
     this.componentService.getAllById(item._id).subscribe((data: any) => {
-      this.listObjects = [...data, ...this.listObjects];
       data.forEach(element => {
-        delete element._id;
         element.userId = `#${element.userId}#`;
-        this.listParams = [...element.parameters, ...this.listParams];
         element.parameters.forEach(p => {
-          var re = new RegExp(` ${element.modelIdName}.`, 'g');
-          p.value = p.value.replace(re, ` #${element.modelIdName}#.`);
+          if (p.value && p.value.charAt(0) === "="){
+            let spcaSpit = p.value.split(" ");
+            spcaSpit.forEach((element, index) => {
+              let earr = element.split(".");
+              if (earr.length == 3) {
+                var re = new RegExp(`${element}`, 'g');
+                p.value = p.value.replace(re, `#${this.getName(element)}#`);
+              }
+            });
+          }
         });
+        delete element._id;
       });
       let verSplit = (item.ver || "1.0").split(".");
       let ver = +verSplit[0] + 1 + ".0";
@@ -217,13 +243,14 @@ export class ModelListComponent implements OnInit {
   listObjects = [];
   listParams = [];
   getName(item) {
-    console.log(1)
+    // console.log(1,item)
     let arr = item.split('.');
     let model = this.searchById(arr[0], this.data);
     let object = this.searchById(arr[1], this.listObjects);
     let param = this.searchById(arr[2], this.listParams);
-    console.log(this.data, this.listObjects , this.listParams )
-    console.log(model, object , param )
+    // console.log(this.data, this.listObjects , this.listParams )
+    // console.log(model, object , param )
+    // console.log(model.id,object.id, param.id )
 
     if(object && model && param && model.id && object.id && param.id)
       return model.id + "." + object.id + "." + param.id; 
@@ -231,6 +258,30 @@ export class ModelListComponent implements OnInit {
       return "";
   }
   
+  getId(item) {
+        // console.log(1,item)
+        let arr = item.split('.');
+        let model = this.searchByName(arr[0], this.data);
+        let object = this.searchByName(arr[1], this.listObjects);
+        let param = this.searchByName(arr[2], this.listParams);
+        // console.log(this.data, this.listObjects , this.listParams )
+        console.log(model, object , param )
+        // console.log(model.id,object.id, param.id )
+    
+        if(object && model && param && model.id && object.id && param.id)
+          return model.id + "." + object.id + "." + param.id; 
+        else 
+          return "";
+  }
+  
+  searchByName(id, arr) {
+    if (arr) {
+      console.log(id,arr)
+      let result = arr.find(element => element.id === id);
+      return result;
+    }
+  }
+
   searchById(id, arr) {
     if (arr) {
       let result = arr.find(element => element._id === id);

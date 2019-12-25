@@ -1280,7 +1280,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shared_components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../shared/components/dialog-create-model/dialog-create-model.component */ "./src/app/shared/components/dialog-create-model/dialog-create-model.component.ts");
 /* harmony import */ var _shared_model__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../shared/model */ "./src/app/shared/model.ts");
 /* harmony import */ var _shared_component_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../shared/component.service */ "./src/app/shared/component.service.ts");
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm5/index.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1290,7 +1289,6 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 var __metadata = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-
 
 
 
@@ -1323,6 +1321,14 @@ var ModelListComponent = /** @class */ (function () {
         this.modelService.getAllById(this.user._id).subscribe(function (data) {
             console.log(data);
             _this.data = data;
+            _this.data.forEach(function (element) {
+                _this.componentService.getAllById(element._id).subscribe(function (obj) {
+                    _this.listObjects = obj.concat(_this.listObjects);
+                    obj.forEach(function (p) {
+                        _this.listParams = p.parameters.concat(_this.listParams);
+                    });
+                });
+            });
         });
     };
     ModelListComponent.prototype.openDialog = function () {
@@ -1438,36 +1444,54 @@ var ModelListComponent = /** @class */ (function () {
             m.modelId = newModel._id;
             m.userId = _this.user._id;
             m.parameters.forEach(function (p) {
-                if (mask) {
-                    var re = new RegExp("#" + m.modelIdName + "#", 'g');
-                    p.value = p.value.replace(re, newModel.id);
-                }
-                else {
-                    var re = new RegExp(m.modelIdName, 'g');
-                    p.value = p.value.replace(re, newModel.id);
+                if (p.value && p.value.charAt(0) === "=") {
+                    var spcaSpit = p.value.split(" ");
+                    spcaSpit.forEach(function (element, index) {
+                        var earr = element.split(".");
+                        if (earr.length == 3) {
+                            if (mask) {
+                                element = element.slice(1, element.length);
+                                element = element.slice(0, element.length - 1);
+                                console.log(_this.getId(element), element);
+                                var re = new RegExp("" + _this.getId(element), 'g');
+                                p.value = p.value.replace(re, element);
+                            }
+                            else {
+                                var re = new RegExp(m.modelIdName, 'g');
+                                p.value = p.value.replace(re, newModel.id);
+                            }
+                        }
+                    });
                 }
             });
             m.modelIdName = newModel.id;
             delete m._id;
+            console.log(m);
             observableList.push(_this.componentService.create(m));
         });
-        var obs = Object(rxjs__WEBPACK_IMPORTED_MODULE_8__["forkJoin"])(observableList);
-        obs.subscribe(function (t) {
-            _this.router.navigate(["model/" + newModel._id]);
-        });
+        // let obs = forkJoin(observableList);
+        // obs.subscribe(t => {
+        //   this.router.navigate(["model/" + newModel._id]);
+        // });
     };
     ModelListComponent.prototype.export = function (item) {
         var _this = this;
         this.componentService.getAllById(item._id).subscribe(function (data) {
-            _this.listObjects = data.concat(_this.listObjects);
             data.forEach(function (element) {
-                delete element._id;
                 element.userId = "#" + element.userId + "#";
-                _this.listParams = element.parameters.concat(_this.listParams);
                 element.parameters.forEach(function (p) {
-                    var re = new RegExp(" " + element.modelIdName + ".", 'g');
-                    p.value = p.value.replace(re, " #" + element.modelIdName + "#.");
+                    if (p.value && p.value.charAt(0) === "=") {
+                        var spcaSpit = p.value.split(" ");
+                        spcaSpit.forEach(function (element, index) {
+                            var earr = element.split(".");
+                            if (earr.length == 3) {
+                                var re = new RegExp("" + element, 'g');
+                                p.value = p.value.replace(re, "#" + _this.getName(element) + "#");
+                            }
+                        });
+                    }
                 });
+                delete element._id;
             });
             var verSplit = (item.ver || "1.0").split(".");
             var ver = +verSplit[0] + 1 + ".0";
@@ -1492,17 +1516,39 @@ var ModelListComponent = /** @class */ (function () {
         a.click();
     };
     ModelListComponent.prototype.getName = function (item) {
-        console.log(1);
+        // console.log(1,item)
         var arr = item.split('.');
         var model = this.searchById(arr[0], this.data);
         var object = this.searchById(arr[1], this.listObjects);
         var param = this.searchById(arr[2], this.listParams);
-        console.log(this.data, this.listObjects, this.listParams);
-        console.log(model, object, param);
+        // console.log(this.data, this.listObjects , this.listParams )
+        // console.log(model, object , param )
+        // console.log(model.id,object.id, param.id )
         if (object && model && param && model.id && object.id && param.id)
             return model.id + "." + object.id + "." + param.id;
         else
             return "";
+    };
+    ModelListComponent.prototype.getId = function (item) {
+        // console.log(1,item)
+        var arr = item.split('.');
+        var model = this.searchByName(arr[0], this.data);
+        var object = this.searchByName(arr[1], this.listObjects);
+        var param = this.searchByName(arr[2], this.listParams);
+        // console.log(this.data, this.listObjects , this.listParams )
+        console.log(model, object, param);
+        // console.log(model.id,object.id, param.id )
+        if (object && model && param && model.id && object.id && param.id)
+            return model.id + "." + object.id + "." + param.id;
+        else
+            return "";
+    };
+    ModelListComponent.prototype.searchByName = function (id, arr) {
+        if (arr) {
+            console.log(id, arr);
+            var result = arr.find(function (element) { return element.id === id; });
+            return result;
+        }
     };
     ModelListComponent.prototype.searchById = function (id, arr) {
         if (arr) {
@@ -1748,8 +1794,22 @@ var ModelMainComponent = /** @class */ (function () {
         var _this = this;
         this.data.forEach(function (comp) {
             comp.parameters.forEach(function (element, i) {
-                // console.log(element)
-                _this.formulaSaver[element._id] = element.value;
+                // if (element.value && element.value.charAt(0) === "="){
+                //   let spcaSpit = element.value.split(" ");
+                //   spcaSpit.forEach((element, index) => {
+                //     let earr = element.split(".");
+                //     if (earr.length == 3) {
+                //       if (!this.formulaSaver[earr[2]] && !this.formulaSaver[element]) {
+                //         this.formulaSearch(element);
+                //       }
+                //     }
+                //   });
+                if (element.value && element.value.charAt(0) === "=") {
+                    _this.searchFormula(element.value, element._id);
+                }
+                else {
+                    _this.formulaSaver[element._id] = element.value;
+                }
                 if (comp.parameters.length === (i + 1)) {
                     if (resolve)
                         resolve();
@@ -1772,6 +1832,59 @@ var ModelMainComponent = /** @class */ (function () {
                 // }
             });
         });
+    };
+    ModelMainComponent.prototype.searchFormula = function (value, id) {
+        var _this = this;
+        var spcaSpit = value.split(" ");
+        spcaSpit.forEach(function (element, index) {
+            var earr = element.split(".");
+            if (earr.length == 3) {
+                if (!_this.formulaSaver[earr[2]]) {
+                    _this.data.forEach(function (comp) {
+                        comp.parameters.forEach(function (element, i) {
+                            if (element._id === earr[2]) {
+                                _this.formulaSaver[earr[2]] = element.value;
+                            }
+                        });
+                    });
+                }
+            }
+        });
+        spcaSpit.shift();
+        try {
+            this.formulaSaver[id] = this.notEval(spcaSpit.join(''));
+        }
+        catch (_a) {
+            // this.searchFormula(value, id)
+            this.reculc(value, id);
+            // this.formulaSaver[id] = 0;
+        }
+    };
+    ModelMainComponent.prototype.reculc = function (v, id) {
+        var _this = this;
+        var _loop_1 = function (key) {
+            if (this_1.formulaSaver[key] && typeof this_1.formulaSaver[key] === 'string' && this_1.formulaSaver[key].charAt(0) === "=") {
+                var spcaSpit_1 = this_1.formulaSaver[key].split(" ");
+                spcaSpit_1.forEach(function (element, index) {
+                    var earr = element.split(".");
+                    if (earr.length == 3) {
+                        spcaSpit_1[index] = _this.formulaSaver[earr[2]];
+                    }
+                });
+                spcaSpit_1.shift();
+                try {
+                    this_1.formulaSaver[key] = this_1.notEval(spcaSpit_1.join(''));
+                }
+                catch (_a) {
+                    // this.calc();
+                }
+            }
+        };
+        var this_1 = this;
+        for (var key in this.formulaSaver) {
+            _loop_1(key);
+        }
+        ;
     };
     ModelMainComponent.prototype.clear = function () {
         this.selected = null;
@@ -2204,9 +2317,7 @@ var ModelMainComponent = /** @class */ (function () {
                         });
                         dialogRef.afterClosed().subscribe(function (model) {
                             if (model) {
-                                console.log(_this.saverComponent);
                                 _this.saverComponent.push(JSON.parse(JSON.stringify(_this.data)));
-                                console.log(_this.saverComponent);
                                 var observableList_2 = [];
                                 _this.componentService.getAllByUserId(_this.user._id).subscribe(function (data) {
                                     _this.formulaData = data;
@@ -2269,23 +2380,23 @@ var ModelMainComponent = /** @class */ (function () {
                                 case "":
                                     var v = param.value;
                                     if (v && v.charAt(0) === "=") {
-                                        var spcaSpit_1 = v.split(" ");
-                                        spcaSpit_1.forEach(function (element, index) {
+                                        var spcaSpit_2 = v.split(" ");
+                                        spcaSpit_2.forEach(function (element, index) {
                                             var earr = element.split(".");
                                             if (earr.length == 3) {
-                                                spcaSpit_1[index] = _this.formulaSaver[earr[2]];
+                                                spcaSpit_2[index] = _this.formulaSaver[earr[2]];
                                             }
                                         });
-                                        spcaSpit_1.shift();
+                                        spcaSpit_2.shift();
                                         try {
                                             // this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] = this.notEval(spcaSpit.join(''));
-                                            _this.formulaSaver[param.id] = _this.notEval(spcaSpit_1.join(''));
+                                            _this.formulaSaver[param._id] = _this.notEval(spcaSpit_2.join(''));
                                         }
                                         catch (_a) {
                                             _this.calc();
                                         }
                                         // let res = this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] || 0;
-                                        var res = _this.formulaSaver[param.id] || 0;
+                                        var res = _this.formulaSaver[param._id] || 0;
                                         g_1.append("text")
                                             .attr("x", element.x + 20)
                                             .attr("y", py)
@@ -2747,7 +2858,6 @@ var ModelMainComponent = /** @class */ (function () {
         if (!res) {
             this.canChangeId = true;
         }
-        console.log(data, this.data[this.selectedModal].id, this.canChangeId, res);
     };
     ModelMainComponent.prototype.returnCopyData = function () {
         var data;
@@ -2772,12 +2882,9 @@ var ModelMainComponent = /** @class */ (function () {
         if (this.canChangeId) {
             this.data.forEach(function (d) {
                 d.parameters.forEach(function (p) {
-                    console.log(p.value, data[_this.selectedModal].id, id);
                     var re = new RegExp(data[_this.selectedModal].id, 'g');
                     p.value = p.value.replace(re, id);
-                    console.log(p.value, data[_this.selectedModal].id, id);
                 });
-                console.log(d);
                 _this.componentService.update(d).subscribe(function (r) {
                 });
             });
