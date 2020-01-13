@@ -163,40 +163,92 @@ export class ModelListComponent implements OnInit {
 
   createNewComponents(arr, newModel, mask?) {
     let observableList = [];
-
+    console.log(5)
     arr.forEach((m: ComponentClass) => {
       m.modelId = newModel._id;
       m.userId = this.user._id;
-      m.parameters.forEach(p => {
-        if (p.value && p.value.charAt(0) === "="){
-          let spcaSpit = p.value.split(" ");
-          spcaSpit.forEach((element, index) => {
-            let earr = element.split(".");
-            if (earr.length == 3) {
-              if (mask) {
-                element = element.slice(1, element.length);
-                element = element.slice(0, element.length - 1);
-                console.log(this.getId(element),element)
-                var re = new RegExp(`${this.getId(element)}`, 'g');
-                p.value = p.value.replace(re, element);
-              } else {
-                var re = new RegExp(m.modelIdName, 'g');
-                p.value = p.value.replace(re, newModel.id);
-              }
-            }
-          });
-        }
-      });
+      // m.parameters.forEach(p => {
+      //   if (p.value && p.value.charAt(0) === "="){
+      //     let spcaSpit = p.value.split(" ");
+      //     spcaSpit.forEach((element, index) => {
+      //       let earr = element.split(".");
+      //       if (earr.length == 3) {
+      //         if (mask) {
+      //           earr[0] = earr[0].slice(1, earr[0].length);
+      //           earr[0] = earr[0].slice(0, earr[0].length - 1);
+      //           console.log(this.getId(earr.join(".")),element,newModel)
+      //           var re = new RegExp(`${this.getId(element)}`, 'g');
+      //           p.value = p.value.replace(re, element);
+      //         } else {
+      //           var re = new RegExp(m.modelIdName, 'g');
+      //           p.value = p.value.replace(re, newModel.id);
+      //         }
+      //       }
+      //     });
+      //   }
+      // });
       m.modelIdName = newModel.id;
       delete m._id;
       console.log(m)
       observableList.push(this.componentService.create(m));
     });
+    let observableListUpdate = []
+    let obs = forkJoin(observableList);
+    obs.subscribe(t => {
+      this.componentService.getAllById(newModel._id).subscribe((data: any) => {
+        this.data.forEach((model) => {
+          this.listObjects.forEach((comp) => {
+            data.forEach((compNew:any) => {
+              compNew.parameters.forEach(p => {
+                if (p.value && p.value.charAt(0) === "="){
+                  let spcaSpit = p.value.split(" ");
+                  spcaSpit.forEach((element, index) => {
+                    let earr = element.split(".");
+                    if (earr.length == 3) {
+                      if (mask) {
 
-    // let obs = forkJoin(observableList);
-    // obs.subscribe(t => {
-    //   this.router.navigate(["model/" + newModel._id]);
-    // });
+                        if(earr[0].charAt(0) === "#") {
+                          // earr[0] = earr[0].slice(1, earr[0].length);
+                          // earr[0] = earr[0].slice(0, earr[0].length - 1);
+                          compNew.parameters.forEach(pNew => {
+                            console.log(p.value, 
+                              element, "#" + newModel.id + "#." + compNew.id + "." + pNew.id, 
+                              newModel._id + "." + compNew._id + "." + pNew._id)
+                              var re = new RegExp(`${ "#" + newModel.id + "#." + compNew.id + "." + pNew.id }`, 'g');
+                              p.value = p.value.replace(re, newModel._id + "." + compNew._id + "." + pNew._id);
+                              console.log(p.value, element, newModel._id + "." + compNew._id + "." + pNew._id)
+                          });
+               
+                        } else {
+                          comp.parameters.forEach(pO => {
+                            console.log(element, model.id + "." + comp.id + "." + pO.id)
+                            var re = new RegExp(`${model.id + "." + comp.id + "." + pO.id}`, 'g');
+                            p.value = p.value.replace(re, model._id + "." + comp._id + "." + pO._id);
+                          });
+
+                        }
+                      } 
+                    }
+                  });
+                }
+              });
+              console.log(compNew)
+              observableListUpdate.push(this.componentService.update(compNew));
+            });
+          });
+        });
+      })
+
+
+      setTimeout(() => {
+        console.log(observableListUpdate)
+        let obsUpdate = forkJoin(observableListUpdate);
+  
+        obsUpdate.subscribe(t => {
+          this.router.navigate(["model/" + newModel._id]);
+        });
+      }, 5000);
+    });
   }
 
   export(item) {
@@ -210,7 +262,7 @@ export class ModelListComponent implements OnInit {
               let earr = element.split(".");
               if (earr.length == 3) {
                 var re = new RegExp(`${element}`, 'g');
-                p.value = p.value.replace(re, `#${this.getName(element)}#`);
+                p.value = p.value.replace(re, `${this.getName(element, item.id)}`);
               }
             });
           }
@@ -242,8 +294,8 @@ export class ModelListComponent implements OnInit {
   }
   listObjects = [];
   listParams = [];
-  getName(item) {
-    // console.log(1,item)
+  getName(item, modelId) {
+    console.log(1,item)
     let arr = item.split('.');
     let model = this.searchById(arr[0], this.data);
     let object = this.searchById(arr[1], this.listObjects);
@@ -251,11 +303,10 @@ export class ModelListComponent implements OnInit {
     // console.log(this.data, this.listObjects , this.listParams )
     // console.log(model, object , param )
     // console.log(model.id,object.id, param.id )
-
     if(object && model && param && model.id && object.id && param.id)
-      return model.id + "." + object.id + "." + param.id; 
+      return (model.id === modelId ? ("#" + model.id + "#") : model.id) + "." + object.id + "." + param.id; 
     else 
-      return "";
+      return item;
   }
   
   getId(item) {

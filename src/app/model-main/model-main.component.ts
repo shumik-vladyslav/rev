@@ -132,6 +132,8 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
 
   getData() {
     this.componentService.getAllById(this.modelId).subscribe((data: any) => {
+      console.log(data);
+      
       this.data = JSON.parse(JSON.stringify( data ));
       this.dataCopy = JSON.parse(JSON.stringify( data ));
       this.saverComponent = [...this.saverComponent, JSON.parse(JSON.stringify( this.data ))];
@@ -247,15 +249,24 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
         if (!this.formulaSaver[earr[2]]) {
           this.data.forEach((comp) => {
             comp.parameters.forEach((element, i) => {
+              if (element.value && element.value.charAt(0) === "="){
+                // this.searchFormulaIner(element.value, element._id);
+              } 
               if(element._id === earr[2]) {
-                this.formulaSaver[earr[2]] = element.value;
+                  this.formulaSaver[earr[2]] = element.value;
               }
             });
           });
+          for (const key in this.formulaSaver) {
+            if(key === earr[2]) {
+                this.formulaSaver[earr[2]] = this.formulaSaver[key];
+            }
+          }
         }
       }
     });
     spcaSpit.shift();
+    
     try {
       this.formulaSaver[id] = this.notEval(spcaSpit.join(''));
     } catch {
@@ -265,6 +276,36 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
     }
   }
 
+  searchFormulaIner(value, id){
+    let spcaSpit = value.split(" ");
+    spcaSpit.forEach((element, index) => {
+      let earr = element.split(".");
+      if (earr.length == 3) {
+        if (!this.formulaSaver[earr[2]]) {
+          this.data.forEach((comp) => {
+            comp.parameters.forEach((element, i) => {
+              if (element.value && element.value.charAt(0) === "="){
+                // this.searchFormula(element.value, element._id);
+              } 
+              if(element._id === earr[2]) {
+                  this.formulaSaver[earr[2]] = element.value;
+              }
+            });
+          });
+        }
+      }
+    });
+    spcaSpit.shift();
+    console.log(spcaSpit)
+    
+    try {
+      this.formulaSaver[id] = this.notEval(spcaSpit.join(''));
+    } catch {
+      // this.searchFormula(value, id)
+      this.reculc(value, id);
+      // this.formulaSaver[id] = 0;
+    }
+  }
   reculc(v, id) {
     for (const key in this.formulaSaver){
       if (this.formulaSaver[key] && typeof  this.formulaSaver[key] === 'string' && this.formulaSaver[key].charAt(0) === "=") {
@@ -278,6 +319,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
           }
         });
         spcaSpit.shift();
+        console.log(spcaSpit)
         try {
           this.formulaSaver[key] = this.notEval(spcaSpit.join(''));
         } catch {

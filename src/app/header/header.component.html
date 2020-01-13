@@ -2,7 +2,7 @@
   <mat-toolbar color="primary">
     <div [ngClass]="{'container': router.url.slice(1, 5) === 'auth'}" class="df full-width ai-e">
       <a [routerLink]="['/']" class="logo"></a>
-      <div *ngIf="selectedModel" style="padding-bottom: 5px; color: #463e3e;">Model: {{selectedModel.name}}</div>
+      <div *ngIf="selectedModel" style="padding-bottom: 5px; color: #463e3e;">Model: {{selectedModel.id}}</div>
       <!-- <span class="example-spacer">
         <app-player></app-player>
       </span> -->

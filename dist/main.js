@@ -1027,7 +1027,7 @@ var TokenStorage = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<header>\r\n  <mat-toolbar color=\"primary\">\r\n    <div [ngClass]=\"{'container': router.url.slice(1, 5) === 'auth'}\" class=\"df full-width ai-e\">\r\n      <a [routerLink]=\"['/']\" class=\"logo\"></a>\r\n      <div *ngIf=\"selectedModel\" style=\"padding-bottom: 5px; color: #463e3e;\">Model: {{selectedModel.name}}</div>\r\n      <!-- <span class=\"example-spacer\">\r\n        <app-player></app-player>\r\n      </span> -->\r\n      <button *ngIf=\"!user\" style=\"margin-bottom: 5px;\" [routerLink]=\"['/auth/register']\" mat-raised-button\r\n        color=\"primary\" class=\"m-r-10\">\r\n        Sign up free\r\n      </button>\r\n      <button style=\"margin-bottom: 5px;\" mat-button color=\"primary\" [routerLink]=\"['/auth/login']\" *ngIf=\"!user\">\r\n        Login\r\n      </button>\r\n      <div style=\"margin-bottom: 5px;\">\r\n        <a class=\"links side\" *ngIf=\"user\" [matMenuTriggerFor]=\"menu\">\r\n          <mat-icon>account_circle</mat-icon>{{ user.fullname }}\r\n        </a>\r\n        <mat-menu #menu=\"matMenu\">\r\n          <button mat-menu-item *ngIf=\"user && user.isAdmin\" [routerLink]=\"['/admin']\">\r\n            admin\r\n          </button>\r\n          <button mat-menu-item (click)=\"logout()\">logout</button>\r\n        </mat-menu>\r\n      </div>\r\n    </div>\r\n  </mat-toolbar>\r\n</header>"
+module.exports = "<header>\r\n  <mat-toolbar color=\"primary\">\r\n    <div [ngClass]=\"{'container': router.url.slice(1, 5) === 'auth'}\" class=\"df full-width ai-e\">\r\n      <a [routerLink]=\"['/']\" class=\"logo\"></a>\r\n      <div *ngIf=\"selectedModel\" style=\"padding-bottom: 5px; color: #463e3e;\">Model: {{selectedModel.id}}</div>\r\n      <!-- <span class=\"example-spacer\">\r\n        <app-player></app-player>\r\n      </span> -->\r\n      <button *ngIf=\"!user\" style=\"margin-bottom: 5px;\" [routerLink]=\"['/auth/register']\" mat-raised-button\r\n        color=\"primary\" class=\"m-r-10\">\r\n        Sign up free\r\n      </button>\r\n      <button style=\"margin-bottom: 5px;\" mat-button color=\"primary\" [routerLink]=\"['/auth/login']\" *ngIf=\"!user\">\r\n        Login\r\n      </button>\r\n      <div style=\"margin-bottom: 5px;\">\r\n        <a class=\"links side\" *ngIf=\"user\" [matMenuTriggerFor]=\"menu\">\r\n          <mat-icon>account_circle</mat-icon>{{ user.fullname }}\r\n        </a>\r\n        <mat-menu #menu=\"matMenu\">\r\n          <button mat-menu-item *ngIf=\"user && user.isAdmin\" [routerLink]=\"['/admin']\">\r\n            admin\r\n          </button>\r\n          <button mat-menu-item (click)=\"logout()\">logout</button>\r\n        </mat-menu>\r\n      </div>\r\n    </div>\r\n  </mat-toolbar>\r\n</header>"
 
 /***/ }),
 
@@ -1280,6 +1280,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shared_components_dialog_create_model_dialog_create_model_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../shared/components/dialog-create-model/dialog-create-model.component */ "./src/app/shared/components/dialog-create-model/dialog-create-model.component.ts");
 /* harmony import */ var _shared_model__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../shared/model */ "./src/app/shared/model.ts");
 /* harmony import */ var _shared_component_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../shared/component.service */ "./src/app/shared/component.service.ts");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm5/index.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1289,6 +1290,7 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 var __metadata = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 
 
 
@@ -1440,39 +1442,85 @@ var ModelListComponent = /** @class */ (function () {
     ModelListComponent.prototype.createNewComponents = function (arr, newModel, mask) {
         var _this = this;
         var observableList = [];
+        console.log(5);
         arr.forEach(function (m) {
             m.modelId = newModel._id;
             m.userId = _this.user._id;
-            m.parameters.forEach(function (p) {
-                if (p.value && p.value.charAt(0) === "=") {
-                    var spcaSpit = p.value.split(" ");
-                    spcaSpit.forEach(function (element, index) {
-                        var earr = element.split(".");
-                        if (earr.length == 3) {
-                            if (mask) {
-                                element = element.slice(1, element.length);
-                                element = element.slice(0, element.length - 1);
-                                console.log(_this.getId(element), element);
-                                var re = new RegExp("" + _this.getId(element), 'g');
-                                p.value = p.value.replace(re, element);
-                            }
-                            else {
-                                var re = new RegExp(m.modelIdName, 'g');
-                                p.value = p.value.replace(re, newModel.id);
-                            }
-                        }
-                    });
-                }
-            });
+            // m.parameters.forEach(p => {
+            //   if (p.value && p.value.charAt(0) === "="){
+            //     let spcaSpit = p.value.split(" ");
+            //     spcaSpit.forEach((element, index) => {
+            //       let earr = element.split(".");
+            //       if (earr.length == 3) {
+            //         if (mask) {
+            //           earr[0] = earr[0].slice(1, earr[0].length);
+            //           earr[0] = earr[0].slice(0, earr[0].length - 1);
+            //           console.log(this.getId(earr.join(".")),element,newModel)
+            //           var re = new RegExp(`${this.getId(element)}`, 'g');
+            //           p.value = p.value.replace(re, element);
+            //         } else {
+            //           var re = new RegExp(m.modelIdName, 'g');
+            //           p.value = p.value.replace(re, newModel.id);
+            //         }
+            //       }
+            //     });
+            //   }
+            // });
             m.modelIdName = newModel.id;
             delete m._id;
             console.log(m);
             observableList.push(_this.componentService.create(m));
         });
-        // let obs = forkJoin(observableList);
-        // obs.subscribe(t => {
-        //   this.router.navigate(["model/" + newModel._id]);
-        // });
+        var observableListUpdate = [];
+        var obs = Object(rxjs__WEBPACK_IMPORTED_MODULE_8__["forkJoin"])(observableList);
+        obs.subscribe(function (t) {
+            _this.componentService.getAllById(newModel._id).subscribe(function (data) {
+                _this.data.forEach(function (model) {
+                    _this.listObjects.forEach(function (comp) {
+                        data.forEach(function (compNew) {
+                            compNew.parameters.forEach(function (p) {
+                                if (p.value && p.value.charAt(0) === "=") {
+                                    var spcaSpit = p.value.split(" ");
+                                    spcaSpit.forEach(function (element, index) {
+                                        var earr = element.split(".");
+                                        if (earr.length == 3) {
+                                            if (mask) {
+                                                if (earr[0].charAt(0) === "#") {
+                                                    // earr[0] = earr[0].slice(1, earr[0].length);
+                                                    // earr[0] = earr[0].slice(0, earr[0].length - 1);
+                                                    compNew.parameters.forEach(function (pNew) {
+                                                        console.log(p.value, element, "#" + newModel.id + "#." + compNew.id + "." + pNew.id, newModel._id + "." + compNew._id + "." + pNew._id);
+                                                        var re = new RegExp("" + ("#" + newModel.id + "#." + compNew.id + "." + pNew.id), 'g');
+                                                        p.value = p.value.replace(re, newModel._id + "." + compNew._id + "." + pNew._id);
+                                                        console.log(p.value, element, newModel._id + "." + compNew._id + "." + pNew._id);
+                                                    });
+                                                }
+                                                else {
+                                                    comp.parameters.forEach(function (pO) {
+                                                        console.log(element, model.id + "." + comp.id + "." + pO.id);
+                                                        var re = new RegExp("" + (model.id + "." + comp.id + "." + pO.id), 'g');
+                                                        p.value = p.value.replace(re, model._id + "." + comp._id + "." + pO._id);
+                                                    });
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                            console.log(compNew);
+                            observableListUpdate.push(_this.componentService.update(compNew));
+                        });
+                    });
+                });
+            });
+            setTimeout(function () {
+                console.log(observableListUpdate);
+                var obsUpdate = Object(rxjs__WEBPACK_IMPORTED_MODULE_8__["forkJoin"])(observableListUpdate);
+                obsUpdate.subscribe(function (t) {
+                    _this.router.navigate(["model/" + newModel._id]);
+                });
+            }, 5000);
+        });
     };
     ModelListComponent.prototype.export = function (item) {
         var _this = this;
@@ -1486,7 +1534,7 @@ var ModelListComponent = /** @class */ (function () {
                             var earr = element.split(".");
                             if (earr.length == 3) {
                                 var re = new RegExp("" + element, 'g');
-                                p.value = p.value.replace(re, "#" + _this.getName(element) + "#");
+                                p.value = p.value.replace(re, "" + _this.getName(element, item.id));
                             }
                         });
                     }
@@ -1515,8 +1563,8 @@ var ModelListComponent = /** @class */ (function () {
         a.download = fileName;
         a.click();
     };
-    ModelListComponent.prototype.getName = function (item) {
-        // console.log(1,item)
+    ModelListComponent.prototype.getName = function (item, modelId) {
+        console.log(1, item);
         var arr = item.split('.');
         var model = this.searchById(arr[0], this.data);
         var object = this.searchById(arr[1], this.listObjects);
@@ -1525,9 +1573,9 @@ var ModelListComponent = /** @class */ (function () {
         // console.log(model, object , param )
         // console.log(model.id,object.id, param.id )
         if (object && model && param && model.id && object.id && param.id)
-            return model.id + "." + object.id + "." + param.id;
+            return (model.id === modelId ? ("#" + model.id + "#") : model.id) + "." + object.id + "." + param.id;
         else
-            return "";
+            return item;
     };
     ModelListComponent.prototype.getId = function (item) {
         // console.log(1,item)
@@ -1733,6 +1781,7 @@ var ModelMainComponent = /** @class */ (function () {
     ModelMainComponent.prototype.getData = function () {
         var _this = this;
         this.componentService.getAllById(this.modelId).subscribe(function (data) {
+            console.log(data);
             _this.data = JSON.parse(JSON.stringify(data));
             _this.dataCopy = JSON.parse(JSON.stringify(data));
             _this.saverComponent = _this.saverComponent.concat([JSON.parse(JSON.stringify(_this.data))]);
@@ -1842,6 +1891,44 @@ var ModelMainComponent = /** @class */ (function () {
                 if (!_this.formulaSaver[earr[2]]) {
                     _this.data.forEach(function (comp) {
                         comp.parameters.forEach(function (element, i) {
+                            if (element.value && element.value.charAt(0) === "=") {
+                                // this.searchFormulaIner(element.value, element._id);
+                            }
+                            if (element._id === earr[2]) {
+                                _this.formulaSaver[earr[2]] = element.value;
+                            }
+                        });
+                    });
+                    for (var key in _this.formulaSaver) {
+                        if (key === earr[2]) {
+                            _this.formulaSaver[earr[2]] = _this.formulaSaver[key];
+                        }
+                    }
+                }
+            }
+        });
+        spcaSpit.shift();
+        try {
+            this.formulaSaver[id] = this.notEval(spcaSpit.join(''));
+        }
+        catch (_a) {
+            // this.searchFormula(value, id)
+            this.reculc(value, id);
+            // this.formulaSaver[id] = 0;
+        }
+    };
+    ModelMainComponent.prototype.searchFormulaIner = function (value, id) {
+        var _this = this;
+        var spcaSpit = value.split(" ");
+        spcaSpit.forEach(function (element, index) {
+            var earr = element.split(".");
+            if (earr.length == 3) {
+                if (!_this.formulaSaver[earr[2]]) {
+                    _this.data.forEach(function (comp) {
+                        comp.parameters.forEach(function (element, i) {
+                            if (element.value && element.value.charAt(0) === "=") {
+                                // this.searchFormula(element.value, element._id);
+                            }
                             if (element._id === earr[2]) {
                                 _this.formulaSaver[earr[2]] = element.value;
                             }
@@ -1851,6 +1938,7 @@ var ModelMainComponent = /** @class */ (function () {
             }
         });
         spcaSpit.shift();
+        console.log(spcaSpit);
         try {
             this.formulaSaver[id] = this.notEval(spcaSpit.join(''));
         }
@@ -1872,6 +1960,7 @@ var ModelMainComponent = /** @class */ (function () {
                     }
                 });
                 spcaSpit_1.shift();
+                console.log(spcaSpit_1);
                 try {
                     this_1.formulaSaver[key] = this_1.notEval(spcaSpit_1.join(''));
                 }
@@ -3124,7 +3213,7 @@ var DialogCreateModelComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\r\n<div id=\"wrap-dialog-scroll\" mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>Model</mat-label>\r\n    <mat-select [(ngModel)]=\"sleectedModel\" (ngModelChange)=\"modelChange($event)\">\r\n      <mat-option *ngFor=\"let item of listModel\" [value]=\"item._id\">\r\n        {{item.name}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Class</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedClass\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listClass\" [value]=\"item\">\r\n        {{item}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Object</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedObject\" (ngModelChange)=\"selectedObjectChange(listObjects)\">\r\n      <mat-option *ngFor=\"let item of listObjects | filtrListParam: selectedClass\" [value]=\"item._id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Parameter</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedParam\" (ngModelChange)=\"paramsChange($event)\">\r\n      <mat-option *ngFor=\"let item of listParams | filtrListParam: selectedClass: selectedObject\" [value]=\"item._id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <div style=\"width: 40%; padding: 20px 0 0 20px;\">\r\n    <div class=\"full-width\">\r\n      <!-- [disabled]=\"!boolLastOperator\" -->\r\n      <!-- [matTooltip]=\"!boolLastOperator ? 'Before add math operator: +, -, *, /' : null\"? -->\r\n      <button\r\n       (click)=\"add()\" class=\"full-width\" mat-raised-button color=\"primary\" mat-button>\r\n        <= ADD</button> </div>\r\n          <!-- <button (click)=\"test()\" class=\"func\" mat-raised-button color=\"primary\" mat-button>\r\n            <i>\r\n              f(x)\r\n            </i>\r\n          </button> -->\r\n  </div>\r\n  <div class=\"textarea-wrap\">\r\n    <div class=\"formula-wrap-outer\">\r\n      <div (click)=\"formulaWrapClick();textArea.focus()\" class=\"formula-wrap\">\r\n        <div class=\"formula-item-wrap\" *ngFor=\"let item of formulaArr;let i = index\">\r\n            <div *ngIf=\"(item !== '|') && (i === 0 || (formulaArr[i - 1] && formulaArr[i - 1] !== '|'))\" \r\n            (click)=\"formulaItemClick(item, i)\" class=\"formula-item-space\"\r\n             ></div>\r\n            <div (click)=\"formulaItemClick(item, i + 1)\" class=\"formula-item\" [ngClass]=\"{'blink blink-item': item === '|'}\">\r\n              <span *ngIf=\"item.split('.').length === 3\">\r\n                <!-- {{item | filtrListParamGetName: item.split('.') : listModel: listObjects : listParams}} -->\r\n                {{getName(item)}}\r\n              </span>\r\n              <span *ngIf=\"item.split('.').length !== 3\">\r\n                {{item}}\r\n              </span>\r\n            </div>\r\n            <div *ngIf=\"(i === (formulaArr.length - 1)) && item !== '|'\" (click)=\"formulaItemClick(item, i+1)\" class=\"formula-item-space\"></div>\r\n        </div>\r\n      </div>\r\n      <!-- formula-text -->\r\n      <mat-form-field style=\"width: 100%;position: absolute;top: 0; z-index: -1;\" class=\" example-full-width\">\r\n        <!-- (ngModelChange)=\"change($event)\" -->\r\n        <!-- [(ngModel)]=\"formula\" (ngModelChange)=\"change($event)\" (keydown)=\"checkPattern($event)\" -->\r\n        <textarea #textArea matInput [(ngModel)]=\"formulaData\" \r\n        (ngModelChange)=\"changeForumula($event)\" (keydown)=\"keyFormula($event)\"></textarea>\r\n          \r\n      </mat-form-field>\r\n      <!-- <div (click)=\"textArea.focus()\" class=\"text-area-shield\"></div> -->\r\n    </div>\r\n\r\n  </div>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button mat-button (click)=\"ok()\" mat-raised-button color=\"primary\" cdkFocusInitial>\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>"
+module.exports = "<h1 mat-dialog-title>Formula dialog</h1>\r\n<div id=\"wrap-dialog-scroll\" mat-dialog-content>\r\n  <mat-form-field>\r\n    <mat-label>Model</mat-label>\r\n    <mat-select [(ngModel)]=\"sleectedModel\" (ngModelChange)=\"modelChange($event)\">\r\n      <mat-option *ngFor=\"let item of listModel\" [value]=\"item._id\">\r\n        {{item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Class</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedClass\" (ngModelChange)=\"paramsFilter($event)\">\r\n      <mat-option *ngFor=\"let item of listClass\" [value]=\"item\">\r\n        {{item}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Object</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedObject\" (ngModelChange)=\"selectedObjectChange(listObjects)\">\r\n      <mat-option *ngFor=\"let item of listObjects | filtrListParam: selectedClass\" [value]=\"item._id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-label>Parameter</mat-label>\r\n    <mat-select [(ngModel)]=\"selectedParam\" (ngModelChange)=\"paramsChange($event)\">\r\n      <mat-option *ngFor=\"let item of listParams | filtrListParam: selectedClass: selectedObject\" [value]=\"item._id\">\r\n        {{item.name || item.id}}\r\n      </mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <div style=\"width: 40%; padding: 20px 0 0 20px;\">\r\n    <div class=\"full-width\">\r\n      <!-- [disabled]=\"!boolLastOperator\" -->\r\n      <!-- [matTooltip]=\"!boolLastOperator ? 'Before add math operator: +, -, *, /' : null\"? -->\r\n      <button\r\n       (click)=\"add()\" class=\"full-width\" mat-raised-button color=\"primary\" mat-button>\r\n        <= ADD</button> </div>\r\n          <!-- <button (click)=\"test()\" class=\"func\" mat-raised-button color=\"primary\" mat-button>\r\n            <i>\r\n              f(x)\r\n            </i>\r\n          </button> -->\r\n  </div>\r\n  <div class=\"textarea-wrap\">\r\n    <div class=\"formula-wrap-outer\">\r\n      <div (click)=\"formulaWrapClick();textArea.focus()\" class=\"formula-wrap\">\r\n        <div class=\"formula-item-wrap\" *ngFor=\"let item of formulaArr;let i = index\">\r\n            <div *ngIf=\"(item !== '|') && (i === 0 || (formulaArr[i - 1] && formulaArr[i - 1] !== '|'))\" \r\n            (click)=\"formulaItemClick(item, i)\" class=\"formula-item-space\"\r\n             ></div>\r\n            <div (click)=\"formulaItemClick(item, i + 1)\" class=\"formula-item\" [ngClass]=\"{'blink blink-item': item === '|'}\">\r\n              <span *ngIf=\"item.split('.').length === 3\">\r\n                <!-- {{item | filtrListParamGetName: item.split('.') : listModel: listObjects : listParams}} -->\r\n                {{getName(item)}}\r\n              </span>\r\n              <span *ngIf=\"item.split('.').length !== 3\">\r\n                {{item}}\r\n              </span>\r\n            </div>\r\n            <div *ngIf=\"(i === (formulaArr.length - 1)) && item !== '|'\" (click)=\"formulaItemClick(item, i+1)\" class=\"formula-item-space\"></div>\r\n        </div>\r\n      </div>\r\n      <!-- formula-text -->\r\n      <mat-form-field style=\"width: 100%;position: absolute;top: 0; z-index: -1;\" class=\" example-full-width\">\r\n        <!-- (ngModelChange)=\"change($event)\" -->\r\n        <!-- [(ngModel)]=\"formula\" (ngModelChange)=\"change($event)\" (keydown)=\"checkPattern($event)\" -->\r\n        <textarea #textArea matInput [(ngModel)]=\"formulaData\" \r\n        (ngModelChange)=\"changeForumula($event)\" (keydown)=\"keyFormula($event)\"></textarea>\r\n          \r\n      </mat-form-field>\r\n      <!-- <div (click)=\"textArea.focus()\" class=\"text-area-shield\"></div> -->\r\n    </div>\r\n\r\n  </div>\r\n</div>\r\n<div mat-dialog-actions class=\"jc-c df\">\r\n  <button mat-button (click)=\"ok()\" mat-raised-button color=\"primary\" cdkFocusInitial>\r\n    Ok\r\n  </button>\r\n  <button mat-button (click)=\"onNoClick()\">Cancel</button>\r\n</div>"
 
 /***/ }),
 
@@ -3153,6 +3242,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_material_dialog__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/material/dialog */ "./node_modules/@angular/material/esm5/dialog.es5.js");
 /* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
 /* harmony import */ var _component_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../component.service */ "./src/app/shared/component.service.ts");
+/* harmony import */ var _model_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../model.service */ "./src/app/shared/model.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -3169,9 +3259,11 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 
 
 
+
 var DialogParametersComponent = /** @class */ (function () {
-    function DialogParametersComponent(dialogRef, componentService, chRef, data) {
+    function DialogParametersComponent(dialogRef, modelService, componentService, chRef, data) {
         this.dialogRef = dialogRef;
+        this.modelService = modelService;
         this.componentService = componentService;
         this.chRef = chRef;
         this.data = data;
@@ -3180,6 +3272,7 @@ var DialogParametersComponent = /** @class */ (function () {
         this.listClass = [];
         this.listObjects = [];
         this.listParams = [];
+        this.allParametrs = [];
         this.formulaData = "";
         this.selectedFormulaVar = "";
         this.formula = "= ";
@@ -3191,31 +3284,44 @@ var DialogParametersComponent = /** @class */ (function () {
         this.keyPeriod = true;
     }
     DialogParametersComponent.prototype.ngOnInit = function () {
-        this.listModel = this.data.list;
-        // this.formula = this.data.formula;
-        this.formula = this.data.formula.charAt(0) !== '=' ? this.data.formula : this.data.formula.slice(2);
-        this.formulaArr = this.formula.split(' ');
-        if (this.formulaArr.length === 1 && this.formulaArr[0] === "0") {
-            this.formulaArr = [];
-        }
-        this.sleectedModel = this.data.modelId;
-        this.modelChange(this.sleectedModel);
+        var _this = this;
+        this.modelService.getAll().subscribe(function (data) {
+            _this.allModels = data;
+        });
+        this.componentService.getAll().subscribe(function (data) {
+            _this.allComponents = data;
+            data.forEach(function (element) {
+                _this.allParametrs = _this.allParametrs.concat(element.parameters);
+            });
+            _this.listModel = _this.data.list;
+            // this.formula = this.data.formula;
+            _this.formula = _this.data.formula.charAt(0) !== '=' ? _this.data.formula : _this.data.formula.slice(2);
+            _this.formulaArr = _this.formula.split(' ');
+            console.log(_this.formulaArr);
+            if (_this.formulaArr.length === 1 && _this.formulaArr[0] === "0") {
+                _this.formulaArr = [];
+            }
+            _this.sleectedModel = _this.data.modelId;
+            _this.modelChange(_this.sleectedModel);
+            _this.getData();
+        });
     };
     DialogParametersComponent.prototype.ngAfterViewInit = function () {
-        var _this = this;
         setTimeout(function () {
-            if (!_this.formulaArr.length) {
-                _this.formulaArr = ["|"];
-                _this.formulaIndex = _this.formulaArr.length - 1;
-            }
-            else {
-                _this.formulaIndex = _this.formulaArr.length;
-                _this.formulaArr.splice(_this.formulaIndex, 0, "|");
-            }
-            _this.textArea.nativeElement.focus();
-            document.getElementById("wrap-dialog-scroll").scrollTo(0, 0);
-            _this.chRef.detectChanges();
         }, 500);
+    };
+    DialogParametersComponent.prototype.getData = function () {
+        if (this.formulaArr && !this.formulaArr.length) {
+            this.formulaArr = ["|"];
+            this.formulaIndex = this.formulaArr.length - 1;
+        }
+        else {
+            this.formulaIndex = this.formulaArr.length;
+            this.formulaArr.splice(this.formulaIndex, 0, "|");
+        }
+        this.textArea.nativeElement.focus();
+        document.getElementById("wrap-dialog-scroll").scrollTo(0, 0);
+        this.chRef.detectChanges();
     };
     DialogParametersComponent.prototype.formulaItemClick = function (item, i) {
         var fiend = this.formulaArr.indexOf("|");
@@ -3347,9 +3453,9 @@ var DialogParametersComponent = /** @class */ (function () {
     DialogParametersComponent.prototype.getName = function (item) {
         console.log(1);
         var arr = item.split('.');
-        var model = this.searchById(arr[0], this.listModel);
-        var object = this.searchById(arr[1], this.listObjects);
-        var param = this.searchById(arr[2], this.listParams);
+        var model = this.searchById(arr[0], this.allModels);
+        var object = this.searchById(arr[1], this.allComponents);
+        var param = this.searchById(arr[2], this.allParametrs);
         if (object && model && param && model.id && object.id && param.id)
             return model.id + "." + object.id + "." + param.id;
         else
@@ -3539,8 +3645,9 @@ var DialogParametersComponent = /** @class */ (function () {
             template: __webpack_require__(/*! ./dialog-parameters.component.html */ "./src/app/shared/components/dialog-parameters/dialog-parameters.component.html"),
             styles: [__webpack_require__(/*! ./dialog-parameters.component.scss */ "./src/app/shared/components/dialog-parameters/dialog-parameters.component.scss")]
         }),
-        __param(3, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(_angular_material__WEBPACK_IMPORTED_MODULE_2__["MAT_DIALOG_DATA"])),
+        __param(4, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(_angular_material__WEBPACK_IMPORTED_MODULE_2__["MAT_DIALOG_DATA"])),
         __metadata("design:paramtypes", [_angular_material_dialog__WEBPACK_IMPORTED_MODULE_1__["MatDialogRef"],
+            _model_service__WEBPACK_IMPORTED_MODULE_4__["ModelService"],
             _component_service__WEBPACK_IMPORTED_MODULE_3__["ComponentService"], _angular_core__WEBPACK_IMPORTED_MODULE_0__["ChangeDetectorRef"], Object])
     ], DialogParametersComponent);
     return DialogParametersComponent;

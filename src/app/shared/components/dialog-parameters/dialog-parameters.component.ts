@@ -2,6 +2,7 @@ import { Component, OnInit, Inject, ChangeDetectorRef, ViewChild, AfterViewInit,
 import { MatDialogRef } from "@angular/material/dialog";
 import { MAT_DIALOG_DATA } from '@angular/material';
 import { ComponentService } from "../../component.service";
+import { ModelService } from "../../model.service";
 
 @Component({
   selector: "app-dialog-parameters",
@@ -19,37 +20,58 @@ export class DialogParametersComponent implements OnInit, AfterViewInit {
   selectedObject;
   selectedClass;
   sleectedModel;
+  allModels;
+  allComponents;
+  allParametrs = [];
   constructor(public dialogRef: MatDialogRef<DialogParametersComponent>,
+    private modelService: ModelService,
     private componentService: ComponentService, private chRef: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
   @ViewChild("textArea") textArea: ElementRef;
 
   ngOnInit(): void {
-    this.listModel = this.data.list;
-    // this.formula = this.data.formula;
-    this.formula = this.data.formula.charAt(0) !== '=' ? this.data.formula : this.data.formula.slice(2); 
-    this.formulaArr = this.formula.split(' ');
-    if (this.formulaArr.length === 1 && this.formulaArr[0] === "0") {
-      this.formulaArr = [];
-    }
+    this.modelService.getAll().subscribe((data) => {
+      this.allModels = data;
+    });
+    this.componentService.getAll().subscribe((data:any) => {
+      this.allComponents = data;
+      data.forEach(element => {
+        this.allParametrs = [...this.allParametrs, ...element.parameters];
+      });
+      this.listModel = this.data.list;
+      // this.formula = this.data.formula;
+      this.formula = this.data.formula.charAt(0) !== '=' ? this.data.formula : this.data.formula.slice(2); 
+      this.formulaArr = this.formula.split(' ');
+      console.log(this.formulaArr);
+      
+      if (this.formulaArr.length === 1 && this.formulaArr[0] === "0") {
+        this.formulaArr = [];
+      }
+  
+      this.sleectedModel = this.data.modelId;
+      this.modelChange(this.sleectedModel);
+      this. getData();
+    })
 
-    this.sleectedModel = this.data.modelId;
-    this.modelChange(this.sleectedModel);
   }
 
   ngAfterViewInit() {
     setTimeout(() => {
-      if (!this.formulaArr.length) {
-        this.formulaArr = ["|"];
-        this.formulaIndex = this.formulaArr.length - 1;
-      } else {
-        this.formulaIndex = this.formulaArr.length;
-        this.formulaArr.splice(this.formulaIndex, 0, "|");
-      }
-      this.textArea.nativeElement.focus();
-      document.getElementById("wrap-dialog-scroll").scrollTo(0, 0);
-      this.chRef.detectChanges();
+  
     }, 500);
+  }
+
+  getData(){
+    if (this.formulaArr && !this.formulaArr.length) {
+      this.formulaArr = ["|"];
+      this.formulaIndex = this.formulaArr.length - 1;
+    } else {
+      this.formulaIndex = this.formulaArr.length;
+      this.formulaArr.splice(this.formulaIndex, 0, "|");
+    }
+    this.textArea.nativeElement.focus();
+    document.getElementById("wrap-dialog-scroll").scrollTo(0, 0);
+    this.chRef.detectChanges();
   }
 
   formulaData = "";
@@ -202,9 +224,9 @@ export class DialogParametersComponent implements OnInit, AfterViewInit {
   getName(item) {
     console.log(1)
     let arr = item.split('.');
-    let model = this.searchById(arr[0], this.listModel);
-    let object = this.searchById(arr[1], this.listObjects);
-    let param = this.searchById(arr[2], this.listParams);
+    let model = this.searchById(arr[0], this.allModels);
+    let object = this.searchById(arr[1], this.allComponents);
+    let param = this.searchById(arr[2], this.allParametrs);
     if(object && model && param && model.id && object.id && param.id)
       return model.id + "." + object.id + "." + param.id; 
     else 

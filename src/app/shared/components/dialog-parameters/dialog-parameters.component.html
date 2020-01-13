@@ -4,7 +4,7 @@
     <mat-label>Model</mat-label>
     <mat-select [(ngModel)]="sleectedModel" (ngModelChange)="modelChange($event)">
       <mat-option *ngFor="let item of listModel" [value]="item._id">
-        {{item.name}}
+        {{item.id}}
       </mat-option>
     </mat-select>
   </mat-form-field>
