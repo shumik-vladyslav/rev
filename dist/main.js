@@ -1442,30 +1442,30 @@ var ModelListComponent = /** @class */ (function () {
     ModelListComponent.prototype.createNewComponents = function (arr, newModel, mask) {
         var _this = this;
         var observableList = [];
-        console.log(5);
         arr.forEach(function (m) {
             m.modelId = newModel._id;
             m.userId = _this.user._id;
-            // m.parameters.forEach(p => {
-            //   if (p.value && p.value.charAt(0) === "="){
-            //     let spcaSpit = p.value.split(" ");
-            //     spcaSpit.forEach((element, index) => {
-            //       let earr = element.split(".");
-            //       if (earr.length == 3) {
-            //         if (mask) {
-            //           earr[0] = earr[0].slice(1, earr[0].length);
-            //           earr[0] = earr[0].slice(0, earr[0].length - 1);
-            //           console.log(this.getId(earr.join(".")),element,newModel)
-            //           var re = new RegExp(`${this.getId(element)}`, 'g');
-            //           p.value = p.value.replace(re, element);
-            //         } else {
-            //           var re = new RegExp(m.modelIdName, 'g');
-            //           p.value = p.value.replace(re, newModel.id);
-            //         }
-            //       }
-            //     });
-            //   }
-            // });
+            m.parameters.forEach(function (p) {
+                delete p._id;
+                //   if (p.value && p.value.charAt(0) === "="){
+                //     let spcaSpit = p.value.split(" ");
+                //     spcaSpit.forEach((element, index) => {
+                //       let earr = element.split(".");
+                //       if (earr.length == 3) {
+                //         if (mask) {
+                //           earr[0] = earr[0].slice(1, earr[0].length);
+                //           earr[0] = earr[0].slice(0, earr[0].length - 1);
+                //           console.log(this.getId(earr.join(".")),element,newModel)
+                //           var re = new RegExp(`${this.getId(element)}`, 'g');
+                //           p.value = p.value.replace(re, element);
+                //         } else {
+                //           var re = new RegExp(m.modelIdName, 'g');
+                //           p.value = p.value.replace(re, newModel.id);
+                //         }
+                //       }
+                //     });
+                //   }
+            });
             m.modelIdName = newModel.id;
             delete m._id;
             console.log(m);
@@ -1490,7 +1490,7 @@ var ModelListComponent = /** @class */ (function () {
                                                     // earr[0] = earr[0].slice(0, earr[0].length - 1);
                                                     compNew.parameters.forEach(function (pNew) {
                                                         console.log(p.value, element, "#" + newModel.id + "#." + compNew.id + "." + pNew.id, newModel._id + "." + compNew._id + "." + pNew._id);
-                                                        var re = new RegExp("" + ("#" + newModel.id + "#." + compNew.id + "." + pNew.id), 'g');
+                                                        var re = new RegExp("" + ("#" + model.id + "#." + compNew.id + "." + pNew.id), 'g');
                                                         p.value = p.value.replace(re, newModel._id + "." + compNew._id + "." + pNew._id);
                                                         console.log(p.value, element, newModel._id + "." + compNew._id + "." + pNew._id);
                                                     });
@@ -1715,6 +1715,7 @@ var ModelMainComponent = /** @class */ (function () {
         this.saverComponent = [];
         this.modelsKeys = {};
         this.copyIndexCounter = {};
+        this.inSearch = {};
         this.formulaSaver = {};
         this.txtQueryChanged = new rxjs__WEBPACK_IMPORTED_MODULE_7__["Subject"]();
         this.txtQueryChangedDebounce = new rxjs__WEBPACK_IMPORTED_MODULE_7__["Subject"]();
@@ -1762,6 +1763,10 @@ var ModelMainComponent = /** @class */ (function () {
     ModelMainComponent.prototype.updateQuery = function (model) {
         var _this = this;
         this.saverComponent.push(JSON.parse(JSON.stringify(this.data)));
+        new Promise(function (resolve, reject) { _this.calc(resolve, reject); }).then(function () {
+            _this.removeAll();
+            _this.drow();
+        });
         var id = this.data[model.selected];
         if (id) {
             this.componentService.update(id).subscribe(function (r) {
@@ -1769,6 +1774,13 @@ var ModelMainComponent = /** @class */ (function () {
                     _this.componentService.getAllByUserId(_this.user._id).subscribe(function (data) {
                         _this.formulaData = data;
                         _this.formulaSaver = {};
+                        _this.formulaData.forEach(function (comp) {
+                            comp.parameters.forEach(function (element, i) {
+                                if (element.value && element.value.charAt(0) !== "=") {
+                                    _this.formulaSaver[element._id] = element.value;
+                                }
+                            });
+                        });
                         new Promise(function (resolve, reject) { _this.calc(resolve, reject); }).then(function () {
                             _this.removeAll();
                             _this.drow();
@@ -1884,96 +1896,106 @@ var ModelMainComponent = /** @class */ (function () {
     };
     ModelMainComponent.prototype.searchFormula = function (value, id) {
         var _this = this;
+        if (this.formulaData)
+            this.formulaData.forEach(function (comp) {
+                comp.parameters.forEach(function (element, i) {
+                    _this.formulaSaver[element._id] = element.formulaValue || element.value;
+                });
+            });
         var spcaSpit = value.split(" ");
+        // spcaSpit.forEach((element, index) => {
+        //   let earr = element.split(".");
+        //   if (earr.length == 3) {
+        //     if (!this.formulaSaver[earr[2]]) {
+        //       if(this.formulaData)
+        //       this.formulaData.forEach((comp) => {
+        //         comp.parameters.forEach((element, i) => {
+        //           this.formulaSaver[earr[2]] = element.value;
+        //           // if (element.value && element.value.charAt(0) === "="){
+        //           //   // this.formulaSaver[earr[2]] = element.value;
+        //           //   if(!this.inSearch[element.value]){
+        //           //     this.inSearch[element.value] = true;
+        //           //     // this.searchFormula(element.value, element._id);
+        //           //   }
+        //           // } 
+        //           // if(element._id === earr[2] && element.value.charAt(0) !== "=") {
+        //           //   this.formulaSaver[earr[2]] = element.value;
+        //           // }
+        //         });
+        //       });
+        //     }
+        //   }
+        // });
         spcaSpit.forEach(function (element, index) {
             var earr = element.split(".");
             if (earr.length == 3) {
-                if (!_this.formulaSaver[earr[2]]) {
-                    _this.data.forEach(function (comp) {
-                        comp.parameters.forEach(function (element, i) {
-                            if (element.value && element.value.charAt(0) === "=") {
-                                // this.searchFormulaIner(element.value, element._id);
-                            }
-                            if (element._id === earr[2]) {
-                                _this.formulaSaver[earr[2]] = element.value;
-                            }
-                        });
-                    });
-                    for (var key in _this.formulaSaver) {
-                        if (key === earr[2]) {
-                            _this.formulaSaver[earr[2]] = _this.formulaSaver[key];
-                        }
-                    }
-                }
+                spcaSpit[index] = _this.formulaSaver[earr[2]];
             }
         });
         spcaSpit.shift();
         try {
             this.formulaSaver[id] = this.notEval(spcaSpit.join(''));
+            this.formulaValueUpdateComponent(id, this.formulaSaver[id]);
         }
         catch (_a) {
             // this.searchFormula(value, id)
-            this.reculc(value, id);
-            // this.formulaSaver[id] = 0;
-        }
-    };
-    ModelMainComponent.prototype.searchFormulaIner = function (value, id) {
-        var _this = this;
-        var spcaSpit = value.split(" ");
-        spcaSpit.forEach(function (element, index) {
-            var earr = element.split(".");
-            if (earr.length == 3) {
-                if (!_this.formulaSaver[earr[2]]) {
-                    _this.data.forEach(function (comp) {
-                        comp.parameters.forEach(function (element, i) {
-                            if (element.value && element.value.charAt(0) === "=") {
-                                // this.searchFormula(element.value, element._id);
-                            }
-                            if (element._id === earr[2]) {
-                                _this.formulaSaver[earr[2]] = element.value;
-                            }
-                        });
-                    });
-                }
-            }
-        });
-        spcaSpit.shift();
-        console.log(spcaSpit);
-        try {
-            this.formulaSaver[id] = this.notEval(spcaSpit.join(''));
-        }
-        catch (_a) {
-            // this.searchFormula(value, id)
-            this.reculc(value, id);
+            // this.reculc(value, id);
             // this.formulaSaver[id] = 0;
         }
     };
     ModelMainComponent.prototype.reculc = function (v, id) {
         var _this = this;
-        var _loop_1 = function (key) {
-            if (this_1.formulaSaver[key] && typeof this_1.formulaSaver[key] === 'string' && this_1.formulaSaver[key].charAt(0) === "=") {
-                var spcaSpit_1 = this_1.formulaSaver[key].split(" ");
-                spcaSpit_1.forEach(function (element, index) {
+        for (var key in this.formulaSaver) {
+            if (this.formulaSaver[key] && typeof this.formulaSaver[key] === 'string' && this.formulaSaver[key].charAt(0) === "=") {
+                var spcaSpit = this.formulaSaver[key].split(" ");
+                spcaSpit.forEach(function (element, index) {
                     var earr = element.split(".");
-                    if (earr.length == 3) {
-                        spcaSpit_1[index] = _this.formulaSaver[earr[2]];
+                    if (!_this.formulaSaver[earr[2]]) {
+                        _this.data.forEach(function (comp) {
+                            comp.parameters.forEach(function (element, i) {
+                                if (element.value && element.value.charAt(0) === "=") {
+                                    // this.searchFormula(element.value, element._id);
+                                }
+                                if (element._id === earr[2]) {
+                                    _this.formulaSaver[earr[2]] = element.value;
+                                }
+                            });
+                        });
+                        for (var key_1 in _this.formulaSaver) {
+                            if (key_1 === earr[2]) {
+                                _this.formulaSaver[earr[2]] = _this.formulaSaver[key_1];
+                            }
+                        }
                     }
+                    // if (element.value && element.charAt(0) === "="){
+                    //   // this.searchFormula(element.value, element._id);
+                    //     } 
+                    // if (earr.length == 3) {
+                    //   spcaSpit[index] = this.formulaSaver[earr[2]];
+                    // }
                 });
-                spcaSpit_1.shift();
-                console.log(spcaSpit_1);
+                spcaSpit.shift();
                 try {
-                    this_1.formulaSaver[key] = this_1.notEval(spcaSpit_1.join(''));
+                    this.formulaSaver[key] = this.notEval(spcaSpit.join(''));
+                    this.formulaValueUpdateComponent(key, this.formulaSaver[key]);
                 }
                 catch (_a) {
                     // this.calc();
                 }
             }
-        };
-        var this_1 = this;
-        for (var key in this.formulaSaver) {
-            _loop_1(key);
         }
         ;
+    };
+    ModelMainComponent.prototype.formulaValueUpdateComponent = function (id, value) {
+        var _this = this;
+        this.data.forEach(function (c) {
+            c.parameters.forEach(function (p) {
+                if (p._id === id) {
+                    p.formulaValue = value;
+                    _this.componentService.update(c).subscribe(function (data) { });
+                }
+            });
+        });
     };
     ModelMainComponent.prototype.clear = function () {
         this.selected = null;
@@ -2469,20 +2491,21 @@ var ModelMainComponent = /** @class */ (function () {
                                 case "":
                                     var v = param.value;
                                     if (v && v.charAt(0) === "=") {
-                                        var spcaSpit_2 = v.split(" ");
-                                        spcaSpit_2.forEach(function (element, index) {
+                                        var spcaSpit_1 = v.split(" ");
+                                        spcaSpit_1.forEach(function (element, index) {
                                             var earr = element.split(".");
                                             if (earr.length == 3) {
-                                                spcaSpit_2[index] = _this.formulaSaver[earr[2]];
+                                                spcaSpit_1[index] = _this.formulaSaver[earr[2]];
                                             }
                                         });
-                                        spcaSpit_2.shift();
+                                        spcaSpit_1.shift();
                                         try {
                                             // this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] = this.notEval(spcaSpit.join(''));
-                                            _this.formulaSaver[param._id] = _this.notEval(spcaSpit_2.join(''));
+                                            _this.formulaSaver[param._id] = _this.notEval(spcaSpit_1.join(''));
+                                            _this.formulaValueUpdateComponent(param._id, _this.formulaSaver[param._id]);
                                         }
                                         catch (_a) {
-                                            _this.calc();
+                                            _this.searchFormula(v, param._id);
                                         }
                                         // let res = this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] || 0;
                                         var res = _this.formulaSaver[param._id] || 0;

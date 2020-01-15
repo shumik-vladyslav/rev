@@ -43,6 +43,7 @@ const ComponentSchema = new mongoose.Schema({
     name: String,
     description: String,
     value: String,
+    formulaValue: Number,
     measurable: Number,
     changeable: Number,
     controlType: String,

@@ -163,11 +163,11 @@ export class ModelListComponent implements OnInit {
 
   createNewComponents(arr, newModel, mask?) {
     let observableList = [];
-    console.log(5)
     arr.forEach((m: ComponentClass) => {
       m.modelId = newModel._id;
       m.userId = this.user._id;
-      // m.parameters.forEach(p => {
+      m.parameters.forEach((p: any) => {
+        delete p._id;
       //   if (p.value && p.value.charAt(0) === "="){
       //     let spcaSpit = p.value.split(" ");
       //     spcaSpit.forEach((element, index) => {
@@ -186,7 +186,7 @@ export class ModelListComponent implements OnInit {
       //       }
       //     });
       //   }
-      // });
+      });
       m.modelIdName = newModel.id;
       delete m._id;
       console.log(m)
@@ -214,7 +214,7 @@ export class ModelListComponent implements OnInit {
                             console.log(p.value, 
                               element, "#" + newModel.id + "#." + compNew.id + "." + pNew.id, 
                               newModel._id + "." + compNew._id + "." + pNew._id)
-                              var re = new RegExp(`${ "#" + newModel.id + "#." + compNew.id + "." + pNew.id }`, 'g');
+                              var re = new RegExp(`${ "#" + model.id + "#." + compNew.id + "." + pNew.id }`, 'g');
                               p.value = p.value.replace(re, newModel._id + "." + compNew._id + "." + pNew._id);
                               console.log(p.value, element, newModel._id + "." + compNew._id + "." + pNew._id)
                           });

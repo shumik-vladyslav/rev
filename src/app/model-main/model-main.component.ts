@@ -78,7 +78,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
         this.modelList = data;
         this.modelList.forEach((model) => {
           this.modelsKeys[model._id] = model.id;
-        })
+        });
         this.modelService.getAll().subscribe((data: any) => {
           data.forEach(element => {
             if (element._id === this.modelId) {
@@ -112,7 +112,10 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
 
   updateQuery(model) {
     this.saverComponent.push(JSON.parse(JSON.stringify( this.data )));
-
+      new Promise((resolve, reject) => {this.calc(resolve, reject)}).then(() => {
+        this.removeAll();
+        this.drow();
+      });
     let id = this.data[model.selected];
     if (id) {
       this.componentService.update(id).subscribe((r) => {
@@ -120,6 +123,13 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
           this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
             this.formulaData = data;
             this.formulaSaver = {};
+            this.formulaData.forEach((comp) => {
+              comp.parameters.forEach((element, i) => {
+                if (element.value && element.value.charAt(0) !== "="){
+                  this.formulaSaver[element._id] = element.value;
+                }
+              });
+            });
             new Promise((resolve, reject) => {this.calc(resolve, reject)}).then(() => {
               this.removeAll();
               this.drow();
@@ -196,9 +206,8 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
       }
   }
 
-  
-
   calc(resolve?, reject?) {
+  
     this.data.forEach((comp) => {
       comp.parameters.forEach((element, i) => {
         // if (element.value && element.value.charAt(0) === "="){
@@ -241,71 +250,59 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
     });
   }
 
+  inSearch = {}
+;
   searchFormula(value, id){
+    if(this.formulaData)
+    this.formulaData.forEach((comp) => {
+      comp.parameters.forEach((element, i) => {
+        this.formulaSaver[element._id] = element.formulaValue || element.value;
+      });
+    });
+
     let spcaSpit = value.split(" ");
+    // spcaSpit.forEach((element, index) => {
+    //   let earr = element.split(".");
+    //   if (earr.length == 3) {
+    //     if (!this.formulaSaver[earr[2]]) {
+    //       if(this.formulaData)
+    //       this.formulaData.forEach((comp) => {
+    //         comp.parameters.forEach((element, i) => {
+    //           this.formulaSaver[earr[2]] = element.value;
+    //           // if (element.value && element.value.charAt(0) === "="){
+    //           //   // this.formulaSaver[earr[2]] = element.value;
+    //           //   if(!this.inSearch[element.value]){
+    //           //     this.inSearch[element.value] = true;
+    //           //     // this.searchFormula(element.value, element._id);
+    //           //   }
+    //           // } 
+    //           // if(element._id === earr[2] && element.value.charAt(0) !== "=") {
+    //           //   this.formulaSaver[earr[2]] = element.value;
+    //           // }
+    //         });
+    //       });
+    //     }
+    //   }
+    // });
     spcaSpit.forEach((element, index) => {
       let earr = element.split(".");
+
       if (earr.length == 3) {
-        if (!this.formulaSaver[earr[2]]) {
-          this.data.forEach((comp) => {
-            comp.parameters.forEach((element, i) => {
-              if (element.value && element.value.charAt(0) === "="){
-                // this.searchFormulaIner(element.value, element._id);
-              } 
-              if(element._id === earr[2]) {
-                  this.formulaSaver[earr[2]] = element.value;
-              }
-            });
-          });
-          for (const key in this.formulaSaver) {
-            if(key === earr[2]) {
-                this.formulaSaver[earr[2]] = this.formulaSaver[key];
-            }
-          }
-        }
+        spcaSpit[index] = this.formulaSaver[earr[2]];
       }
     });
     spcaSpit.shift();
     
     try {
       this.formulaSaver[id] = this.notEval(spcaSpit.join(''));
+      this.formulaValueUpdateComponent(id, this.formulaSaver[id]);
     } catch {
       // this.searchFormula(value, id)
-      this.reculc(value, id);
+      // this.reculc(value, id);
       // this.formulaSaver[id] = 0;
     }
   }
 
-  searchFormulaIner(value, id){
-    let spcaSpit = value.split(" ");
-    spcaSpit.forEach((element, index) => {
-      let earr = element.split(".");
-      if (earr.length == 3) {
-        if (!this.formulaSaver[earr[2]]) {
-          this.data.forEach((comp) => {
-            comp.parameters.forEach((element, i) => {
-              if (element.value && element.value.charAt(0) === "="){
-                // this.searchFormula(element.value, element._id);
-              } 
-              if(element._id === earr[2]) {
-                  this.formulaSaver[earr[2]] = element.value;
-              }
-            });
-          });
-        }
-      }
-    });
-    spcaSpit.shift();
-    console.log(spcaSpit)
-    
-    try {
-      this.formulaSaver[id] = this.notEval(spcaSpit.join(''));
-    } catch {
-      // this.searchFormula(value, id)
-      this.reculc(value, id);
-      // this.formulaSaver[id] = 0;
-    }
-  }
   reculc(v, id) {
     for (const key in this.formulaSaver){
       if (this.formulaSaver[key] && typeof  this.formulaSaver[key] === 'string' && this.formulaSaver[key].charAt(0) === "=") {
@@ -313,20 +310,51 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
         
         spcaSpit.forEach((element, index) => {
           let earr = element.split(".");
-  
-          if (earr.length == 3) {
-            spcaSpit[index] = this.formulaSaver[earr[2]];
+          if (!this.formulaSaver[earr[2]]) {
+            this.data.forEach((comp) => {
+              comp.parameters.forEach((element, i) => {
+                if (element.value && element.value.charAt(0) === "="){
+              // this.searchFormula(element.value, element._id);
+                } 
+                if(element._id === earr[2]) {
+                    this.formulaSaver[earr[2]] = element.value;
+                }
+              });
+            });
+            for (const key in this.formulaSaver) {
+              
+              if(key === earr[2]) {
+                  this.formulaSaver[earr[2]] = this.formulaSaver[key];
+              }
+            }
           }
+          // if (element.value && element.charAt(0) === "="){
+          //   // this.searchFormula(element.value, element._id);
+          //     } 
+          // if (earr.length == 3) {
+          //   spcaSpit[index] = this.formulaSaver[earr[2]];
+          // }
         });
         spcaSpit.shift();
-        console.log(spcaSpit)
         try {
           this.formulaSaver[key] = this.notEval(spcaSpit.join(''));
+          this.formulaValueUpdateComponent(key, this.formulaSaver[key]);
         } catch {
           // this.calc();
         }
       }
     };
+  }
+
+  formulaValueUpdateComponent(id, value){
+    this.data.forEach((c) => {
+      c.parameters.forEach((p) => {
+        if(p._id === id) {
+          p.formulaValue = value;
+          this.componentService.update(c).subscribe((data) => {});
+        }
+      });
+    });
   }
 
   clear() {
@@ -903,7 +931,6 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
 
                   if (v && v.charAt(0) === "=") {
                     let spcaSpit = v.split(" ");
-                    
                     spcaSpit.forEach((element, index) => {
                       let earr = element.split(".");
 
@@ -912,11 +939,13 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
                       }
                     });
                     spcaSpit.shift();
+                    
                     try {
                       // this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] = this.notEval(spcaSpit.join(''));
                       this.formulaSaver[param._id] = this.notEval(spcaSpit.join(''));
+                      this.formulaValueUpdateComponent(param._id, this.formulaSaver[param._id]);
                     } catch {
-                      this.calc();
+                      this.searchFormula(v, param._id);
                     }
                     // let res = this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] || 0;
                     let res = this.formulaSaver[param._id] || 0;
