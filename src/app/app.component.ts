@@ -37,10 +37,10 @@ export class AppComponent implements OnInit {
     this.authService.me().subscribe(data => {
       this.user = data.user;
       (window as any).user = data.user;
-      this.user.isAdmin = true;
-      this.modelService.updateUserById(this.user).subscribe(() => {
+      // this.user.isAdmin = true;
+      // this.modelService.updateUserById(this.user).subscribe(() => {
     
-      })
+      // })
       this.tokenStorage.saveUser(JSON.stringify(data.user));
     });
 

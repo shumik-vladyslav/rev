@@ -477,9 +477,9 @@ var AppComponent = /** @class */ (function () {
         this.authService.me().subscribe(function (data) {
             _this.user = data.user;
             window.user = data.user;
-            _this.user.isAdmin = true;
-            _this.modelService.updateUserById(_this.user).subscribe(function () {
-            });
+            // this.user.isAdmin = true;
+            // this.modelService.updateUserById(this.user).subscribe(() => {
+            // })
             _this.tokenStorage.saveUser(JSON.stringify(data.user));
         });
         // update this.user after login/register/logout
