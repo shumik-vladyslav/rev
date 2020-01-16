@@ -12,7 +12,9 @@ const userSchema = Joi.object({
 
 
 module.exports = {
-  insert
+  insert,
+  updateById,
+  getAllUsers
 }
 
 async function insert(user) {
@@ -21,3 +23,23 @@ async function insert(user) {
   delete user.password;
   return await new User(user).save();
 }
+
+async function updateById(params) {
+  return await User.update({_id: params._id}, {$set: params})
+}
+
+async function getAllUsers(params) {
+  return await User.find()
+}
+
+// db.orders.aggregate([
+//   {
+//     $lookup:
+//       {
+//         from: "inventory",
+//         localField: "item",
+//         foreignField: "sku",
+//         as: "inventory_docs"
+//       }
+//  }
+// ])

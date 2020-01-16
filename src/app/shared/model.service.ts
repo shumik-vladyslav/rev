@@ -31,4 +31,14 @@ export class ModelService {
   updateById(model) {
     return this.http.put('/api/model', model);
   }
+
+  updateUserById(user) {
+    return this.http.put('/api/user', user);
+  }
+
+  getAllUsers() {
+    return this.http.get('/api/user/getallusers');
+  }
+
+  
 }

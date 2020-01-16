@@ -1,0 +1,17 @@
+<table id="customers">
+  <tr>
+    <th>Users</th>
+    <th>Models</th>
+    <th>Components</th>
+    <th>Admin</th>
+  </tr>
+  <tr *ngFor="let user of users">
+    <td>{{user.email}}</td>
+    <td>{{getModels(user._id).length}}</td>
+    <td>{{getComponents(user._id).length}}</td>
+    <td>
+        <button *ngIf="!user.isAdmin" (click)="setAdmin(user)">On</button>
+        <button *ngIf="user.isAdmin" (click)="setAdmin(user)">Off</button>
+    </td>
+  </tr>
+</table>

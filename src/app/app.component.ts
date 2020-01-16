@@ -7,6 +7,8 @@ import { DomSanitizer } from "@angular/platform-browser";
 
 import { AuthService } from './auth/auth.service';
 import * as schema from './schema/equipment.json';
+import { TokenStorage } from './auth/token.storage';
+import { ModelService } from './shared/model.service';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +24,9 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private domSanitizer: DomSanitizer,
-    private matIconRegistry: MatIconRegistry
+    private matIconRegistry: MatIconRegistry,
+    private tokenStorage: TokenStorage,
+    private modelService: ModelService
   ) {
     this.registerSvgIcons()
   }
@@ -32,6 +36,10 @@ export class AppComponent implements OnInit {
     // init this.user on startup
     this.authService.me().subscribe(data => {
       this.user = data.user;
+      (window as any).user = data.user;
+      // this.user.isAdmin = true;
+ 
+      this.tokenStorage.saveUser(JSON.stringify(data.user));
     });
 
     // update this.user after login/register/logout

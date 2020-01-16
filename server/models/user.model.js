@@ -22,7 +22,8 @@ const UserSchema = new mongoose.Schema({
   },
   roles: [{
     type: String,
-  }]
+  }],
+  isAdmin: Boolean
 }, {
   versionKey: false
 });

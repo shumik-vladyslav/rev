@@ -51,6 +51,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
 /* harmony import */ var _admin_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./admin.component */ "./src/app/admin/admin.component.ts");
 /* harmony import */ var _admin_user_guard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./admin-user-guard */ "./src/app/admin/admin-user-guard.ts");
+/* harmony import */ var _users_info_users_info_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./users-info/users-info.component */ "./src/app/admin/users-info/users-info.component.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -61,12 +62,17 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
+
 var routes = [{
         path: 'admin',
         canActivate: [_admin_user_guard__WEBPACK_IMPORTED_MODULE_3__["OnlyAdminUsersGuard"]],
         children: [{
                 path: '',
                 component: _admin_component__WEBPACK_IMPORTED_MODULE_2__["AdminComponent"],
+            },
+            {
+                path: 'users',
+                component: _users_info_users_info_component__WEBPACK_IMPORTED_MODULE_4__["UsersInfoComponent"],
             }]
     }];
 var AdminRoutingModule = /** @class */ (function () {
@@ -96,6 +102,7 @@ var AdminRoutingModule = /** @class */ (function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "OnlyAdminUsersGuard", function() { return OnlyAdminUsersGuard; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var _auth_token_storage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../auth/token.storage */ "./src/app/auth/token.storage.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -106,16 +113,19 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+
 var OnlyAdminUsersGuard = /** @class */ (function () {
-    function OnlyAdminUsersGuard() {
+    function OnlyAdminUsersGuard(tokenStorage) {
+        this.tokenStorage = tokenStorage;
     }
     OnlyAdminUsersGuard.prototype.canActivate = function () {
-        var user = window.user;
+        var user = this.tokenStorage.getUser();
+        console.log(user);
         return user && user.isAdmin;
     };
     OnlyAdminUsersGuard = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])(),
-        __metadata("design:paramtypes", [])
+        __metadata("design:paramtypes", [_auth_token_storage__WEBPACK_IMPORTED_MODULE_1__["TokenStorage"]])
     ], OnlyAdminUsersGuard);
     return OnlyAdminUsersGuard;
 }());
@@ -190,6 +200,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _admin_routing_module__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./admin-routing.module */ "./src/app/admin/admin-routing.module.ts");
 /* harmony import */ var _admin_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./admin.component */ "./src/app/admin/admin.component.ts");
 /* harmony import */ var _admin_user_guard__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./admin-user-guard */ "./src/app/admin/admin-user-guard.ts");
+/* harmony import */ var _users_info_users_info_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./users-info/users-info.component */ "./src/app/admin/users-info/users-info.component.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -201,13 +212,15 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
+
 var AdminModule = /** @class */ (function () {
     function AdminModule() {
     }
     AdminModule = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["NgModule"])({
             declarations: [
-                _admin_component__WEBPACK_IMPORTED_MODULE_3__["AdminComponent"]
+                _admin_component__WEBPACK_IMPORTED_MODULE_3__["AdminComponent"],
+                _users_info_users_info_component__WEBPACK_IMPORTED_MODULE_5__["UsersInfoComponent"]
             ],
             imports: [
                 _angular_common__WEBPACK_IMPORTED_MODULE_1__["CommonModule"],
@@ -219,6 +232,111 @@ var AdminModule = /** @class */ (function () {
         })
     ], AdminModule);
     return AdminModule;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/admin/users-info/users-info.component.html":
+/*!************************************************************!*\
+  !*** ./src/app/admin/users-info/users-info.component.html ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<table id=\"customers\">\n  <tr>\n    <th>Users</th>\n    <th>Models</th>\n    <th>Components</th>\n    <th>Admin</th>\n  </tr>\n  <tr *ngFor=\"let user of users\">\n    <td>{{user.email}}</td>\n    <td>{{getModels(user._id).length}}</td>\n    <td>{{getComponents(user._id).length}}</td>\n    <td>\n        <button *ngIf=\"!user.isAdmin\" (click)=\"setAdmin(user)\">On</button>\n        <button *ngIf=\"user.isAdmin\" (click)=\"setAdmin(user)\">Off</button>\n    </td>\n  </tr>\n</table>\n"
+
+/***/ }),
+
+/***/ "./src/app/admin/users-info/users-info.component.scss":
+/*!************************************************************!*\
+  !*** ./src/app/admin/users-info/users-info.component.scss ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "#customers {\n  font-family: \"Trebuchet MS\", Arial, Helvetica, sans-serif;\n  border-collapse: collapse;\n  width: 100%;\n  margin-left: 40px; }\n\n#customers td, #customers th {\n  border: 1px solid #ddd;\n  padding: 8px; }\n\n#customers tr:nth-child(even) {\n  background-color: #f2f2f2; }\n\n#customers tr:hover {\n  background-color: #ddd; }\n\n#customers th {\n  padding-top: 12px;\n  padding-bottom: 12px;\n  text-align: left;\n  background-color: #4CAF50;\n  color: white; }\n"
+
+/***/ }),
+
+/***/ "./src/app/admin/users-info/users-info.component.ts":
+/*!**********************************************************!*\
+  !*** ./src/app/admin/users-info/users-info.component.ts ***!
+  \**********************************************************/
+/*! exports provided: UsersInfoComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UsersInfoComponent", function() { return UsersInfoComponent; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var _shared_model_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/model.service */ "./src/app/shared/model.service.ts");
+/* harmony import */ var _shared_component_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/component.service */ "./src/app/shared/component.service.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (undefined && undefined.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+var UsersInfoComponent = /** @class */ (function () {
+    function UsersInfoComponent(modelService, componentService) {
+        var _this = this;
+        this.modelService = modelService;
+        this.componentService = componentService;
+        this.users = [];
+        this.models = [];
+        this.components = [];
+        this.modelService.getAllUsers().subscribe(function (data) {
+            _this.users = data;
+            console.log(data);
+        });
+        this.modelService.getAll().subscribe(function (data) {
+            _this.models = data;
+            console.log(data);
+        });
+        this.componentService.getAll().subscribe(function (data) {
+            _this.components = data;
+            console.log(data);
+        });
+    }
+    UsersInfoComponent.prototype.ngOnInit = function () {
+    };
+    UsersInfoComponent.prototype.setAdmin = function (user) {
+        var _this = this;
+        user.isAdmin = !user.isAdmin;
+        this.modelService.updateUserById(user).subscribe(function () {
+            _this.modelService.getAllUsers().subscribe(function (data) {
+                _this.users = data;
+                console.log(data);
+            });
+        });
+    };
+    UsersInfoComponent.prototype.getModels = function (id) {
+        return this.models.filter(function (model) {
+            return model.userId === id;
+        });
+    };
+    UsersInfoComponent.prototype.getComponents = function (id) {
+        return this.components.filter(function (component) {
+            return component.userId === id;
+        });
+    };
+    UsersInfoComponent = __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
+            selector: 'app-users-info',
+            template: __webpack_require__(/*! ./users-info.component.html */ "./src/app/admin/users-info/users-info.component.html"),
+            styles: [__webpack_require__(/*! ./users-info.component.scss */ "./src/app/admin/users-info/users-info.component.scss")]
+        }),
+        __metadata("design:paramtypes", [_shared_model_service__WEBPACK_IMPORTED_MODULE_1__["ModelService"], _shared_component_service__WEBPACK_IMPORTED_MODULE_2__["ComponentService"]])
+    ], UsersInfoComponent);
+    return UsersInfoComponent;
 }());
 
 
@@ -325,6 +443,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
 /* harmony import */ var _angular_platform_browser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/platform-browser */ "./node_modules/@angular/platform-browser/fesm5/platform-browser.js");
 /* harmony import */ var _auth_auth_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./auth/auth.service */ "./src/app/auth/auth.service.ts");
+/* harmony import */ var _auth_token_storage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./auth/token.storage */ "./src/app/auth/token.storage.ts");
+/* harmony import */ var _shared_model_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./shared/model.service */ "./src/app/shared/model.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -339,12 +459,16 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
+
+
 var AppComponent = /** @class */ (function () {
-    function AppComponent(authService, router, domSanitizer, matIconRegistry) {
+    function AppComponent(authService, router, domSanitizer, matIconRegistry, tokenStorage, modelService) {
         this.authService = authService;
         this.router = router;
         this.domSanitizer = domSanitizer;
         this.matIconRegistry = matIconRegistry;
+        this.tokenStorage = tokenStorage;
+        this.modelService = modelService;
         this.registerSvgIcons();
     }
     AppComponent.prototype.ngOnInit = function () {
@@ -352,6 +476,9 @@ var AppComponent = /** @class */ (function () {
         // init this.user on startup
         this.authService.me().subscribe(function (data) {
             _this.user = data.user;
+            window.user = data.user;
+            // this.user.isAdmin = true;
+            _this.tokenStorage.saveUser(JSON.stringify(data.user));
         });
         // update this.user after login/register/logout
         this.userSubscription = this.authService.$userSource.subscribe(function (user) {
@@ -418,7 +545,9 @@ var AppComponent = /** @class */ (function () {
         __metadata("design:paramtypes", [_auth_auth_service__WEBPACK_IMPORTED_MODULE_4__["AuthService"],
             _angular_router__WEBPACK_IMPORTED_MODULE_1__["Router"],
             _angular_platform_browser__WEBPACK_IMPORTED_MODULE_3__["DomSanitizer"],
-            _angular_material__WEBPACK_IMPORTED_MODULE_2__["MatIconRegistry"]])
+            _angular_material__WEBPACK_IMPORTED_MODULE_2__["MatIconRegistry"],
+            _auth_token_storage__WEBPACK_IMPORTED_MODULE_5__["TokenStorage"],
+            _shared_model_service__WEBPACK_IMPORTED_MODULE_6__["ModelService"]])
     ], AppComponent);
     return AppComponent;
 }());
@@ -993,11 +1122,13 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 };
 
 var TOKEN_KEY = 'AuthToken';
+var USER = 'user';
 var TokenStorage = /** @class */ (function () {
     function TokenStorage() {
     }
     TokenStorage.prototype.signOut = function () {
         window.localStorage.removeItem(TOKEN_KEY);
+        window.localStorage.removeItem(USER);
         window.localStorage.clear();
     };
     TokenStorage.prototype.saveToken = function (token) {
@@ -1008,6 +1139,15 @@ var TokenStorage = /** @class */ (function () {
     };
     TokenStorage.prototype.getToken = function () {
         return localStorage.getItem(TOKEN_KEY);
+    };
+    TokenStorage.prototype.saveUser = function (user) {
+        if (!user)
+            return;
+        window.localStorage.removeItem(USER);
+        window.localStorage.setItem(USER, user);
+    };
+    TokenStorage.prototype.getUser = function () {
+        return JSON.parse(localStorage.getItem(USER));
     };
     TokenStorage = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])(),
@@ -3561,6 +3701,12 @@ var ModelService = /** @class */ (function () {
     };
     ModelService.prototype.updateById = function (model) {
         return this.http.put('/api/model', model);
+    };
+    ModelService.prototype.updateUserById = function (user) {
+        return this.http.put('/api/user', user);
+    };
+    ModelService.prototype.getAllUsers = function () {
+        return this.http.get('/api/user/getallusers');
     };
     ModelService = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])(),
