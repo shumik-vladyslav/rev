@@ -30,7 +30,6 @@ export class UsersInfoComponent implements OnInit {
   }
 
   setAdmin(user){
-    user.isAdmin = !user.isAdmin;
     this.modelService.updateUserById(user).subscribe(() => {
       this.modelService.getAllUsers().subscribe((data:any) => {
         this.users = data;

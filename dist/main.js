@@ -201,12 +201,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _admin_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./admin.component */ "./src/app/admin/admin.component.ts");
 /* harmony import */ var _admin_user_guard__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./admin-user-guard */ "./src/app/admin/admin-user-guard.ts");
 /* harmony import */ var _users_info_users_info_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./users-info/users-info.component */ "./src/app/admin/users-info/users-info.component.ts");
+/* harmony import */ var _angular_material__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/material */ "./node_modules/@angular/material/esm5/material.es5.js");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
+
 
 
 
@@ -225,6 +229,8 @@ var AdminModule = /** @class */ (function () {
             imports: [
                 _angular_common__WEBPACK_IMPORTED_MODULE_1__["CommonModule"],
                 _admin_routing_module__WEBPACK_IMPORTED_MODULE_2__["AdminRoutingModule"],
+                _angular_forms__WEBPACK_IMPORTED_MODULE_7__["FormsModule"],
+                _angular_material__WEBPACK_IMPORTED_MODULE_6__["MatCheckboxModule"]
             ],
             providers: [
                 _admin_user_guard__WEBPACK_IMPORTED_MODULE_4__["OnlyAdminUsersGuard"]
@@ -245,7 +251,7 @@ var AdminModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<table id=\"customers\">\n  <tr>\n    <th>Users</th>\n    <th>Models</th>\n    <th>Components</th>\n    <th>Admin</th>\n  </tr>\n  <tr *ngFor=\"let user of users\">\n    <td>{{user.email}}</td>\n    <td>{{getModels(user._id).length}}</td>\n    <td>{{getComponents(user._id).length}}</td>\n    <td>\n        <button *ngIf=\"!user.isAdmin\" (click)=\"setAdmin(user)\">On</button>\n        <button *ngIf=\"user.isAdmin\" (click)=\"setAdmin(user)\">Off</button>\n    </td>\n  </tr>\n</table>\n"
+module.exports = "<table id=\"customers\">\n  <tr>\n    <th>Users</th>\n    <th>Models</th>\n    <th>Objects</th>\n    <th>Admin</th>\n  </tr>\n  <tr *ngFor=\"let user of users\">\n    <td>{{user.email}}</td>\n    <td>{{getModels(user._id).length}}</td>\n    <td>{{getComponents(user._id).length}}</td>\n    <td>\n        <mat-checkbox [(ngModel)]=\"user.isAdmin\" (ngModelChange)=\"setAdmin(user)\">Admin</mat-checkbox>\n    </td>\n  </tr>\n</table>\n"
 
 /***/ }),
 
@@ -310,7 +316,6 @@ var UsersInfoComponent = /** @class */ (function () {
     };
     UsersInfoComponent.prototype.setAdmin = function (user) {
         var _this = this;
-        user.isAdmin = !user.isAdmin;
         this.modelService.updateUserById(user).subscribe(function () {
             _this.modelService.getAllUsers().subscribe(function (data) {
                 _this.users = data;

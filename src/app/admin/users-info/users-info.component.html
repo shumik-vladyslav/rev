@@ -2,7 +2,7 @@
   <tr>
     <th>Users</th>
     <th>Models</th>
-    <th>Components</th>
+    <th>Objects</th>
     <th>Admin</th>
   </tr>
   <tr *ngFor="let user of users">
@@ -10,8 +10,7 @@
     <td>{{getModels(user._id).length}}</td>
     <td>{{getComponents(user._id).length}}</td>
     <td>
-        <button *ngIf="!user.isAdmin" (click)="setAdmin(user)">On</button>
-        <button *ngIf="user.isAdmin" (click)="setAdmin(user)">Off</button>
+        <mat-checkbox [(ngModel)]="user.isAdmin" (ngModelChange)="setAdmin(user)">Admin</mat-checkbox>
     </td>
   </tr>
 </table>

@@ -1,0 +1,5 @@
+Obgect ID;Raw1;Raw1;Raw2;Raw2;Mixing
+Obgect name;—ырье 1;—ырье 1;—ырье 2;—ырье 2;—мешивание
+Parameter ID;Rate;temp;Rate;temp;RateMesured
+Parameter name;Rate;Temp1;Rate;Temp2;Mesured rate
+timestamp\Mesured;1;1;1;1;1
