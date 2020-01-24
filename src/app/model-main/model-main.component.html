@@ -1,3 +1,7 @@
+
+<input #file type="file" (change)="onChange($event)"  style="display: none;"/>
+
+
 <div class="bpm-wrap">
   <div class="palette-entries">
     <div *ngFor="let item of types" class="bpm-item">
@@ -6,6 +10,25 @@
       {{item}}
       </div>
     </div>
+  </div>
+  <div class="player-button">
+      <div class="wrap">
+          <button (click)="generateCSVPatern()" mat-icon-button>
+            <i class="material-icons">
+                table_chart
+            </i>
+          </button>
+          <button (click)="file.click()" mat-icon-button>
+            <i class="material-icons">
+              folder
+            </i>
+          </button>
+          <button (click)="generateCSVFull()" mat-icon-button>
+            <i class="material-icons">
+              cloud_download
+            </i>
+          </button>
+      </div>
   </div>
   <div class="coco-bpm-graph" id="graph" style="height: calc(100vh - 60px);"></div>
   <!-- <div class="clickShield" *ngIf="showSide" (click)="showSide = false"></div> -->

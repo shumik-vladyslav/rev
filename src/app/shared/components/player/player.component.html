@@ -1,25 +1,26 @@
-<div class="player-wrap">
+<div *ngIf="data && data[0] && data[0][cursor]" class="player-wrap">
   <div class="actions-buttons">
     <button 
       mat-icon-button 
       matTooltip="Info about the action Info about the action Info about the action Info about the action Info about the action Info about the action Info about the action Info about the action Info about the action Info about the action Info about the action Info about the action Info about the action " 
       matTooltipPosition="below"
+      (click)="cursor = 4"
     >
       <i class="material-icons">
         skip_previous
       </i>
     </button>
-    <button mat-icon-button>
+    <button (click)="pause()" mat-icon-button>
       <i class="material-icons">
         pause
       </i>
     </button>
-    <button mat-icon-button>
+    <button (click)="play()" mat-icon-button>
       <i class="material-icons">
         play_arrow
       </i>
     </button>
-    <button mat-icon-button>
+    <button (click)="cursor = data[0].length - 2" mat-icon-button>
       <i class="material-icons">
         skip_next
       </i>
@@ -31,7 +32,7 @@
         Time Stamp
       </div>
       <div class="box date">
-        20 Dec 2019 20.12
+        {{data[0][cursor]}}
       </div>
       <button mat-icon-button>
         <img width="30px" src="assets/icons/png/chart-down.png" alt="">
@@ -41,15 +42,15 @@
       </button>
     </div>
     <div class="field">
-      <button mat-icon-button style="margin-right: -18px;">
+      <button (click)="skipPrevious()" mat-icon-button style="margin-right: -18px;">
         <i class="material-icons" style="font-size: 38px;">
           arrow_left
         </i>
       </button>
       <div class="slider-wrap">
-        <input type="range">
+        <input [(ngModel)]="cursor" type="range" min="4" [max]="data[0].length - 2" (ngModelChange)="cursorChange($event)">
       </div>
-      <button mat-icon-button style="margin-left: -18px;">
+      <button (click)="skipNext()" mat-icon-button style="margin-left: -18px;">
         <i class="material-icons" style="font-size: 38px;">
           arrow_right
         </i>

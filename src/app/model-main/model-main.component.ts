@@ -9,7 +9,11 @@ import { Subject, forkJoin } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/internal/operators";
 import { AuthService } from '../auth/auth.service';
 import { DialogCreateModelComponent } from '../shared/components/dialog-create-model/dialog-create-model.component';
+import { HttpClient } from '@angular/common/http';
+import { PlayerService } from '../shared/components/player/player.service';
+// var windows1251 = require('windows-1251');
 declare var d3;
+declare var windows1251;
 @Component({
   selector: 'app-model-main',
   templateUrl: './model-main.component.html',
@@ -59,13 +63,16 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
   modelsKeys = {};
   dataCopy;
   selectedModalObj;
+  modelID;
 
   constructor(
     private modelService: ModelService,
     private componentService: ComponentService,
     public dialog: MatDialog,
     private authService: AuthService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private http : HttpClient,
+    private playerService: PlayerService
   ) {
     this.modelId = this.activatedRoute.snapshot.paramMap.get('id');
     this.authService.me().subscribe(data => {
@@ -77,6 +84,9 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
         });
         this.modelList = data;
         this.modelList.forEach((model) => {
+          if(this.modelId === model._id){
+            this.modelID = model.id;
+          }
           this.modelsKeys[model._id] = model.id;
         })
         this.modelService.getAll().subscribe((data: any) => {
@@ -108,6 +118,30 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
       .subscribe(model => {
         this.updateQuery(model);
       });
+
+    this.playerService.cursorEmitter.subscribe((cursor) => {
+      this.formulaSaver = {};
+
+      for (let i = 1; i < this.dataPlayer.length; i++) {
+
+        for (let item of this.data) {
+
+          if (item.id.toLowerCase().trim() === this.dataPlayer[i][0].toLowerCase().trim()) {
+
+            for (let param of item.parameters) {
+
+              if (param.id.toLowerCase().trim() === this.dataPlayer[i][2].toLowerCase().trim()) {
+                param.value = this.dataPlayer[i][cursor];
+                this.formulaSaver[this.modelID + "." + item.id + "." + param.id] = this.dataPlayer[i][cursor];
+              }
+            }
+          }
+        }
+
+      }
+      this.clear();
+
+    })
   }
 
   updateQuery(model) {
@@ -804,6 +838,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
                       }
                     });
                     spcaSpit.shift();
+                    
                     try {
                       this.formulaSaver[this.modelsKeys[element.modelId] + "." + element.id + "." + param.id] = this.notEval(spcaSpit.join(''));
                     } catch {
@@ -1442,4 +1477,231 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
       }
     }
   }
+
+  generateCSVPatern() {
+    let items = [
+      ['Obgect ID'],
+      ['Obgect name'],
+      ['Parameter ID'],
+      ['Parameter name'],
+      [`Timestamp\\Mesured`]];
+
+    for (const item of this.data) {
+      for (const param of item.parameters) {
+        if(param.measurable){
+
+        console.log(param);
+        
+        items[0].push(item.id);
+        items[1].push(item.name);
+        items[2].push(param.id);
+        items[3].push(param.name);
+        let v = param.value;
+
+        if (v && v.charAt(0) === "=") {
+          let spcaSpit = v.split(" ");
+
+          spcaSpit.forEach((element, index) => {
+            let earr = element.split(".");
+            if (earr.length == 3) {
+                spcaSpit[index] = this.formulaSaver[element];
+            }
+          });
+          spcaSpit.shift();
+          try {
+            items[4].push(parseFloat(this.notEval(spcaSpit.join('')).toFixed(1)).toString());
+          } catch {
+            items[4].push("0");
+          }
+          
+        } else {
+          items[4].push(param.value);
+        }
+      }
+    }
+
+    }
+    console.log(items);
+    
+    let csvContent = "data:text/csv;charset=utf-8," 
+    // + windows1251.decode(items.map(e => e.join(";")).join("\n"));
+    + (items.map(e => e.join(";")).join("\n"));
+
+    
+    var encodedUri = encodeURI(csvContent);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "my_data.csv");
+    document.body.appendChild(link); // Required for FF
+
+    link.click();
+  console.log(this.ConvertToCSV(items))
+  }
+
+  generateCSVFull() {
+    console.log(this.data, this.dataPlayer);
+    let items = []
+    for (let i = 0; i < this.dataPlayer.length; i++) {
+      for (let j = 0; j < this.dataPlayer[i].length; j++) {
+        if(this.dataPlayer[i][j])
+        if(!items[j]) {
+          items[j] = [];
+        }
+        if(this.dataPlayer[i][j])
+        items[j].push(this.dataPlayer[i][j]);
+      }
+    }
+
+    console.log(this.data, this.dataPlayer, items);
+    let csvContent = "data:text/csv;charset=utf-8," 
+    + (items.map(e => e.join(";")).join("\n"));
+
+    
+    var encodedUri = encodeURI(csvContent);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "my_data.csv");
+    document.body.appendChild(link); // Required for FF
+
+    link.click();
+  }
+
+  ConvertToCSV(objArray) {
+    var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+    var str = '';
+
+    for (var i = 0; i < array.length; i++) {
+        var line = '';
+        for (var index in array[i]) {
+            if (line != '') line += ';'
+
+            line += array[i][index];
+        }
+
+        str += line + '\r\n';
+    }
+
+    return str;
+}
+
+
+  dataPlayer;
+
+  onChange(event) {
+    var file = event.srcElement.files[0];
+    if (file) {
+        var reader = new FileReader();
+        let self = this;
+        reader.readAsText(file, "UTF-8");
+        reader.onload = function (evt: any) {
+          console.log(evt.target.result);
+          
+          self.setDataPlayer(self.csvJSON(evt.target.result));
+          self.playerService.dataEmitter.emit(self.dataPlayer);
+        };
+        reader.onerror = function (evt) {
+            console.log('error reading file');
+        }
+    }
+  }
+
+  setDataPlayer(data) {
+    console.log(data);
+    let newArr = [];
+    // this.dataPlayer = data;
+    for(let j = 4; j < data[1].length; j++) {
+      for(let i = 1; i < data.length; i++) {
+        for(let item of this.data) {
+          if(item.id === data[i][0]) {
+            for(let param of item.parameters) {
+              if(param.id === data[i][2]) {
+                param.value = data[i][j];
+                this.formulaSaver[this.modelID + "." + item.id + "." + param.id] = data[i][j];
+              }
+            }
+          }
+        }
+      }
+      for(let item of this.data) {
+        for(let param of item.parameters) {
+          let v = param.value;
+
+          if (v && v.charAt(0) === "=") {
+            let spcaSpit = v.split(" ");
+            console.log(v);
+      
+            spcaSpit.forEach((element, index) => {
+              let earr = element.split(".");
+              if (earr.length == 3) {
+                  spcaSpit[index] = this.formulaSaver[element];
+              }
+            });
+            spcaSpit.shift();
+            try {
+              let flag;
+              let res = this.notEval(spcaSpit.join(''));
+              
+              for(let i = 0; i < newArr.length; i++) {
+                if(item.id === newArr[i][0] && param.id === newArr[i][2]){
+                  flag = true;
+                  newArr[i][j] = res.toString();
+                }
+              }
+              console.log(spcaSpit, res);
+
+              if(!flag) {
+                newArr.push([]);
+                newArr[newArr.length - 1].push(item.id);
+                newArr[newArr.length - 1].push(item.name);
+                newArr[newArr.length - 1].push(param.id);
+                newArr[newArr.length - 1].push(param.name);
+                newArr[newArr.length - 1].push(res.toString());
+              }
+            } catch{
+      
+            }
+          }
+        }
+      }
+    
+   }
+   this.dataPlayer = [...data, ...newArr]
+   console.log(this.dataPlayer);
+  }
+
+  csvJSON(csv){
+
+    var lines=csv.split("\n");
+  
+    var result = [];
+  
+    // NOTE: If your columns contain commas in their values, you'll need
+    // to deal with those before doing the next step 
+    // (you might convert them to &&& or something, then covert them back later)
+    // jsfiddle showing the issue https://jsfiddle.net/
+    var headers=lines[0].split(",");
+    
+    for(var i=0;i<lines.length;i++){
+  
+        var obj = {};
+        var currentline=lines[i].split(";");
+
+        for(var j=0;j<currentline.length;j++){
+          if(!result[j]){
+            result[j] = [];
+          }
+          result[j].push(currentline[j])
+        }
+        // for(var j=0;j<headers.length;j++){
+        //     obj[headers[j]] = currentline[j];
+        // }
+  
+        // result.push(obj);
+  
+    }
+  
+    return result; //JavaScript object
+    // return JSON.stringify(result); //JSON
+  }
+  
 }

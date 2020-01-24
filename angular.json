@@ -31,7 +31,8 @@
               "node_modules/d3-selection/dist/d3-selection.min.js",
               "node_modules/d3-drag/dist/d3-drag.min.js",
               "node_modules/d3-transition/dist/d3-transition.min.js",
-              "node_modules/jquery/dist/jquery.js"
+              "node_modules/jquery/dist/jquery.js",
+              "node_modules/windows-1251/windows-1251.js"
             ]
           },
           "configurations": {

@@ -3,13 +3,7 @@
   "version": "2.0.2",
   "license": "MIT",
   "scripts": {
-    "ng": "ng",
-    "serve": "node server",
-    "start": "concurrently -c \"yellow.bold,green.bold\" -n \"SERVER,BUILD\" \"nodemon server\" \"ng build --watch\"",
-    "build": "ng build --prod",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
+    "start": "nodemon server"
   },
   "private": true,
   "dependencies": {
@@ -72,6 +66,7 @@
     "rxjs-compat": "^6.0.0-rc.0",
     "swagger-ui-express": "^3.0.9",
     "webpack-dev-server": "^3.1.10",
+    "windows-1251": "^1.0.0",
     "zone.js": "0.8.26"
   },
   "devDependencies": {

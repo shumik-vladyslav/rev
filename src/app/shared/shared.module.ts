@@ -29,6 +29,7 @@ import { DialogCreateModelComponent } from './components/dialog-create-model/dia
 import { FiltrListParamPipe } from './pipes/filtr-list-param.pipe';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
 import { PlayerComponent } from './components/player/player.component';
+import { PlayerService } from './components/player/player.service';
 
 @NgModule({
   imports: [
@@ -81,6 +82,7 @@ import { PlayerComponent } from './components/player/player.component';
     MatTooltipModule,
     PlayerComponent
   ],
+  providers: [PlayerService],
   entryComponents: [DialogParametersComponent, DialogCreateModelComponent],
   declarations: [DialogParametersComponent, DialogCreateModelComponent, FiltrListParamPipe, ClickOutsideDirective, PlayerComponent],
 })

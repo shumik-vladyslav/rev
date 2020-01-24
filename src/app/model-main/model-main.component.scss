@@ -8,6 +8,21 @@
   min-height: calc(100vh - 58px);
 }
 
+.player-button {
+  position: absolute;
+  padding: 5px 0;
+  left: 31px;
+  top: 69%;
+  width: 44px;
+  border-radius: 5px;
+  background: #fafafa;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-wrap: wrap;
+  .wrap {
+    display: grid;
+  }
+}
 .palette-entries {
   position: absolute;
   padding: 5px 0;
