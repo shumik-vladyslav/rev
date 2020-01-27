@@ -118,19 +118,19 @@
           <td>
             <div class="df jc-c">
               <mat-checkbox [(ngModel)]="item.measurable" 
-              (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event)"></mat-checkbox>
+              (ngModelChange)="onFieldChange($event)"></mat-checkbox>
             </div>
           </td>
           <td>
             <div class="df jc-c">
               <mat-checkbox [(ngModel)]="item.changeable" 
-              (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event)"></mat-checkbox>
+              (ngModelChange)="onFieldChange($event)" (blur)="onFieldChange($event)"></mat-checkbox>
             </div>
           </td>
           <td>
             <div class="df jc-c">
               <mat-checkbox [(ngModel)]="item.showOnDiagram" 
-              (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event)"></mat-checkbox>
+              (ngModelChange)="onFieldChange($event)" (blur)="onFieldChange($event)"></mat-checkbox>
             </div>
           </td>
           <td>
@@ -196,16 +196,16 @@
                   </mat-form-field>
                   <div class="chekboxs-list">
                     <mat-checkbox [(ngModel)]="item.measurable" 
-                    (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event)">Measurable
+                    (ngModelChange)="onFieldChange($event)" (blur)="onFieldChange($event)">Measurable
                     </mat-checkbox>
                     <mat-checkbox [(ngModel)]="item.changeable" 
-                    (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event)">Changeable
+                    (ngModelChange)="onFieldChange($event)" (blur)="onFieldChange($event)">Changeable
                     </mat-checkbox>
                     <mat-checkbox [(ngModel)]="item.showOnDiagram" 
-                    (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event)">Show on
+                    (ngModelChange)="onFieldChange($event)" (blur)="onFieldChange($event)">Show on
                       diagram</mat-checkbox>
                     <mat-checkbox [(ngModel)]="item.showName" 
-                    (keyup.enter)="onFieldChange($event)" (blur)="onFieldChange($event)">Show name
+                    (ngModelChange)="onFieldChange($event)" (blur)="onFieldChange($event)">Show name
                     </mat-checkbox>
                   </div>
                   <mat-form-field *ngIf="item.showOnDiagram">
