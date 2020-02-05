@@ -1,5 +1,5 @@
 
-<input #file type="file" (change)="onChange($event)"  style="display: none;"/>
+<input #file  onclick="this.value=null;" type="file" (change)="onChange($event)"  style="display: none;"/>
 
 
 <div class="bpm-wrap">
@@ -13,6 +13,14 @@
   </div>
   <div class="player-button">
       <div class="wrap">
+        <button (click)="switchPlayer()" mat-icon-button>
+          <i *ngIf="this.readOnly" class="material-icons">
+            radio_button_checked
+          </i>
+          <i  *ngIf="!this.readOnly" class="material-icons">
+            radio_button_unchecked
+          </i>
+        </button>
           <button (click)="generateCSVPatern()" mat-icon-button>
             <i class="material-icons">
                 table_chart

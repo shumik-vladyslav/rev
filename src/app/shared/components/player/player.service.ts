@@ -10,6 +10,8 @@ export class PlayerService {
 
   dataEmitter = new EventEmitter();
   cursorEmitter = new EventEmitter();
+  closePlayer = new EventEmitter();
+  
 
   constructor(private http: HttpClient) {}
   

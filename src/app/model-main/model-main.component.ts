@@ -64,7 +64,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
   dataCopy;
   selectedModalObj;
   modelID;
-
+  cursor;
   constructor(
     private modelService: ModelService,
     private componentService: ComponentService,
@@ -110,29 +110,55 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
     }, 5000);
      this.txtQueryChanged
       .subscribe(model => {
-        this.updateQuery(model);
+        if(!this.cursor){
+          this.updateQuery(model);
+        }
+        else {
+          
+          let obj = this.data[model.selected];
+          for (const p of obj.parameters) {
+            this.formulaSaver[this.modelID + "." + obj.id + "." + p.id] = p.value;
+          }
+
+          this.setDataPlayer(null);
+        }
       });
 
       this.txtQueryChangedDebounce
       .pipe(debounceTime(500), distinctUntilChanged())
       .subscribe(model => {
-        this.updateQuery(model);
+        if(!this.cursor){
+          this.updateQuery(model);
+        }
+        else {
+          console.log(this.dataPlayer);
+          
+          let obj = this.data[model.selected];
+          for (const p of obj.parameters) {
+            this.formulaSaver[this.modelID + "." + obj.id + "." + p.id] = p.value;
+          }
+          // this.setDataPlayer(null);
+        }
       });
+
 
     this.playerService.cursorEmitter.subscribe((cursor) => {
       this.formulaSaver = {};
-
+      this.cursor = cursor;
+      if(this.readOnly)
       for (let i = 1; i < this.dataPlayer.length; i++) {
 
         for (let item of this.data) {
 
-          if (item.id.toLowerCase().trim() === this.dataPlayer[i][0].toLowerCase().trim()) {
+          if (item && item.id && item.id.toLowerCase().trim() === this.dataPlayer[i][0].toLowerCase().trim()) {
 
             for (let param of item.parameters) {
 
               if (param.id.toLowerCase().trim() === this.dataPlayer[i][2].toLowerCase().trim()) {
                 param.value = this.dataPlayer[i][cursor];
                 this.formulaSaver[this.modelID + "." + item.id + "." + param.id] = this.dataPlayer[i][cursor];
+              } else {
+                this.formulaSaver[this.modelID + "." + item.id + "." + param.id] = param.value;
               }
             }
           }
@@ -595,10 +621,12 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
         document.getElementById(type).addEventListener(
           "dragstart",
           ev => {
-            ev.dataTransfer.setData('text', 'foo');
-            this.dragType = type;
-            if (this.isStart && type === "Start") {
-              event.preventDefault();
+            if(!this.readOnly){
+              ev.dataTransfer.setData('text', 'foo');
+              this.dragType = type;
+              if (this.isStart && type === "Start") {
+                event.preventDefault();
+              }
             }
           },
           false
@@ -708,6 +736,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
               }
             })
             .on("click", (d, i, s) => {
+              if(!this.readOnly){
               d3.event.stopPropagation();
               this.selectedModal = s[0].id;
               this.selected = s[0].id;
@@ -715,8 +744,10 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
               this.drow();
               if (this.activeArrow)
                 this.shepClick(s[0].id);
+              }
             })
             .on("dblclick", (d, i, s) => {
+              if(!this.readOnly){
               this.selectedModal = s[0].id;
               let name = this.data[this.selectedModal].objectClass + (this.data[this.selectedModal].parameters.length + 1);
               this.newParametr = new ParameterClass("Par" + (this.data.filter(value => value.objectClass === this.data[this.selectedModal].objectClass).length + 1), "", "0")
@@ -726,6 +757,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
               this.drow();
               this.activeArrow = null;
               this.startDrowLine = null;
+              }
             });
 
           g.append("text")
@@ -740,6 +772,8 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
             .text("X")
             .attr("cursor", "pointer")
             .on("click", (d, i, s) => {
+              if(!this.readOnly){
+
               d3.event.stopPropagation();
               let id = s[0].id.split("-")[0];
 
@@ -788,7 +822,8 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
                   });
                 }
               });
-            });
+            
+      }});
 
           g.append("text")
             .attr("id", index + "-arrow")
@@ -797,9 +832,11 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
             .text("=>")
             .attr("cursor", "pointer")
             .on("click", (d, i, s) => {
+              if(!this.readOnly){
               d3.event.stopPropagation();
               let id = s[0].id.split("-")[0];
               this.shepClick(id);
+              }
             });
 
           g.append("text")
@@ -827,7 +864,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
                 case "Value":
                 case "":
                   let v = param.value;
-
+                  
                   if (v && v.charAt(0) === "=") {
                     let spcaSpit = v.split(" ");
 
@@ -944,8 +981,8 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
                   self.sladerChange(param, paramIndex, index);
                   let rangeElementleft: any = document.getElementById(`${index}-${paramIndex}-left`);
                   rangeElementleft.onclick = function (e) {
-                    
-                    let value = +param.value - +param.sliderStep;
+                    if(!self.readOnly){
+                      let value = +param.value - +param.sliderStep;
                       if (value >= param.sliderMin) {
                         self.dragSelected = index;
                         self.data[index].parameters[paramIndex].value = value.toString();
@@ -958,10 +995,13 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
 
                         self.sladerChange(param, paramIndex, index);
                       }
+                    }
+                  
                   };
 
                   let rangeElementright: any = document.getElementById(`${index}-${paramIndex}-right`);
                   rangeElementright.onclick = function (e) {
+                    if(!self.readOnly){
                       let value = +param.value + +param.sliderStep;
 
                       if (value <= (param.sliderMax + 1)) {
@@ -975,10 +1015,12 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
                         });
                         self.sladerChange(param, paramIndex, index);
                       }
+                    }
                   };
 
                   let sliderwrapElementright: any = document.getElementById(`${index}-${paramIndex}-slider-wrap`);
                   sliderwrapElementright.onclick = function (e) {
+                    if(!self.readOnly){
                       let value = ((e.offsetX / 90 * 100) * ((param.sliderMax - param.sliderMin) / 100)) + param.sliderMin;
                       value = Math.round(value / param.sliderStep) * param.sliderStep;
                       if (value <= (param.sliderMax + 1)) {
@@ -992,6 +1034,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
                         });
                         self.sladerChange(param, paramIndex, index);
                       }
+                    }
                   };
                   break;
                 default:
@@ -1018,11 +1061,14 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
       function dragstarted(d) {
         // d3.select(this)
         //   .classed("active", true);
-        self.start_x = +d3.event.x;
-        self.start_y = +d3.event.y;
+        if(!self.readOnly){
+          self.start_x = +d3.event.x;
+          self.start_y = +d3.event.y;
+        }
       }
 
       function dragged(d) {
+        if(!self.readOnly){
         let current_scale, current_scale_string;
         let transform = document.getElementById('wrap')
         if (transform.getAttribute("transform") === null) {
@@ -1058,7 +1104,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
         self.removeAll();
         self.drow();
 
-
+        }
       }
 
       function dragended(d) {
@@ -1585,6 +1631,7 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
 
 
   dataPlayer;
+  readOnly;
 
   onChange(event) {
     var file = event.srcElement.files[0];
@@ -1597,20 +1644,26 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
           
           self.setDataPlayer(self.csvJSON(evt.target.result));
           self.playerService.dataEmitter.emit(self.dataPlayer);
+          self.readOnly = true;
         };
         reader.onerror = function (evt) {
             console.log('error reading file');
         }
     }
   }
-
+  dataPlayerData
   setDataPlayer(data) {
+    if(data === null) {
+      data = this.dataPlayerData;
+    } else {
+      this.dataPlayerData = data;
+    }
     let newArr = [];
     // this.dataPlayer = data;
     for(let j = 4; j < data[1].length; j++) {
       for(let i = 1; i < data.length; i++) {
         for(let item of this.data) {
-          if(item.id.toLowerCase().trim() === data[i][0].toLowerCase().trim()) {
+          if(item && item.id && item.id.toLowerCase().trim() === data[i][0].toLowerCase().trim()) {
             for(let param of item.parameters) {
               if(param.id.toLowerCase().trim() === data[i][2].toLowerCase().trim()) {
                 param.value = data[i][j];
@@ -1666,11 +1719,16 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
 
    }
 
-    this.dataPlayer = [...data, ...newArr];
-    console.log(this.dataPlayer);
-    this.getData();
-    this.formulaSaver = {};
-    this.calc();
+  
+      this.dataPlayer = [...data, ...newArr];
+      console.log(this.dataPlayer); 
+      if(data !== null){
+        this.getData();
+        this.formulaSaver = {};
+        this.calc();
+      }
+   
+ 
   }
 
   csvJSON(csv){
@@ -1706,6 +1764,39 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
   
     return result; //JavaScript object
     // return JSON.stringify(result); //JSON
+  }
+
+  switchPlayer(){
+    if(this.dataPlayer.length) {
+      this.readOnly = !this.readOnly;
+      this.playerService.closePlayer.emit(this.readOnly);
+      if(!this.readOnly){
+        for(let i = 0; i < this.dataCopy.length; i++){
+          for(let j = 0; j < this.dataCopy[i].parameters.length; j++){
+            let p = this.dataCopy[i].parameters[j];
+            if (p.value && p.value.charAt(0) === "=") {
+              this.data[i].parameters[j].value = p.value.slice();
+            } else {
+              for (let di = 1; di < this.dataPlayer.length; di++) {
+                  if (this.dataCopy[i] && this.dataCopy[i].id && this.dataCopy[i].id.toLowerCase().trim() === this.dataPlayer[di][0].toLowerCase().trim()) {
+                      if (p.id.toLowerCase().trim() === this.dataPlayer[di][2].toLowerCase().trim()) {
+                        console.log(this.data[i].parameters[j],this.dataPlayer[di][this.cursor]);
+                        
+                        this.data[i].parameters[j].value =this.dataPlayer[di][this.cursor];
+                        this.formulaSaver[this.modelID + "." + this.dataCopy[i].id + "." + p.id] = this.dataPlayer[di][this.cursor];
+                      }
+                }
+        
+              }
+            }
+        }
+      }
+      }
+      console.log(this.formulaSaver);
+      
+      this.calc();
+    }
+
   }
   
 }

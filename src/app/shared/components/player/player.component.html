@@ -1,4 +1,4 @@
-<div *ngIf="data && data[0] && data[0][cursor]" class="player-wrap">
+<div *ngIf="data && data[0] && data[0][cursor] && !hidde" class="player-wrap">
   <div class="actions-buttons">
     <button 
       mat-icon-button 
@@ -40,6 +40,7 @@
       <button mat-icon-button>
         <img width="30px" src="assets/icons/png/chart-up.png" alt="">
       </button>
+      <!-- <div style="font-size: 14px;" (click)="close()">X</div> -->
     </div>
     <div class="field">
       <button (click)="skipPrevious()" mat-icon-button style="margin-right: -18px;">

@@ -10,11 +10,15 @@ export class PlayerComponent implements OnInit {
   data = [];
   cursor = 4;
   interval;
+  hidde;
 
   constructor(private playerService: PlayerService) {
     playerService.dataEmitter.subscribe((data) => {
       console.log(data)
       this.data = data;
+    });
+    this.playerService.closePlayer.subscribe((data) => {
+      this.hidde = !data;
     })
    }
 
@@ -53,5 +57,10 @@ export class PlayerComponent implements OnInit {
 
   cursorChange(e) {
     this.playerService.cursorEmitter.emit(e);
+  }
+
+  close() {
+    this.data = [];
+    this.playerService.closePlayer.emit("");
   }
 }
