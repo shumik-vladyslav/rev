@@ -110,35 +110,37 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
     }, 5000);
      this.txtQueryChanged
       .subscribe(model => {
-        if(!this.cursor){
           this.updateQuery(model);
-        }
-        else {
+        // if(!this.cursor){
+        //   this.updateQuery(model);
+        // }
+        // else {
           
-          let obj = this.data[model.selected];
-          for (const p of obj.parameters) {
-            this.formulaSaver[this.modelID + "." + obj.id + "." + p.id] = p.value;
-          }
+        //   let obj = this.data[model.selected];
+        //   for (const p of obj.parameters) {
+        //     this.formulaSaver[this.modelID + "." + obj.id + "." + p.id] = p.value;
+        //   }
 
-          this.setDataPlayer(null);
-        }
+        //   this.setDataPlayer(null);
+        // }
       });
 
       this.txtQueryChangedDebounce
       .pipe(debounceTime(500), distinctUntilChanged())
       .subscribe(model => {
-        if(!this.cursor){
           this.updateQuery(model);
-        }
-        else {
-          console.log(this.dataPlayer);
+        // if(!this.cursor){
+        //   this.updateQuery(model);
+        // }
+        // else {
+        //   console.log(this.dataPlayer);
           
-          let obj = this.data[model.selected];
-          for (const p of obj.parameters) {
-            this.formulaSaver[this.modelID + "." + obj.id + "." + p.id] = p.value;
-          }
-          // this.setDataPlayer(null);
-        }
+        //   let obj = this.data[model.selected];
+        //   for (const p of obj.parameters) {
+        //     this.formulaSaver[this.modelID + "." + obj.id + "." + p.id] = p.value;
+        //   }
+        //   // this.setDataPlayer(null);
+        // }
       });
 
 
@@ -183,6 +185,9 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
             new Promise((resolve, reject) => {this.calc(resolve, reject)}).then(() => {
               this.removeAll();
               this.drow();
+              if(!this.readOnly) {
+                this.setDataPlayer(null);
+              }
             });
           });
         }
@@ -366,6 +371,8 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
   ngOnDestroy() {
     this.modelService.selectedModelEvent.emit(null);
     clearInterval(this.setInterval);
+    this.readOnly = false;
+    this.playerService.closePlayer.emit(this.readOnly);
   }
 
   ngAfterViewInit() {
@@ -1771,26 +1778,34 @@ export class ModelMainComponent implements OnInit, OnDestroy, AfterViewInit, OnD
       this.readOnly = !this.readOnly;
       this.playerService.closePlayer.emit(this.readOnly);
       if(!this.readOnly){
-        for(let i = 0; i < this.dataCopy.length; i++){
-          for(let j = 0; j < this.dataCopy[i].parameters.length; j++){
-            let p = this.dataCopy[i].parameters[j];
+        for (let i = 0; i < this.data.length; i++) {
+          let copyObj = this.returnCopyData();
+          for (let j = 0; j < copyObj[i].parameters.length; j++) {
+            let p = copyObj[i].parameters[j];
             if (p.value && p.value.charAt(0) === "=") {
-              this.data[i].parameters[j].value = p.value.slice();
-            } else {
-              for (let di = 1; di < this.dataPlayer.length; di++) {
-                  if (this.dataCopy[i] && this.dataCopy[i].id && this.dataCopy[i].id.toLowerCase().trim() === this.dataPlayer[di][0].toLowerCase().trim()) {
-                      if (p.id.toLowerCase().trim() === this.dataPlayer[di][2].toLowerCase().trim()) {
-                        console.log(this.data[i].parameters[j],this.dataPlayer[di][this.cursor]);
-                        
-                        this.data[i].parameters[j].value =this.dataPlayer[di][this.cursor];
-                        this.formulaSaver[this.modelID + "." + this.dataCopy[i].id + "." + p.id] = this.dataPlayer[di][this.cursor];
-                      }
-                }
-        
-              }
+              this.data[i].parameters[j].value = p.value;
             }
+          }
+          this.componentService.update(this.data[i]).subscribe((r) => {
+              this.componentService.getAllByUserId(this.user._id).subscribe((data: any) => {
+                this.formulaData = data;
+                this.formulaSaver = {};
+                new Promise((resolve, reject) => {this.calc(resolve, reject)}).then(() => {
+                  this.removeAll();
+                  this.drow();
+                });
+              });
+          });
         }
-      }
+
+        setTimeout(() => {
+          this.formulaSaver = {};
+          this.dataPlayer = []
+          this.getData();
+        }, 8000);
+        setTimeout(() => {
+          this.setDataPlayer(null);
+        }, 15000);
       }
       console.log(this.formulaSaver);
       

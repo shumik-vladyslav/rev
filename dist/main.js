@@ -1790,33 +1790,33 @@ var ModelMainComponent = /** @class */ (function () {
         }, 5000);
         this.txtQueryChanged
             .subscribe(function (model) {
-            if (!_this.cursor) {
-                _this.updateQuery(model);
-            }
-            else {
-                var obj = _this.data[model.selected];
-                for (var _i = 0, _a = obj.parameters; _i < _a.length; _i++) {
-                    var p = _a[_i];
-                    _this.formulaSaver[_this.modelID + "." + obj.id + "." + p.id] = p.value;
-                }
-                _this.setDataPlayer(null);
-            }
+            _this.updateQuery(model);
+            // if(!this.cursor){
+            //   this.updateQuery(model);
+            // }
+            // else {
+            //   let obj = this.data[model.selected];
+            //   for (const p of obj.parameters) {
+            //     this.formulaSaver[this.modelID + "." + obj.id + "." + p.id] = p.value;
+            //   }
+            //   this.setDataPlayer(null);
+            // }
         });
         this.txtQueryChangedDebounce
             .pipe(Object(rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8__["debounceTime"])(500), Object(rxjs_internal_operators__WEBPACK_IMPORTED_MODULE_8__["distinctUntilChanged"])())
             .subscribe(function (model) {
-            if (!_this.cursor) {
-                _this.updateQuery(model);
-            }
-            else {
-                console.log(_this.dataPlayer);
-                var obj = _this.data[model.selected];
-                for (var _i = 0, _a = obj.parameters; _i < _a.length; _i++) {
-                    var p = _a[_i];
-                    _this.formulaSaver[_this.modelID + "." + obj.id + "." + p.id] = p.value;
-                }
-                // this.setDataPlayer(null);
-            }
+            _this.updateQuery(model);
+            // if(!this.cursor){
+            //   this.updateQuery(model);
+            // }
+            // else {
+            //   console.log(this.dataPlayer);
+            //   let obj = this.data[model.selected];
+            //   for (const p of obj.parameters) {
+            //     this.formulaSaver[this.modelID + "." + obj.id + "." + p.id] = p.value;
+            //   }
+            //   // this.setDataPlayer(null);
+            // }
         });
         this.playerService.cursorEmitter.subscribe(function (cursor) {
             _this.formulaSaver = {};
@@ -1855,6 +1855,9 @@ var ModelMainComponent = /** @class */ (function () {
                         new Promise(function (resolve, reject) { _this.calc(resolve, reject); }).then(function () {
                             _this.removeAll();
                             _this.drow();
+                            if (!_this.readOnly) {
+                                _this.setDataPlayer(null);
+                            }
                         });
                     });
                 }
@@ -2018,6 +2021,8 @@ var ModelMainComponent = /** @class */ (function () {
     ModelMainComponent.prototype.ngOnDestroy = function () {
         this.modelService.selectedModelEvent.emit(null);
         clearInterval(this.setInterval);
+        this.readOnly = false;
+        this.playerService.closePlayer.emit(this.readOnly);
     };
     ModelMainComponent.prototype.ngAfterViewInit = function () {
         this.init();
@@ -3211,29 +3216,38 @@ var ModelMainComponent = /** @class */ (function () {
         // return JSON.stringify(result); //JSON
     };
     ModelMainComponent.prototype.switchPlayer = function () {
+        var _this = this;
         if (this.dataPlayer.length) {
             this.readOnly = !this.readOnly;
             this.playerService.closePlayer.emit(this.readOnly);
             if (!this.readOnly) {
-                for (var i = 0; i < this.dataCopy.length; i++) {
-                    for (var j = 0; j < this.dataCopy[i].parameters.length; j++) {
-                        var p = this.dataCopy[i].parameters[j];
+                for (var i = 0; i < this.data.length; i++) {
+                    var copyObj = this.returnCopyData();
+                    for (var j = 0; j < copyObj[i].parameters.length; j++) {
+                        var p = copyObj[i].parameters[j];
                         if (p.value && p.value.charAt(0) === "=") {
-                            this.data[i].parameters[j].value = p.value.slice();
-                        }
-                        else {
-                            for (var di = 1; di < this.dataPlayer.length; di++) {
-                                if (this.dataCopy[i] && this.dataCopy[i].id && this.dataCopy[i].id.toLowerCase().trim() === this.dataPlayer[di][0].toLowerCase().trim()) {
-                                    if (p.id.toLowerCase().trim() === this.dataPlayer[di][2].toLowerCase().trim()) {
-                                        console.log(this.data[i].parameters[j], this.dataPlayer[di][this.cursor]);
-                                        this.data[i].parameters[j].value = this.dataPlayer[di][this.cursor];
-                                        this.formulaSaver[this.modelID + "." + this.dataCopy[i].id + "." + p.id] = this.dataPlayer[di][this.cursor];
-                                    }
-                                }
-                            }
+                            this.data[i].parameters[j].value = p.value;
                         }
                     }
+                    this.componentService.update(this.data[i]).subscribe(function (r) {
+                        _this.componentService.getAllByUserId(_this.user._id).subscribe(function (data) {
+                            _this.formulaData = data;
+                            _this.formulaSaver = {};
+                            new Promise(function (resolve, reject) { _this.calc(resolve, reject); }).then(function () {
+                                _this.removeAll();
+                                _this.drow();
+                            });
+                        });
+                    });
                 }
+                setTimeout(function () {
+                    _this.formulaSaver = {};
+                    _this.dataPlayer = [];
+                    _this.getData();
+                }, 8000);
+                setTimeout(function () {
+                    _this.setDataPlayer(null);
+                }, 15000);
             }
             console.log(this.formulaSaver);
             this.calc();
